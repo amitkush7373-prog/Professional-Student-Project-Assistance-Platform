@@ -1,0 +1,340 @@
+export type UserRole = 'student' | 'expert' | 'admin';
+
+export type CollegeServiceType = 
+  | 'college-project'
+  | 'technical-help'
+  | 'data-science'
+  | 'ai-ml'
+  | 'ppt-presentation'
+  | 'project-review'
+  | 'other';
+
+export type StudyYear = '1st_year' | '2nd_year' | '3rd_year' | 'final_year';
+
+export type CollegeProjectLevel = 
+  | 'basic'
+  | 'mini'
+  | 'major'
+  | 'ppt_only'
+  | 'review_only'
+  | 'project_ppt_review'
+  | 'custom';
+
+export type PPTTier = '5_7_slides' | '8_10_slides' | '11_15_slides';
+
+export type ReviewTier = 'basic' | 'technical' | 'presentation' | 'final';
+
+export type ProjectCategory = 
+  | 'college-project'
+  | 'web-dev'
+  | 'python'
+  | 'java'
+  | 'data-science'
+  | 'data-analytics'
+  | 'ai-ml'
+  | 'machine-learning'
+  | 'ai-nlp-cv'
+  | 'ppt-presentation'
+  | 'project-review'
+  | 'debugging'
+  | 'debugging-fixing'
+  | 'documentation'
+  | 'documentation-srs'
+  | 'viva-prep'
+  | 'viva-preparation'
+  | 'deployment'
+  | 'deployment-cloud'
+  | 'mobile-apps'
+  | 'database-systems'
+  | 'ui-ux-design'
+  | 'technical-guidance'
+  | 'other';
+
+export type ComplexityLevel = 'small' | 'medium' | 'large' | 'evaluate-for-me';
+
+export type UrgencyLevel = 'standard' | 'priority' | 'urgent' | 'same-day';
+
+export type ProjectStatus = 
+  | 'submitted'
+  | 'under_review'
+  | 'quotation_ready'
+  | 'payment_pending'
+  | 'verification_pending'
+  | 'in_progress'
+  | 'review'
+  | 'revision_requested'
+  | 'completed'
+  | 'download_available'
+  | 'cancelled';
+
+export type PaymentStatus = 'pending' | 'verification_pending' | 'confirmed' | 'rejected' | 'refunded';
+
+export type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'wallet' | 'manual_upi';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: UserRole;
+  avatar?: string;
+  college?: string;
+  branch?: string;
+  semester?: string;
+  year?: StudyYear;
+  bio?: string;
+  skills?: string[];
+  rating?: number;
+  activeProjectsCount?: number;
+  completedProjectsCount?: number;
+  isAvailable?: boolean;
+  createdAt: string;
+}
+
+export interface ProjectFile {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  sizeFormatted: string;
+  uploadDate: string;
+  category: 'requirement' | 'dataset' | 'screenshot' | 'existing_code' | 'payment_proof' | 'reference';
+  url: string;
+  previewUrl?: string;
+}
+
+export interface ProjectAddon {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  isSelected: boolean;
+  iconName?: string;
+}
+
+export interface ProjectRequirement {
+  title: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  college: string;
+  courseBranch: string;
+  year?: StudyYear;
+  semester: string;
+  serviceType: CollegeServiceType;
+  projectLevel?: CollegeProjectLevel;
+  category: ProjectCategory;
+  technologies: string[];
+  description: string;
+  problemStatement?: string;
+  requiredFeatures: string[];
+  existingWork?: string;
+  expectedOutput?: string;
+  specialInstructions?: string;
+  
+  // Specific college service fields
+  pptSlideCount?: PPTTier;
+  pptDesignLevel?: 'basic' | 'enhanced' | 'premium';
+  reviewType?: ReviewTier;
+  needsPPT?: boolean;
+  needsDocumentation?: boolean;
+  needsReview?: boolean;
+  needsVivaPrep?: boolean;
+  needsCodingHelp?: boolean;
+}
+
+export interface ProjectAssessment {
+  estimatedComplexity: 'small' | 'medium' | 'large';
+  estimatedEffortHours: number;
+  recommendedTimelineDays: number;
+  estimatedPrice: number;
+  basePrice: number;
+  complexityFee: number;
+  techFee: number;
+  urgencyFee: number;
+  addOnsTotal: number;
+  taxAmount: number;
+  totalFinalPrice: number; // Strictly <= 700
+  assignedExpertTier: string;
+  deliverablesList: string[];
+  revisionsAllowed: number;
+  rationale: string;
+  breakdownItems?: { label: string; amount: number }[];
+}
+
+export interface DeliverableItem {
+  id: string;
+  title: string;
+  description: string;
+  fileType: string;
+  fileSize: string;
+  downloadUrl: string;
+  uploadedAt: string;
+  isReady: boolean;
+  category: 'source_code' | 'documentation' | 'presentation' | 'deployment_guide' | 'video_walkthrough' | 'review_notes';
+}
+
+export interface Project {
+  id: string;
+  orderNumber: string;
+  studentId: string;
+  assignedExpertId?: string;
+  assignedExpertName?: string;
+  complexity: ComplexityLevel;
+  selectedUrgency: UrgencyLevel;
+  selectedAddons: ProjectAddon[];
+  deadlineDate: string;
+  status: ProjectStatus;
+  paymentStatus: PaymentStatus;
+  progress: number;
+  createdAt: string;
+  updatedAt: string;
+  requirement: ProjectRequirement;
+  files: ProjectFile[];
+  assessment: ProjectAssessment;
+  deliverables?: DeliverableItem[];
+  revisionNotes?: string;
+  rating?: number;
+  reviewComment?: string;
+  reviewedAt?: string;
+  
+  // Manual UPI Verification fields
+  paymentProofUrl?: string;
+  utrNumber?: string;
+  paymentSubmittedAt?: string;
+  paymentVerifiedAt?: string;
+  paymentRejectedReason?: string;
+}
+
+export interface Message {
+  id: string;
+  projectId: string;
+  senderId: string;
+  senderName: string;
+  senderRole: UserRole;
+  content: string;
+  timestamp: string;
+  codeSnippet?: {
+    language: string;
+    code: string;
+  };
+  attachments?: {
+    name: string;
+    url: string;
+    size: string;
+  }[];
+  read: boolean;
+}
+
+export interface PricingConfig {
+  basePrices: {
+    basicCollege: number; // Small/Basic (₹200)
+    miniProject: number;  // Medium (₹300)
+    majorProject: number; // Complex (₹400)
+  };
+  urgencyAdders: {
+    standard: number; // 7+ days: ₹0 (e.g. ₹200-₹300 total)
+    priority: number; // 4-6 days: +₹50 (e.g. ₹250-₹350 total)
+    urgent: number;   // 2-3 days: +₹150 (e.g. ₹350-₹450 total)
+    'same-day': number; // 1 day: +₹250 (e.g. ₹450-₹550 total)
+  };
+  pptRates: {
+    '5_7_slides': number;   // ₹100
+    '8_10_slides': number;  // ₹150
+    '11_15_slides': number; // ₹200
+  };
+  reviewRates: {
+    basic: number;       // ₹100
+    technical: number;   // ₹150
+    presentation: number;// ₹100
+    final: number;       // ₹200
+  };
+  documentationRates: {
+    formatting: number;  // ₹100
+    fullDocs: number;    // ₹150
+  };
+  debuggingRates: {
+    minorBug: number;    // ₹100
+    multipleBugs: number;// ₹200
+  };
+  addonRates: {
+    documentation: number; // ₹100
+    presentation: number;  // ₹100
+    deployment: number;    // ₹100
+    walkthrough: number;   // ₹100
+    extra_revisions: number; // ₹50
+  };
+  maxPriceLimit: number; // STRICTLY 700
+  minPriceLimit: number; // STRICTLY 100
+}
+
+export interface PaymentSettings {
+  qrCodeUrl: string;
+  upiId: string;
+  merchantName: string;
+  instructions: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  subject: string;
+  category: 'Billing' | 'Project Technical' | 'Expert Communication' | 'Delivery Issue' | 'General';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'open' | 'in_progress' | 'resolved';
+  createdAt: string;
+  updatedAt: string;
+  messages: {
+    id: string;
+    sender: string;
+    senderRole: UserRole;
+    text: string;
+    timestamp: string;
+  }[];
+}
+
+export interface PlatformReview {
+  id: string;
+  studentName: string;
+  studentCollege: string;
+  projectTitle: string;
+  category: ProjectCategory;
+  rating: number;
+  review: string;
+  whatWentWell: string;
+  suggestions?: string;
+  verified: boolean;
+  date: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'project_update' | 'message' | 'payment' | 'system';
+  timestamp: string;
+  read: boolean;
+  actionUrl?: string;
+}
+
+export interface Transaction {
+  id: string;
+  projectId: string;
+  projectTitle: string;
+  studentId: string;
+  studentName: string;
+  studentEmail: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  transactionDate: string;
+  invoiceNumber: string;
+  gatewayRef: string;
+  upiIdOrCardEnding: string;
+  utrNumber?: string;
+  paymentProofUrl?: string;
+  refundReason?: string;
+}
