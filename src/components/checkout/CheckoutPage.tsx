@@ -55,8 +55,9 @@ export const CheckoutPage: React.FC = () => {
   };
 
   const originalTotal = pendingCheckoutProject.assessment.totalFinalPrice;
+  const isFree = originalTotal === 0;
   const discountAmount = Math.round((originalTotal * discountPercent) / 100);
-  const finalPayable = Math.max(100, originalTotal - discountAmount);
+  const finalPayable = isFree ? 0 : Math.max(50, Math.min(200, originalTotal - discountAmount));
 
   const handlePaymentSuccess = () => {
     setIsGatewayOpen(false);

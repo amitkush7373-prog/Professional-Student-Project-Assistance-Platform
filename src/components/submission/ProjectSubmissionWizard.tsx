@@ -481,14 +481,19 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   {/* CASE A: PPT Presentation Specific Service */}
                   {serviceType === 'ppt-presentation' && (
                     <div className="space-y-4 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)]">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        Select Number of Slides
-                      </h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                          Select Number of Slides
+                        </h4>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                          College PPT — FREE
+                        </span>
+                      </div>
                       <div className="grid grid-cols-3 gap-3 text-center">
                         {[
-                          { id: '5_7_slides' as PPTTier, title: '5–7 Slides', price: 100, desc: 'Quick Seminar / Viva' },
-                          { id: '8_10_slides' as PPTTier, title: '8–10 Slides', price: 150, desc: 'Standard College PPT' },
-                          { id: '11_15_slides' as PPTTier, title: '11–15 Slides', price: 200, desc: 'Complete Defense Deck' }
+                          { id: '5_7_slides' as PPTTier, title: '5–7 Slides', priceText: 'FREE (₹0)', desc: 'Quick Seminar / Viva' },
+                          { id: '8_10_slides' as PPTTier, title: '8–10 Slides', priceText: 'FREE (₹0)', desc: 'Standard College PPT' },
+                          { id: '11_15_slides' as PPTTier, title: '11–15 Slides', priceText: '₹50', desc: 'Complete Defense Deck' }
                         ].map(s => (
                           <div
                             key={s.id}
@@ -500,7 +505,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                             }`}
                           >
                             <div className="text-xs font-bold text-[var(--text-primary)]">{s.title}</div>
-                            <div className="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">₹{s.price}</div>
+                            <div className="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">{s.priceText}</div>
                             <div className="text-[10px] text-[var(--text-muted)] mt-1">{s.desc}</div>
                           </div>
                         ))}
@@ -512,14 +517,14 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   {serviceType === 'project-review' && (
                     <div className="space-y-4 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)]">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        Select Review Package
+                        Select Review Package (₹50–₹100)
                       </h4>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                         {[
-                          { id: 'basic' as ReviewTier, title: 'Basic Review', price: 100, desc: 'Structure & error check' },
-                          { id: 'technical' as ReviewTier, title: 'Technical Review', price: 150, desc: 'Code & logic audit' },
-                          { id: 'presentation' as ReviewTier, title: 'PPT Review', price: 100, desc: 'Design & content flow' },
-                          { id: 'final' as ReviewTier, title: 'Final Review', price: 200, desc: 'All-inclusive full audit' }
+                          { id: 'basic' as ReviewTier, title: 'Basic Review', price: 50, desc: 'Structure & error check' },
+                          { id: 'technical' as ReviewTier, title: 'Technical Review', price: 100, desc: 'Code & logic audit' },
+                          { id: 'presentation' as ReviewTier, title: 'PPT Review', price: 50, desc: 'Design & content flow' },
+                          { id: 'final' as ReviewTier, title: 'Final Review', price: 100, desc: 'All-inclusive full audit' }
                         ].map(r => (
                           <div
                             key={r.id}
@@ -648,9 +653,9 @@ export const ProjectSubmissionWizard: React.FC = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                       {[
                         { id: 'standard' as UrgencyLevel, title: '7+ Days', tag: 'Best Savings (₹0 Extra)' },
-                        { id: 'priority' as UrgencyLevel, title: '4–6 Days', tag: '+₹50 Priority' },
-                        { id: 'urgent' as UrgencyLevel, title: '2–3 Days', tag: '+₹150 Urgent' },
-                        { id: 'same-day' as UrgencyLevel, title: '1 Day (Tomorrow)', tag: '+₹250 Express' }
+                        { id: 'priority' as UrgencyLevel, title: '4–6 Days', tag: '+₹20 Priority' },
+                        { id: 'urgent' as UrgencyLevel, title: '2–3 Days', tag: '+₹30 Urgent' },
+                        { id: 'same-day' as UrgencyLevel, title: '1 Day (Tomorrow)', tag: '+₹50 Priority' }
                       ].map(urg => (
                         <div
                           key={urg.id}
@@ -672,7 +677,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                           <Clock className="w-4 h-4 text-blue-500" />
-                          <span>Need more time? Choose a longer deadline and save money.</span>
+                          <span>Choose your deadline for maximum student savings.</span>
                         </span>
                         <span className="text-[10px] text-emerald-500 font-bold">
                           Save up to {formatCurrency(deadlineComparison.savingsWithStandard, currency)}
@@ -719,7 +724,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                         </div>
                       ))}
                       <div className="flex justify-between font-bold text-sm text-[var(--text-primary)] border-t border-[var(--border-color)] pt-2">
-                        <span>Total Investment (Max ₹700 Capped):</span>
+                        <span>Total Investment (Max ₹200 Capped):</span>
                         <span className="font-mono font-black text-blue-600 dark:text-blue-400">{formatCurrency(assessment.totalFinalPrice, currency)}</span>
                       </div>
                     </div>
@@ -748,7 +753,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   onClick={handleNextStep}
                   className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all flex items-center gap-1.5 hover:scale-105"
                 >
-                  <span>{currentStep === 4 ? 'Proceed to Order Summary & Payment' : 'Continue'}</span>
+                  <span>{currentStep === 4 ? (assessment.totalFinalPrice === 0 ? 'Submit Free PPT Request (₹0)' : 'Proceed to Simple Payment') : 'Continue'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -768,7 +773,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   </h4>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
-                  Max ₹700 Capped
+                  {assessment.totalFinalPrice === 0 ? 'College PPT — FREE' : 'Max ₹200 Capped'}
                 </span>
               </div>
 
@@ -780,7 +785,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                 </div>
                 <div className="text-[10px] text-emerald-500 font-semibold flex items-center justify-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>No surprise fees • Revisions included</span>
+                  <span>Simple. Affordable. Student-Friendly.</span>
                 </div>
               </div>
 

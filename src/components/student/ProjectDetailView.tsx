@@ -204,7 +204,7 @@ export const ProjectDetailView: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-sm text-amber-950 dark:text-amber-200">
-                    Payment Status: 🟡 VERIFICATION PENDING
+                    Payment Status: 🟡 Payment Submitted
                   </span>
                   {project.paymentSubmittedAt && (
                     <span className="text-[10px] text-amber-800 dark:text-amber-300">
@@ -213,7 +213,7 @@ export const ProjectDetailView: React.FC = () => {
                   )}
                 </div>
                 <p className="text-amber-900 dark:text-amber-200 text-xs leading-relaxed">
-                  Your payment of <span className="font-mono font-bold">{formatCurrency(project.assessment.totalFinalPrice, currency)}</span> with UTR <span className="font-mono font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">{project.utrNumber || 'N/A'}</span> has been received and is currently being verified against our bank statement. Development will start as soon as verified.
+                  Your payment of <span className="font-mono font-bold">{formatCurrency(project.assessment.totalFinalPrice, currency)}</span> with UTR <span className="font-mono font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">{project.utrNumber || 'N/A'}</span> has been submitted. Status will update to Paid once processed.
                 </p>
               </div>
             </div>
@@ -241,10 +241,10 @@ export const ProjectDetailView: React.FC = () => {
               </div>
               <div className="space-y-0.5">
                 <div className="font-bold text-sm text-emerald-950 dark:text-emerald-200">
-                  Payment Status: 🟢 VERIFIED
+                  Payment Status: 🟢 Paid
                 </div>
                 <div className="text-emerald-800 dark:text-emerald-300 text-xs">
-                  Verified on {project.paymentVerifiedAt ? formatDate(project.paymentVerifiedAt) : 'Recently'} by {project.paymentVerifiedBy || 'Admin'}. Project is actively in progress.
+                  Verified on {project.paymentVerifiedAt ? formatDate(project.paymentVerifiedAt) : 'Recently'}. Source code & project deliverables are unlocked.
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ export const ProjectDetailView: React.FC = () => {
               className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all shrink-0"
             >
               <FileText className="w-4 h-4" />
-              <span>Download Tax Invoice</span>
+              <span>Download Receipt</span>
             </button>
           </div>
         )}
@@ -268,13 +268,13 @@ export const ProjectDetailView: React.FC = () => {
               </div>
               <div className="space-y-1">
                 <div className="font-bold text-sm text-red-950 dark:text-red-200">
-                  Payment Status: 🔴 REJECTED
+                  Payment Status: 🔴 Payment Issue
                 </div>
                 <div className="text-red-900 dark:text-red-200 text-xs leading-relaxed">
-                  <b>Reason:</b> {project.paymentRejectedReason || 'UTR could not be verified in bank statement.'}
+                  <b>Reason:</b> {project.paymentRejectedReason || 'UTR or payment screenshot could not be confirmed.'}
                 </div>
                 <div className="text-[11px] text-red-800 dark:text-red-300">
-                  Please check your transaction statement and re-upload the valid UPI payment proof and 12-digit UTR.
+                  Please check your transaction details and re-enter your UTR or attach your screenshot.
                 </div>
               </div>
             </div>

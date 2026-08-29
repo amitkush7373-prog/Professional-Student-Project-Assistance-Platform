@@ -56,7 +56,7 @@ export const QuickEstimatorWidget: React.FC = () => {
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
               Instant Student Price Estimator
             </h3>
-            <p className="text-[10px] text-[var(--text-muted)]">Capped between ₹100 and ₹700</p>
+            <p className="text-[10px] text-[var(--text-muted)]">Priced between ₹50 and ₹200 MAX</p>
           </div>
         </div>
 
@@ -74,8 +74,8 @@ export const QuickEstimatorWidget: React.FC = () => {
           className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
         >
           <option value="college-project">🎓 College Project (1st/2nd/3rd/Final Year)</option>
-          <option value="ppt-presentation">📑 PPT / Presentation Only (from ₹100)</option>
-          <option value="project-review">📝 Project Review & Error Audit (from ₹100)</option>
+          <option value="ppt-presentation">📑 College PPT / Presentation (100% FREE ₹0)</option>
+          <option value="project-review">📝 Project Review & Error Audit (from ₹50)</option>
           <option value="data-science">📊 Data Science / Python Analysis</option>
           <option value="ai-ml">🤖 AI / Machine Learning Mini Project</option>
           <option value="technical-help">💻 Coding & Debugging Assistance</option>
@@ -114,9 +114,9 @@ export const QuickEstimatorWidget: React.FC = () => {
           <label className="block font-semibold text-[var(--text-primary)]">Number of Slides</label>
           <div className="grid grid-cols-3 gap-1.5">
             {[
-              { id: '5_7_slides' as PPTTier, label: '5–7 Slides (₹100)' },
-              { id: '8_10_slides' as PPTTier, label: '8–10 Slides (₹150)' },
-              { id: '11_15_slides' as PPTTier, label: '11–15 Slides (₹200)' }
+              { id: '5_7_slides' as PPTTier, label: '5–7 Slides (FREE)' },
+              { id: '8_10_slides' as PPTTier, label: '8–10 Slides (FREE)' },
+              { id: '11_15_slides' as PPTTier, label: '11–15 Slides (₹50)' }
             ].map(s => (
               <button
                 key={s.id}
@@ -152,9 +152,9 @@ export const QuickEstimatorWidget: React.FC = () => {
               key={u.id}
               type="button"
               onClick={() => setUrgency(u.id)}
-              className={`py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
+              className={`py-1.5 text-[10px] font-bold rounded-lg border transition-all ${
                 urgency === u.id
-                  ? 'border-blue-600 bg-blue-500/15 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'border-blue-600 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold'
                   : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
               }`}
             >
@@ -164,28 +164,24 @@ export const QuickEstimatorWidget: React.FC = () => {
         </div>
       </div>
 
-      {/* Estimated Price Result Card */}
-      <div className="p-4 rounded-2xl bg-gradient-to-tr from-blue-600/10 via-indigo-600/10 to-emerald-500/10 border border-blue-500/30 text-center space-y-1">
-        <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-          Student Estimated Price
+      {/* Calculated Total Box */}
+      <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-blue-600/10 to-indigo-600/10 border border-blue-500/25 flex items-center justify-between">
+        <div>
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block">Estimated Investment</span>
+          <span className="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">
+            {assessment.totalFinalPrice === 0 ? 'FREE (₹0)' : formatCurrency(assessment.totalFinalPrice, currency)}
+          </span>
         </div>
-        <div className="text-3xl font-black text-blue-600 dark:text-blue-400 font-mono">
-          {formatCurrency(assessment.totalFinalPrice, currency)}
-        </div>
-        <div className="text-[10px] text-[var(--text-secondary)]">
-          {assessment.rationale}
-        </div>
-      </div>
 
-      {/* Action Button */}
-      <button
-        type="button"
-        onClick={handleStartWithEstimate}
-        className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:scale-102"
-      >
-        <span>Get Started at {formatCurrency(assessment.totalFinalPrice, currency)}</span>
-        <ArrowRight className="w-4 h-4" />
-      </button>
+        <button
+          type="button"
+          onClick={handleStartWithEstimate}
+          className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 flex items-center gap-1.5 transition-transform hover:scale-105"
+        >
+          <span>{assessment.totalFinalPrice === 0 ? 'Get Free PPT' : 'Start Project'}</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
 
     </div>
   );

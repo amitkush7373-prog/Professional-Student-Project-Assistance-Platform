@@ -41,8 +41,8 @@ export const SERVICES_LIST: ServiceItem[] = [
     categoryTag: 'Frontend & Backend',
     icon: Globe,
     description: 'Modern, production-grade web applications built with clean architecture, responsive UI, authentication, and RESTful APIs.',
-    keyFeatures: ['React 18 / Next.js 14', 'Node.js / Express / NestJS', 'PostgreSQL / MongoDB', 'Clean MVC Architecture'],
-    startingPrice: 380,
+    keyFeatures: ['React / Next.js', 'Node.js / Express', 'PostgreSQL / MongoDB', 'Clean MVC Architecture'],
+    startingPrice: 150,
     popularTech: ['React', 'Next.js', 'Node.js', 'PostgreSQL'],
     color: 'from-blue-500/20 to-indigo-500/10 text-blue-500'
   },
@@ -53,7 +53,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Terminal,
     description: 'Specialized Python development from async FastAPI microservices and web scraping to complex algorithm simulations.',
     keyFeatures: ['FastAPI / Django / Flask', 'Web Automation & Scraping', 'Data Pipelines & ETL', 'Modular Object-Oriented Code'],
-    startingPrice: 320,
+    startingPrice: 100,
     popularTech: ['Python', 'FastAPI', 'Django', 'Selenium'],
     color: 'from-emerald-500/20 to-teal-500/10 text-emerald-500'
   },
@@ -64,7 +64,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Cpu,
     description: 'Enterprise-grade Java systems, Spring Boot microservices, Hibernate ORM, and secure RESTful backend architectures.',
     keyFeatures: ['Spring Boot 3 & Security', 'Microservices & JWT Auth', 'JPA Hibernate & MySQL', 'JUnit Test Suites'],
-    startingPrice: 380,
+    startingPrice: 150,
     popularTech: ['Java', 'Spring Boot', 'MySQL', 'Docker'],
     color: 'from-amber-500/20 to-orange-500/10 text-amber-500'
   },
@@ -75,7 +75,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: BarChart3,
     description: 'End-to-end data analysis pipelines, exploratory data analysis (EDA), interactive Power BI dashboards, and statistical tests.',
     keyFeatures: ['Pandas, NumPy, Seaborn', 'Interactive Power BI / Tableau', 'Statistical Hypothesis Testing', 'Automated Executive Reports'],
-    startingPrice: 350,
+    startingPrice: 100,
     popularTech: ['Pandas', 'Power BI', 'SQL', 'NumPy'],
     color: 'from-cyan-500/20 to-blue-500/10 text-cyan-500'
   },
@@ -86,7 +86,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Brain,
     description: 'Custom ML pipelines from data preprocessing and feature engineering to model training, hyperparameter tuning, and ROC evaluation.',
     keyFeatures: ['Scikit-learn, XGBoost, LightGBM', 'Classification & Regression', 'Time-Series Forecasting', 'Model Evaluation Metrics'],
-    startingPrice: 450,
+    startingPrice: 150,
     popularTech: ['Python', 'Scikit-learn', 'XGBoost', 'Pandas'],
     color: 'from-purple-500/20 to-pink-500/10 text-purple-500'
   },
@@ -97,7 +97,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Sparkles,
     description: 'Cutting-edge deep learning systems: YOLOv8 object detection, U-Net image segmentation, LLMs, LangChain, and PyTorch.',
     keyFeatures: ['PyTorch & TensorFlow', 'YOLOv8 & OpenCV Vision', 'Transformers, BERT & LLMs', 'FastAPI Real-Time Inference'],
-    startingPrice: 550,
+    startingPrice: 200,
     popularTech: ['PyTorch', 'TensorFlow', 'OpenCV', 'LangChain'],
     color: 'from-rose-500/20 to-red-500/10 text-rose-500'
   },
@@ -108,7 +108,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Smartphone,
     description: 'Native-feel mobile apps built with Flutter or React Native, complete with state management, offline storage, and push notifications.',
     keyFeatures: ['Flutter / React Native', 'Firebase & REST API Sync', 'Camera, GPS & BLE Sensor Sync', 'Installable APK & IPA Builds'],
-    startingPrice: 480,
+    startingPrice: 200,
     popularTech: ['Flutter', 'React Native', 'Firebase', 'SQLite'],
     color: 'from-indigo-500/20 to-blue-500/10 text-indigo-500'
   },
@@ -119,7 +119,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Database,
     description: 'Architecting normalized relational schemas (PostgreSQL, MySQL), complex query indexing, performance tuning, and NoSQL stores.',
     keyFeatures: ['Normalized 3NF Relational Schemas', 'ER Diagrams & Data Dictionaries', 'Complex Query Optimization', 'Transactions & Triggers'],
-    startingPrice: 300,
+    startingPrice: 100,
     popularTech: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis'],
     color: 'from-emerald-500/20 to-green-500/10 text-emerald-500'
   },
@@ -130,7 +130,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Palette,
     description: 'Pixel-perfect UI design systems, responsive web & mobile mockups in Figma, design tokens, wireframes, and clickable interactive prototypes.',
     keyFeatures: ['Figma Component Libraries', 'Mobile & Web Wireframes', 'Interactive Clickable Prototypes', 'Tailwind CSS Export Specs'],
-    startingPrice: 320,
+    startingPrice: 100,
     popularTech: ['Figma', 'Tailwind CSS', 'Design Systems'],
     color: 'from-pink-500/20 to-purple-500/10 text-pink-500'
   },
@@ -141,7 +141,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Bug,
     description: 'Urgent resolution of critical build errors, runtime crashes, CUDA memory leaks, dependency hell, and logical bugs with detailed explanations.',
     keyFeatures: ['Root-Cause Analysis', 'Crashes & Exceptions Fixed', 'Performance Optimization', 'Clean Refactored Patch'],
-    startingPrice: 299,
+    startingPrice: 50,
     popularTech: ['Python', 'JavaScript', 'Java', 'C++'],
     color: 'from-red-500/20 to-orange-500/10 text-red-500'
   },
@@ -150,9 +150,9 @@ export const SERVICES_LIST: ServiceItem[] = [
     title: 'SRS & Academic Documentation',
     categoryTag: 'IEEE Format Reports',
     icon: FileText,
-    description: 'Professional 30-60 page academic thesis reports, Software Requirements Specification (SRS), UML diagrams, and references formatted to university guidelines.',
+    description: 'Professional academic thesis reports, Software Requirements Specification (SRS), UML diagrams, and references formatted to university guidelines.',
     keyFeatures: ['IEEE Format Compliance', 'UML, Sequence & ER Diagrams', 'Literature Survey & Results', 'Plagiarism-Free Original Writing'],
-    startingPrice: 300,
+    startingPrice: 50,
     popularTech: ['IEEE Standard', 'LaTeX', 'UML Diagrams', 'MS Word'],
     color: 'from-blue-500/20 to-cyan-500/10 text-blue-500'
   },
@@ -163,7 +163,7 @@ export const SERVICES_LIST: ServiceItem[] = [
     icon: Cloud,
     description: 'Public deployment on AWS, Vercel, Render, or GCP with custom domains, SSL certificates, containerized Dockerfiles, and CI/CD pipelines.',
     keyFeatures: ['Docker & Docker Compose', 'AWS EC2 / S3 / RDS Setup', 'Vercel / Render Live URLs', 'Production SSL & Environment Config'],
-    startingPrice: 300,
+    startingPrice: 50,
     popularTech: ['Docker', 'AWS', 'Vercel', 'Render', 'Nginx'],
     color: 'from-teal-500/20 to-emerald-500/10 text-teal-500'
   },
@@ -172,20 +172,20 @@ export const SERVICES_LIST: ServiceItem[] = [
     title: 'Technical 1-on-1 Guidance',
     categoryTag: 'Live Mentorship',
     icon: GraduationCap,
-    description: 'Dedicated screen-share sessions with senior engineers to walk through code logic, algorithms, architecture decisions, and viva questions.',
-    keyFeatures: ['Live 1-on-1 Code Walkthrough', 'Architecture Q&A Sessions', 'Concept Clarification', 'Recorded Mentoring Videos'],
-    startingPrice: 299,
+    description: 'Dedicated sessions with senior engineers to walk through code logic, algorithms, architecture decisions, and viva questions.',
+    keyFeatures: ['Live Code Walkthrough', 'Architecture Q&A Sessions', 'Concept Clarification', 'Recorded Mentoring Videos'],
+    startingPrice: 50,
     popularTech: ['Screen Share', 'Code Review', 'Pair Programming'],
     color: 'from-amber-500/20 to-yellow-500/10 text-amber-500'
   },
   {
     id: 'viva-preparation',
-    title: 'Viva & Presentation Preparation',
-    categoryTag: 'Defense Prep',
+    title: 'College PPT & Viva Preparation',
+    categoryTag: 'College PPT — FREE',
     icon: Presentation,
-    description: 'High-impact 15-20 slide PowerPoint presentation decks, speaker talking points script, demo video recording, and anticipated examiner Q&A cheat-sheets.',
-    keyFeatures: ['15-Slide Master Defense Deck', 'Speaker Talking Script', 'Anticipated Examiner Q&A Guide', 'Demo Video Walkthrough Script'],
-    startingPrice: 299,
+    description: 'PowerPoint presentation decks (5–10 slides 100% FREE), speaker talking points script, and anticipated examiner Q&A cheat-sheets.',
+    keyFeatures: ['5–10 Slide Presentation (FREE)', 'Speaker Talking Script', 'Anticipated Examiner Q&A Guide', 'Demo Video Walkthrough Script'],
+    startingPrice: 0,
     popularTech: ['PowerPoint', 'Keynote', 'Viva Q&A Notes'],
     color: 'from-indigo-500/20 to-purple-500/10 text-indigo-500'
   }

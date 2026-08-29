@@ -31,9 +31,9 @@ export const HeroSection: React.FC = () => {
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             
             {/* Tagline Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm animate-pulse">
-              <PiggyBank className="w-3.5 h-3.5" />
-              <span>Built for Students, Priced for Students • ₹100 – ₹700 Max</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Simple. Affordable. Student-Friendly. • ₹50 – ₹200 MAX</span>
             </div>
 
             {/* Main Headline */}
@@ -46,15 +46,15 @@ export const HeroSection: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Affordable project assistance, PPTs, reviews, documentation, and technical support — designed specifically for college and university students.
+              Start with a Free Preview — Pay Only When You Need More. Affordable assistance, 100% FREE college PPTs, code review, documentation, and viva prep.
             </p>
 
             {/* Trust Bullet Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
               {[
-                { label: 'PPTs from ₹100', icon: Presentation },
-                { label: 'Projects Up to ₹700 Max', icon: PiggyBank },
-                { label: 'Admin Verified UPI QR', icon: ShieldCheck },
+                { label: 'College PPT — FREE', icon: Presentation },
+                { label: 'Paid Tasks ₹50–₹200 Max', icon: PiggyBank },
+                { label: 'Free Project Preview', icon: ShieldCheck },
                 { label: '100% Viva Ready Code', icon: Code2 },
                 { label: 'On-Time Delivery', icon: Clock },
                 { label: '3 Revisions Included', icon: CheckCircle2 }
@@ -78,7 +78,7 @@ export const HeroSection: React.FC = () => {
                 onClick={() => setActiveView('submit')}
                 className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:scale-105"
               >
-                <span>Submit Your College Project</span>
+                <span>Start with Free Preview</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -87,10 +87,10 @@ export const HeroSection: React.FC = () => {
                   setDraftSubmission({ serviceType: 'ppt-presentation' });
                   setActiveView('submit');
                 }}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-xs sm:text-sm font-bold text-[var(--text-primary)] transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 transition-colors flex items-center justify-center gap-2"
               >
-                <Presentation className="w-4 h-4 text-pink-500" />
-                <span>Order PPT Slides (from ₹100)</span>
+                <Presentation className="w-4 h-4 text-emerald-500" />
+                <span>Get Free College PPT (₹0)</span>
               </button>
             </div>
 
