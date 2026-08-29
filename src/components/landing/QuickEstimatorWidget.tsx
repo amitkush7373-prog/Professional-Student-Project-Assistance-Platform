@@ -56,7 +56,7 @@ export const QuickEstimatorWidget: React.FC = () => {
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
               Instant Student Price Estimator
             </h3>
-            <p className="text-[10px] text-[var(--text-muted)]">Priced between ₹50 and ₹200 MAX</p>
+            <p className="text-[10px] text-[var(--text-muted)]">Priced between ₹30 and ₹100 MAX</p>
           </div>
         </div>
 
@@ -75,7 +75,7 @@ export const QuickEstimatorWidget: React.FC = () => {
         >
           <option value="college-project">🎓 College Project (1st/2nd/3rd/Final Year)</option>
           <option value="ppt-presentation">📑 College PPT / Presentation (100% FREE ₹0)</option>
-          <option value="project-review">📝 Project Review & Error Audit (from ₹50)</option>
+          <option value="project-review">📝 Project Review & Error Audit (from ₹30)</option>
           <option value="data-science">📊 Data Science / Python Analysis</option>
           <option value="ai-ml">🤖 AI / Machine Learning Mini Project</option>
           <option value="technical-help">💻 Coding & Debugging Assistance</option>
@@ -116,7 +116,7 @@ export const QuickEstimatorWidget: React.FC = () => {
             {[
               { id: '5_7_slides' as PPTTier, label: '5–7 Slides (FREE)' },
               { id: '8_10_slides' as PPTTier, label: '8–10 Slides (FREE)' },
-              { id: '11_15_slides' as PPTTier, label: '11–15 Slides (₹50)' }
+              { id: '11_15_slides' as PPTTier, label: '11–15 Slides (₹30)' }
             ].map(s => (
               <button
                 key={s.id}

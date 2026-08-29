@@ -43,14 +43,14 @@ export const PricingMatrixTable: React.FC = () => {
     {
       id: 'very_small',
       title: 'Very Small Task / Bug Fix',
-      badgeText: '₹50 Level',
+      badgeText: '₹30 Level',
       tagline: 'Minor bug resolution, quick syntax fix, or small script edits',
-      standardPrice: 50,
-      priorityPrice: 50,
-      urgentPrice: 50,
-      sameDayPrice: 50,
+      standardPrice: 30,
+      priorityPrice: 30,
+      urgentPrice: 30,
+      sameDayPrice: 30,
       isFree: false,
-      priceLabel: '₹50',
+      priceLabel: '₹30',
       features: [
         'Single bug or minor logic correction',
         'Code formatting and linting cleanup',
@@ -65,14 +65,14 @@ export const PricingMatrixTable: React.FC = () => {
     {
       id: 'basic',
       title: 'Small Task / Basic Assignment',
-      badgeText: '₹100 Level',
+      badgeText: '₹50 Level',
       tagline: 'Simple 1st/2nd year assignments, Python/Java scripts & basic tasks',
-      standardPrice: 100,
-      priorityPrice: 100,
-      urgentPrice: 100,
-      sameDayPrice: 100,
+      standardPrice: 50,
+      priorityPrice: 50,
+      urgentPrice: 50,
+      sameDayPrice: 50,
       isFree: false,
-      priceLabel: '₹100',
+      priceLabel: '₹50',
       features: [
         'Complete working source code & clean folders',
         'Step-by-step setup guide (README)',
@@ -87,14 +87,14 @@ export const PricingMatrixTable: React.FC = () => {
     {
       id: 'mini',
       title: 'Medium Task / Mini Project',
-      badgeText: '₹150 Level',
+      badgeText: '₹80 Level',
       tagline: 'Standard semester mini project (Python, Web, ML, Data Science)',
-      standardPrice: 150,
-      priorityPrice: 150,
-      urgentPrice: 150,
-      sameDayPrice: 150,
+      standardPrice: 80,
+      priorityPrice: 80,
+      urgentPrice: 80,
+      sameDayPrice: 80,
       isFree: false,
-      priceLabel: '₹150',
+      priceLabel: '₹80',
       features: [
         'Full functional codebase (Frontend + Backend + DB)',
         'Clean dataset analysis / ML pipeline / GUI application',
@@ -109,19 +109,19 @@ export const PricingMatrixTable: React.FC = () => {
     {
       id: 'major',
       title: 'More Involved Task / Capstone',
-      badgeText: '₹200 MAXIMUM',
+      badgeText: '₹100 MAXIMUM',
       tagline: 'Comprehensive multi-module academic project or final-year task',
-      standardPrice: 200,
-      priorityPrice: 200,
-      urgentPrice: 200,
-      sameDayPrice: 200,
+      standardPrice: 100,
+      priorityPrice: 100,
+      urgentPrice: 100,
+      sameDayPrice: 100,
       isFree: false,
-      priceLabel: '₹200 MAX',
+      priceLabel: '₹100 MAX',
       features: [
         'Full multi-module project code & structure',
         'Interactive web interface / dashboard / API',
         'Comprehensive documentation & viva prep notes',
-        'Strictly capped at ₹200 MAXIMUM',
+        'Strictly capped at ₹100 MAXIMUM',
         'Priority verified mentor review'
       ],
       popular: false,
@@ -149,10 +149,10 @@ export const PricingMatrixTable: React.FC = () => {
             <span>Simple. Affordable. Student-Friendly.</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight">
-            Clear Student Price Levels (₹50, ₹100, ₹150, ₹200 MAX)
+            Clear Student Price Levels (₹30, ₹50, ₹80, ₹100 MAX)
           </h2>
           <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
-            Start with a Free Preview — Pay Only When You Need More. Basic College PPT is 100% FREE (₹0). Highest normal price is ₹200 MAX.
+            Start with a Free Preview — Pay Only When You Need More. Basic College PPT is 100% FREE (₹0). Highest normal price is strictly ₹100 MAX.
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export const PricingMatrixTable: React.FC = () => {
             <div>
               <div className="font-bold text-[var(--text-primary)]">Start with a Free Preview — Pay Only When You Need More</div>
               <div className="text-[var(--text-muted)] text-[11px]">
-                Upload your files to get an instant verification preview. Only pay if you need source code, report or assistance.
+                Upload your files to get an instant verification preview. Only pay if you need source code, report or assistance (strictly below ₹100).
               </div>
             </div>
           </div>

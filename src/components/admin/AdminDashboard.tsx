@@ -52,7 +52,7 @@ export const AdminDashboard: React.FC = () => {
                 College Project Platform Operations
               </h1>
               <p className="text-xs text-[var(--text-secondary)]">
-                Manage manual UPI payment verification, custom QR settings, student orders, and affordable pricing rules (₹100–₹700).
+                Manage manual UPI payment verification, custom QR settings, student orders, and affordable pricing rules (Max ₹100).
               </p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export const AdminDashboard: React.FC = () => {
             { id: 'verifications', label: `Payment Verification (${pendingVerificationCount} Pending)`, icon: FileCheck, highlight: pendingVerificationCount > 0 },
             { id: 'orders', label: `Orders Queue (${paymentRecords.length})`, icon: Layers },
             { id: 'payment_settings', label: 'Payment QR Settings', icon: QrCode },
-            { id: 'pricing', label: 'Affordable Pricing Matrix (₹100–₹700)', icon: Zap },
+            { id: 'pricing', label: 'Affordable Pricing Matrix (Max ₹100)', icon: Zap },
             { id: 'analytics', label: 'Executive Analytics', icon: BarChart3 },
             { id: 'experts', label: 'Mentors Roster', icon: Users },
             { id: 'payments', label: `Transactions Ledger (${transactions.length})`, icon: CreditCard }

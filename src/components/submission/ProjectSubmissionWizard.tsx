@@ -257,7 +257,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
             <PiggyBank className="w-3.5 h-3.5" />
-            <span>Built for Students, Priced for Students • ₹100 to ₹700 Max</span>
+            <span>Simple. Affordable. Student-Friendly. • ₹100 MAXIMUM</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] tracking-tight">
             College Project Assistance & Submission
@@ -493,7 +493,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                         {[
                           { id: '5_7_slides' as PPTTier, title: '5–7 Slides', priceText: 'FREE (₹0)', desc: 'Quick Seminar / Viva' },
                           { id: '8_10_slides' as PPTTier, title: '8–10 Slides', priceText: 'FREE (₹0)', desc: 'Standard College PPT' },
-                          { id: '11_15_slides' as PPTTier, title: '11–15 Slides', priceText: '₹50', desc: 'Complete Defense Deck' }
+                          { id: '11_15_slides' as PPTTier, title: '11–15 Slides', priceText: '₹30', desc: 'Complete Defense Deck' }
                         ].map(s => (
                           <div
                             key={s.id}
@@ -517,14 +517,14 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   {serviceType === 'project-review' && (
                     <div className="space-y-4 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)]">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        Select Review Package (₹50–₹100)
+                        Select Review Package (₹30–₹70)
                       </h4>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                         {[
-                          { id: 'basic' as ReviewTier, title: 'Basic Review', price: 50, desc: 'Structure & error check' },
-                          { id: 'technical' as ReviewTier, title: 'Technical Review', price: 100, desc: 'Code & logic audit' },
-                          { id: 'presentation' as ReviewTier, title: 'PPT Review', price: 50, desc: 'Design & content flow' },
-                          { id: 'final' as ReviewTier, title: 'Final Review', price: 100, desc: 'All-inclusive full audit' }
+                          { id: 'basic' as ReviewTier, title: 'Basic Review', price: 30, desc: 'Structure & error check' },
+                          { id: 'technical' as ReviewTier, title: 'Technical Review', price: 50, desc: 'Code & logic audit' },
+                          { id: 'presentation' as ReviewTier, title: 'PPT Review', price: 30, desc: 'Design & content flow' },
+                          { id: 'final' as ReviewTier, title: 'Final Review', price: 70, desc: 'All-inclusive full audit' }
                         ].map(r => (
                           <div
                             key={r.id}
@@ -553,10 +553,10 @@ export const ProjectSubmissionWizard: React.FC = () => {
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                         {[
                           { checked: needsProject, set: setNeedsProject, label: '✓ Project Source Code' },
-                          { checked: needsPPT, set: setNeedsPPT, label: '✓ PPT / Slides (+₹100)' },
-                          { checked: needsDocumentation, set: setNeedsDocumentation, label: '✓ Project Report / Docs (+₹100)' },
-                          { checked: needsReview, set: setNeedsReview, label: '✓ Project Review (+₹100)' },
-                          { checked: needsVivaPrep, set: setNeedsVivaPrep, label: '✓ Viva / Q&A Prep (+₹100)' },
+                          { checked: needsPPT, set: setNeedsPPT, label: '✓ College PPT (100% FREE)' },
+                          { checked: needsDocumentation, set: setNeedsDocumentation, label: '✓ Project Report / Docs (+₹30)' },
+                          { checked: needsReview, set: setNeedsReview, label: '✓ Project Review (+₹30)' },
+                          { checked: needsVivaPrep, set: setNeedsVivaPrep, label: '✓ Viva / Q&A Prep (+₹30)' },
                           { checked: needsCodingHelp, set: setNeedsCodingHelp, label: '✓ Basic Coding Help' }
                         ].map((item, idx) => (
                           <label key={idx} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)] hover:bg-[var(--bg-elevated)]">
@@ -653,9 +653,9 @@ export const ProjectSubmissionWizard: React.FC = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                       {[
                         { id: 'standard' as UrgencyLevel, title: '7+ Days', tag: 'Best Savings (₹0 Extra)' },
-                        { id: 'priority' as UrgencyLevel, title: '4–6 Days', tag: '+₹20 Priority' },
-                        { id: 'urgent' as UrgencyLevel, title: '2–3 Days', tag: '+₹30 Urgent' },
-                        { id: 'same-day' as UrgencyLevel, title: '1 Day (Tomorrow)', tag: '+₹50 Priority' }
+                        { id: 'priority' as UrgencyLevel, title: '4–6 Days', tag: '+₹10 Priority' },
+                        { id: 'urgent' as UrgencyLevel, title: '2–3 Days', tag: '+₹20 Urgent' },
+                        { id: 'same-day' as UrgencyLevel, title: '1 Day (Tomorrow)', tag: '+₹30 Priority' }
                       ].map(urg => (
                         <div
                           key={urg.id}
@@ -724,7 +724,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                         </div>
                       ))}
                       <div className="flex justify-between font-bold text-sm text-[var(--text-primary)] border-t border-[var(--border-color)] pt-2">
-                        <span>Total Investment (Max ₹200 Capped):</span>
+                        <span>Total Investment (Max ₹100 Capped):</span>
                         <span className="font-mono font-black text-blue-600 dark:text-blue-400">{formatCurrency(assessment.totalFinalPrice, currency)}</span>
                       </div>
                     </div>
@@ -773,7 +773,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   </h4>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
-                  {assessment.totalFinalPrice === 0 ? 'College PPT — FREE' : 'Max ₹200 Capped'}
+                  {assessment.totalFinalPrice === 0 ? 'College PPT — FREE' : 'Max ₹100 Capped'}
                 </span>
               </div>
 

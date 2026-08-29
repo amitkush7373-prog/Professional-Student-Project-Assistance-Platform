@@ -39,10 +39,10 @@ export const AdminPricingConfig: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <PiggyBank className="w-4 h-4 text-emerald-500" />
-            <h3 className="text-sm font-bold text-[var(--text-primary)]">Student-Friendly Dynamic Pricing Control Matrix</h3>
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">Student-Friendly Pricing Control Matrix (Max ₹100)</h3>
           </div>
           <p className="text-xs text-[var(--text-secondary)]">
-            Configure base project prices, PPT rates (from ₹100), review rates, and the strict maximum price ceiling (₹700 HARD CAP).
+            Configure base project prices (₹30–₹100), Free PPT rates (₹0), and the strict maximum price ceiling (₹100 HARD CAP).
           </p>
         </div>
 
@@ -73,10 +73,10 @@ export const AdminPricingConfig: React.FC = () => {
             <Lock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <div>
               <h4 className="text-sm font-bold text-[var(--text-primary)]">
-                Absolute Maximum Price Limit (Hard Cap: ₹700)
+                Absolute Maximum Price Limit (Hard Cap: ₹100 MAXIMUM)
               </h4>
               <p className="text-xs text-[var(--text-muted)]">
-                All platform services (Project + PPT + Docs + Review + Express) are strictly clamped below this budget ceiling.
+                All platform services (Project + PPT + Docs + Review + Priority) are strictly clamped below this budget ceiling.
               </p>
             </div>
           </div>
@@ -87,7 +87,7 @@ export const AdminPricingConfig: React.FC = () => {
               <span className="absolute left-3 top-2 text-xs font-bold text-[var(--text-muted)]">₹</span>
               <input
                 type="number"
-                value={config.maxPriceLimit || 700}
+                value={config.maxPriceLimit || 100}
                 onChange={e => setConfig(prev => ({
                   ...prev,
                   maxPriceLimit: Number(e.target.value)
@@ -111,7 +111,7 @@ export const AdminPricingConfig: React.FC = () => {
           <div className="space-y-3 text-xs">
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                Basic College / 1st-Year Project (₹200 baseline)
+                Basic College / 1st-Year Project (₹50 baseline)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 font-bold text-[var(--text-muted)]">₹</span>
@@ -129,7 +129,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                Mini Project / Data Science (₹300 baseline)
+                Mini Project / Data Science (₹80 baseline)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 font-bold text-[var(--text-muted)]">₹</span>
@@ -147,7 +147,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                Major Capstone Project (₹400 baseline)
+                Major Capstone Project (₹100 baseline)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 font-bold text-[var(--text-muted)]">₹</span>
@@ -169,13 +169,13 @@ export const AdminPricingConfig: React.FC = () => {
         <div className="p-6 rounded-2xl glass-panel border border-[var(--border-color)] space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2 flex items-center justify-between">
             <span>PPT Presentation Rates (INR)</span>
-            <span className="text-pink-500 font-normal text-[10px]">Affordable Slides</span>
+            <span className="text-pink-500 font-normal text-[10px]">Free Slides</span>
           </h4>
 
           <div className="space-y-3 text-xs">
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                5–7 Slides Rate (₹100)
+                5–7 Slides Rate (₹0 FREE)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 font-bold text-[var(--text-muted)]">₹</span>
@@ -193,7 +193,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                8–10 Slides Rate (₹150)
+                8–10 Slides Rate (₹0 FREE)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 font-bold text-[var(--text-muted)]">₹</span>
@@ -211,7 +211,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                11–15 Slides Rate (₹200)
+                11–15 Slides Rate (₹30)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 font-bold text-[var(--text-muted)]">₹</span>
@@ -253,7 +253,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                4–6 Days Priority (+₹50)
+                4–6 Days Priority (+₹10)
               </label>
               <input
                 type="number"
@@ -268,7 +268,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                2–3 Days Urgent (+₹150)
+                2–3 Days Urgent (+₹20)
               </label>
               <input
                 type="number"
@@ -283,7 +283,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                1 Day Express (+₹250)
+                1 Day Priority (+₹30)
               </label>
               <input
                 type="number"

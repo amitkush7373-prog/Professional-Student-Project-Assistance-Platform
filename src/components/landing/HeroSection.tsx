@@ -33,7 +33,7 @@ export const HeroSection: React.FC = () => {
             {/* Tagline Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Simple. Affordable. Student-Friendly. • ₹50 – ₹200 MAX</span>
+              <span>Simple. Affordable. Student-Friendly. • ₹100 MAXIMUM</span>
             </div>
 
             {/* Main Headline */}
@@ -46,14 +46,14 @@ export const HeroSection: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Start with a Free Preview — Pay Only When You Need More. Affordable assistance, 100% FREE college PPTs, code review, documentation, and viva prep.
+              Start with a Free Preview — Pay Only When You Need More. Affordable assistance (Max ₹100), 100% FREE college PPTs, code review, documentation, and viva prep.
             </p>
 
             {/* Trust Bullet Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
               {[
                 { label: 'College PPT — FREE', icon: Presentation },
-                { label: 'Paid Tasks ₹50–₹200 Max', icon: PiggyBank },
+                { label: 'Paid Tasks Up to ₹100 Max', icon: PiggyBank },
                 { label: 'Free Project Preview', icon: ShieldCheck },
                 { label: '100% Viva Ready Code', icon: Code2 },
                 { label: 'On-Time Delivery', icon: Clock },

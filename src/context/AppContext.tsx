@@ -82,7 +82,7 @@ interface AppContextType {
   sendMessage: (projectId: string, content: string, codeSnippet?: { code: string; language: string }, attachment?: any) => void;
   getProjectMessages: (projectId: string) => Message[];
 
-  // Pricing Matrix Configuration (Admin editable, strictly ₹100 - ₹700)
+  // Pricing Matrix Configuration (Admin editable, strictly ₹0 - ₹100)
   pricingConfig: PricingConfig;
   updatePricingConfig: (newConfig: PricingConfig) => void;
   resetPricingConfig: () => void;

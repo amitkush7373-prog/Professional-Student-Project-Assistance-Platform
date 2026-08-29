@@ -154,7 +154,7 @@ export interface ProjectAssessment {
   urgencyFee: number;
   addOnsTotal: number;
   taxAmount: number;
-  totalFinalPrice: number; // Strictly <= 700
+  totalFinalPrice: number; // Strictly <= 100
   assignedExpertTier: string;
   deliverablesList: string[];
   revisionsAllowed: number;
@@ -259,44 +259,44 @@ export interface Message {
 
 export interface PricingConfig {
   basePrices: {
-    basicCollege: number; // Small/Basic (₹50 - ₹100)
-    miniProject: number;  // Medium (₹150)
-    majorProject: number; // Complex (₹200 MAX)
+    basicCollege: number; // Small/Basic (₹30 - ₹50)
+    miniProject: number;  // Medium (₹70 - ₹80)
+    majorProject: number; // Complex (₹100 MAX)
   };
   urgencyAdders: {
     standard: number; // 7+ days: ₹0
-    priority: number; // 4-6 days: +₹20
-    urgent: number;   // 2-3 days: +₹30
-    'same-day': number; // 1 day: +₹50
+    priority: number; // 4-6 days: +₹10
+    urgent: number;   // 2-3 days: +₹20
+    'same-day': number; // 1 day: +₹30
   };
   pptRates: {
     '5_7_slides': number;   // ₹0 (FREE)
     '8_10_slides': number;  // ₹0 (FREE)
-    '11_15_slides': number; // ₹50
+    '11_15_slides': number; // ₹30
   };
   reviewRates: {
-    basic: number;       // ₹50
-    technical: number;   // ₹100
-    presentation: number;// ₹50
-    final: number;       // ₹100
+    basic: number;       // ₹30
+    technical: number;   // ₹50
+    presentation: number;// ₹30
+    final: number;       // ₹70
   };
   documentationRates: {
-    formatting: number;  // ₹50
-    fullDocs: number;    // ₹100
+    formatting: number;  // ₹30
+    fullDocs: number;    // ₹50
   };
   debuggingRates: {
-    minorBug: number;    // ₹50
-    multipleBugs: number;// ₹100
+    minorBug: number;    // ₹30
+    multipleBugs: number;// ₹50
   };
   addonRates: {
-    documentation: number; // ₹50
+    documentation: number; // ₹30
     presentation: number;  // ₹0 (FREE)
-    deployment: number;    // ₹50
-    walkthrough: number;   // ₹50
-    extra_revisions: number; // ₹20
+    deployment: number;    // ₹30
+    walkthrough: number;   // ₹30
+    extra_revisions: number; // ₹10
   };
-  maxPriceLimit: number; // STRICTLY 200 MAXIMUM
-  minPriceLimit: number; // 0 (Free PPT) or 50 minimum
+  maxPriceLimit: number; // STRICTLY 100 MAXIMUM
+  minPriceLimit: number; // 0 (Free PPT) or 30 minimum
 }
 
 export interface PaymentSettings {

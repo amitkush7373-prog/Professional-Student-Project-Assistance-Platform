@@ -282,7 +282,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
                 </div>
 
                 <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                  Unlock complete source code development, step-by-step documentation, error audits, and mentor assistance. (Affordable rates: ₹50 – ₹200 or FREE for 5-10 slide PPT).
+                  Unlock complete source code development, step-by-step documentation, error audits, and mentor assistance. (Affordable rates: Max ₹100 or FREE for 5-10 slide PPT).
                 </p>
 
                 <div className="flex items-center justify-between pt-1 border-t border-[var(--border-color)] text-[11px]">

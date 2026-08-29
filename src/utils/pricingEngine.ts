@@ -13,44 +13,44 @@ import {
 
 export const DEFAULT_PRICING_CONFIG: PricingConfig = {
   basePrices: {
-    basicCollege: 100, // Small task / 1st Year (₹50–₹100)
-    miniProject: 150,  // Medium task / Mini project (₹150)
-    majorProject: 200  // Complex task / Capstone (₹200 MAX)
+    basicCollege: 50, // Small task / 1st Year (₹30–₹50)
+    miniProject: 80,  // Medium task / Mini project (₹70–₹80)
+    majorProject: 100 // Complex task / Capstone (₹100 MAX)
   },
   urgencyAdders: {
     standard: 0,     // 7+ days: ₹0 (best price)
-    priority: 20,    // 4-6 days: +₹20
-    urgent: 30,      // 2-3 days: +₹30
-    'same-day': 50   // 1 day (tomorrow): +₹50
+    priority: 10,    // 4-6 days: +₹10
+    urgent: 20,      // 2-3 days: +₹20
+    'same-day': 30   // 1 day (tomorrow): +₹30
   },
   pptRates: {
     '5_7_slides': 0,    // COMPLETELY FREE (₹0)
     '8_10_slides': 0,   // COMPLETELY FREE (₹0)
-    '11_15_slides': 50  // Extended slides (+₹50)
+    '11_15_slides': 30  // Extended slides (+₹30)
   },
   reviewRates: {
-    basic: 50,
-    technical: 100,
-    presentation: 50,
-    final: 100
+    basic: 30,
+    technical: 50,
+    presentation: 30,
+    final: 70
   },
   documentationRates: {
-    formatting: 50,
-    fullDocs: 100
+    formatting: 30,
+    fullDocs: 50
   },
   debuggingRates: {
-    minorBug: 50,
-    multipleBugs: 100
+    minorBug: 30,
+    multipleBugs: 50
   },
   addonRates: {
-    documentation: 50,
+    documentation: 30,
     presentation: 0,    // FREE
-    deployment: 50,
-    walkthrough: 50,
-    extra_revisions: 20
+    deployment: 30,
+    walkthrough: 30,
+    extra_revisions: 10
   },
-  maxPriceLimit: 200, // ABSOLUTE MAXIMUM CEILING (₹200)
-  minPriceLimit: 0    // MINIMUM RATE (₹0 for Free PPT, ₹50 for paid tasks)
+  maxPriceLimit: 100, // ABSOLUTE MAXIMUM CEILING (₹100)
+  minPriceLimit: 0    // MINIMUM RATE (₹0 for Free PPT, ₹30 for paid tasks)
 };
 
 export const AVAILABLE_ADDONS: ProjectAddon[] = [
@@ -66,7 +66,7 @@ export const AVAILABLE_ADDONS: ProjectAddon[] = [
     id: 'documentation',
     title: 'Project Report / Documentation',
     description: 'Formatted project documentation report with structure & summaries.',
-    price: 50,
+    price: 30,
     isSelected: false,
     iconName: 'FileText'
   },
@@ -74,7 +74,7 @@ export const AVAILABLE_ADDONS: ProjectAddon[] = [
     id: 'review',
     title: 'Project Review & Error Audit',
     description: 'Review for logical bugs, layout consistency, and missing sections.',
-    price: 50,
+    price: 30,
     isSelected: false,
     iconName: 'CheckCircle2'
   },
@@ -82,7 +82,7 @@ export const AVAILABLE_ADDONS: ProjectAddon[] = [
     id: 'walkthrough',
     title: 'Viva Preparation & Code Explanation',
     description: 'Explanation of code flow and anticipated examiner viva questions.',
-    price: 50,
+    price: 30,
     isSelected: false,
     iconName: 'Video'
   },
@@ -90,7 +90,7 @@ export const AVAILABLE_ADDONS: ProjectAddon[] = [
     id: 'deployment',
     title: 'Live Deployment Link',
     description: 'Deploy project online with live accessible demo URL.',
-    price: 50,
+    price: 30,
     isSelected: false,
     iconName: 'CloudUpload'
   }
@@ -118,19 +118,18 @@ export interface EvaluateProjectParams {
 }
 
 /**
- * Super Affordable Student Pricing Engine (₹50, ₹100, ₹150, ₹200 MAX)
+ * Super Affordable Student Pricing Engine (₹30, ₹50, ₹80, ₹100 MAXIMUM)
  * - 5-10 slide College PPT: 100% FREE (₹0)
- * - Very small task: ₹50
- * - Small task: ₹100
- * - Medium task: ₹150
- * - More involved task: ₹200 MAX
+ * - Very small task / bug fix: ₹30 – ₹50
+ * - Medium task / mini project: ₹70 – ₹80
+ * - More involved task: ₹100 MAX
  */
 export function evaluateProjectRequirements(params: EvaluateProjectParams): ProjectAssessment {
   const config = params.pricingConfig || DEFAULT_PRICING_CONFIG;
-  const maxCap = config.maxPriceLimit || 200;
+  const maxCap = config.maxPriceLimit || 100;
 
   const breakdownItems: { label: string; amount: number }[] = [];
-  let baseAmount = 100;
+  let baseAmount = 50;
   let resolvedComplexity: 'small' | 'medium' | 'large' = 'small';
   let rationale = '';
 
@@ -152,30 +151,30 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
       ? 'College presentation slides (5–10 slides) provided 100% FREE for college students.'
       : `Extended college presentation deck (${slideLabel.toLowerCase()}).`;
   }
-  // 2. Project Review Only Service Flow (₹50–₹100)
+  // 2. Project Review Only Service Flow (₹30–₹70)
   else if (service === 'project-review') {
     const revTier = params.reviewType || 'basic';
-    baseAmount = config.reviewRates[revTier] || 50;
+    baseAmount = config.reviewRates[revTier] || 30;
     const revLabel = revTier === 'technical' ? 'Technical Code Review' : revTier === 'final' ? 'Final Comprehensive Review' : 'Basic Project Review';
     breakdownItems.push({ label: revLabel, amount: baseAmount });
     resolvedComplexity = 'small';
     rationale = `${revLabel} checking logic, syntax, formatting, and submission rubric.`;
   }
-  // 3. College Project & Technical Help Flows (₹50, ₹100, ₹150, ₹200 MAX)
+  // 3. College Project & Technical Help Flows (₹30, ₹50, ₹80, ₹100 MAX)
   else {
     const level = params.projectLevel || 'basic';
     if (level === 'basic' || params.complexity === 'small') {
-      baseAmount = config.basePrices.basicCollege || 100;
+      baseAmount = config.basePrices.basicCollege || 50;
       resolvedComplexity = 'small';
       breakdownItems.push({ label: 'Basic College Project / Task', amount: baseAmount });
       rationale = 'Small task / 1st-year college assignment assistance.';
     } else if (level === 'major' || params.complexity === 'large') {
-      baseAmount = config.basePrices.majorProject || 200;
+      baseAmount = config.basePrices.majorProject || 100;
       resolvedComplexity = 'large';
       breakdownItems.push({ label: 'Major Project / Comprehensive Task', amount: baseAmount });
       rationale = 'More involved final-year / complex project assistance.';
     } else {
-      baseAmount = config.basePrices.miniProject || 150;
+      baseAmount = config.basePrices.miniProject || 80;
       resolvedComplexity = 'medium';
       breakdownItems.push({ label: 'College Mini Project / Standard Task', amount: baseAmount });
       rationale = 'Standard college mini project (Web / Python / Data Science / ML).';
@@ -186,13 +185,13 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
       breakdownItems.push({ label: 'College PPT (5–10 Slides) — FREE', amount: 0 });
     }
     if (params.needsDocumentation) {
-      breakdownItems.push({ label: 'Project Documentation Report', amount: 50 });
+      breakdownItems.push({ label: 'Project Documentation Report', amount: 30 });
     }
     if (params.needsReview) {
-      breakdownItems.push({ label: 'Project Review & Feedback', amount: 50 });
+      breakdownItems.push({ label: 'Project Review & Feedback', amount: 30 });
     }
     if (params.needsVivaPrep) {
-      breakdownItems.push({ label: 'Viva & Concept Explanation', amount: 50 });
+      breakdownItems.push({ label: 'Viva & Concept Explanation', amount: 30 });
     }
   }
 
@@ -205,7 +204,7 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
     });
   }
 
-  // Urgency Fee (₹0, ₹20, ₹30, ₹50)
+  // Urgency Fee (₹0, ₹10, ₹20, ₹30)
   const urgencyAdder = config.urgencyAdders[params.urgency] || 0;
   if (urgencyAdder > 0) {
     const urgencyLabel = params.urgency === 'same-day' ? '1 Day Priority' : params.urgency === 'urgent' ? '2–3 Days Priority' : '4–6 Days Priority';
@@ -217,9 +216,9 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
 
   // If service is basic free PPT with no paid extras, total is strictly 0
   const isFreePptService = service === 'ppt-presentation' && (params.pptSlideCount === '5_7_slides' || params.pptSlideCount === '8_10_slides' || !params.pptSlideCount);
-  const minFloor = isFreePptService && unconstrainedTotal === 0 ? 0 : 50;
+  const minFloor = isFreePptService && unconstrainedTotal === 0 ? 0 : 30;
 
-  // Enforce Hard Student Limit: strictly ₹50, ₹100, ₹150, ₹200 (or ₹0 for Free PPT)
+  // Enforce Hard Student Limit: strictly ₹30, ₹50, ₹80, ₹100 MAXIMUM (or ₹0 for Free PPT)
   const totalFinalPrice = isFreePptService && unconstrainedTotal === 0
     ? 0
     : Math.min(maxCap, Math.max(minFloor, unconstrainedTotal));
@@ -264,7 +263,7 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
 }
 
 /**
- * Calculates deadline pricing comparison for student savings UX (₹50 – ₹200)
+ * Calculates deadline pricing comparison for student savings UX (up to ₹100 MAX)
  */
 export function getDeadlineComparisonPrices(params: Omit<EvaluateProjectParams, 'urgency'>) {
   const sameDayPrice = evaluateProjectRequirements({ ...params, urgency: 'same-day' }).totalFinalPrice;
