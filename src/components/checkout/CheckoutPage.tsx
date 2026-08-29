@@ -11,7 +11,8 @@ import {
   Tag,
   Lock,
   Sparkles,
-  Info
+  Info,
+  CreditCard
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { PaymentGatewayModal } from './PaymentGatewayModal';
@@ -171,7 +172,7 @@ export const CheckoutPage: React.FC = () => {
           <div className="pt-4 border-t border-[var(--border-color)] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>Admin Verified UPI Payment with Official Invoice</span>
+              <span>Admin Verified Order with Official Invoice</span>
             </div>
 
             <button
@@ -179,8 +180,8 @@ export const CheckoutPage: React.FC = () => {
               onClick={() => setIsGatewayOpen(true)}
               className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:scale-105"
             >
-              <QrCode className="w-4 h-4" />
-              <span>Pay with UPI QR Code ({formatCurrency(finalPayable, currency)})</span>
+              <CreditCard className="w-4 h-4" />
+              <span>Proceed to Checkout ({formatCurrency(finalPayable, currency)})</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

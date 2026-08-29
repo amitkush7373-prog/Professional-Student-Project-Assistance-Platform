@@ -557,20 +557,28 @@ export const AdminPaymentVerification: React.FC = () => {
                   </span>
                 </div>
 
-                <div
-                  onClick={() => setIsZoomedScreenshot(true)}
-                  className="rounded-2xl border border-[var(--border-color)] bg-black/40 p-2 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden min-h-[260px]"
-                >
-                  <img
-                    src={viewingPayment.payment_screenshot || '/phonepe-qr.png'}
-                    alt="Payment Screenshot Proof"
-                    className="max-h-72 w-auto object-contain rounded-xl transition-transform duration-200 group-hover:scale-102"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold text-xs gap-1.5">
-                    <ZoomIn className="w-4 h-4" />
-                    <span>Click to Zoom Screenshot</span>
+                {viewingPayment.payment_screenshot ? (
+                  <div
+                    onClick={() => setIsZoomedScreenshot(true)}
+                    className="rounded-2xl border border-[var(--border-color)] bg-black/40 p-2 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden min-h-[220px]"
+                  >
+                    <img
+                      src={viewingPayment.payment_screenshot}
+                      alt="Payment Screenshot Proof"
+                      className="max-h-72 w-auto object-contain rounded-xl transition-transform duration-200 group-hover:scale-102"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold text-xs gap-1.5">
+                      <ZoomIn className="w-4 h-4" />
+                      <span>Click to Zoom Screenshot</span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-elevated)] p-6 text-center space-y-2 min-h-[160px] flex flex-col items-center justify-center">
+                    <FileCheck className="w-8 h-8 text-blue-500 opacity-60" />
+                    <div className="font-bold text-xs text-[var(--text-primary)]">Direct Order Submission</div>
+                    <div className="text-[11px] text-[var(--text-muted)]">No external receipt uploaded. Verify using the Reference ID: {viewingPayment.utr_number}</div>
+                  </div>
+                )}
 
                 <div className="text-[11px] text-[var(--text-muted)] text-center">
                   Verify the transaction amount (₹{viewingPayment.amount}) and UTR ({viewingPayment.utr_number}) match your Union Bank statement.
@@ -766,7 +774,7 @@ export const AdminPaymentVerification: React.FC = () => {
 
             <div className="rounded-2xl overflow-hidden border border-[var(--border-color)] bg-black/50 p-2 flex items-center justify-center">
               <img
-                src={viewingPayment.payment_screenshot || '/phonepe-qr.png'}
+                src={viewingPayment.payment_screenshot || ''}
                 alt="Enlarged Proof"
                 className="max-h-[70vh] w-auto object-contain rounded-xl shadow-lg"
               />

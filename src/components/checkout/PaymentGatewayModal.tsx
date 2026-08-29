@@ -1,7 +1,5 @@
 import React, { useState, useRef } from 'react';
 import {
-  QrCode,
-  Copy,
   Check,
   UploadCloud,
   CheckCircle2,
@@ -33,11 +31,9 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
   const {
     currency,
     submitManualPayment,
-    paymentSettings,
     addToast
   } = useApp();
 
-  const [copiedUpi, setCopiedUpi] = useState(false);
   const [utrNumber, setUtrNumber] = useState('');
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const screenshotInputRef = useRef<HTMLInputElement | null>(null);
@@ -46,20 +42,13 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
 
   const isFree = project.assessment.totalFinalPrice === 0;
 
-  const handleCopyUpiId = () => {
-    navigator.clipboard.writeText(paymentSettings.upiId);
-    setCopiedUpi(true);
-    addToast('UPI ID Copied', `${paymentSettings.upiId} copied to clipboard.`, 'info');
-    setTimeout(() => setCopiedUpi(false), 3000);
-  };
-
   const handleScreenshotUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const objectUrl = URL.createObjectURL(file);
     setScreenshotPreview(objectUrl);
-    addToast('Screenshot Attached', 'Payment proof screenshot attached.', 'success');
+    addToast('File Attached', 'Payment receipt / reference document attached.', 'success');
   };
 
   const handleSubmitPayment = (e: React.FormEvent) => {
@@ -72,12 +61,9 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
       return;
     }
 
-    if (!utrNumber.trim()) {
-      addToast('Enter UTR Number', 'Please enter your UPI transaction / UTR number.', 'warning');
-      return;
-    }
-
-    submitManualPayment(project.id, utrNumber.trim(), screenshotPreview || undefined);
+    const referenceId = utrNumber.trim() || `ORDER-${Date.now().toString().slice(-6)}`;
+    submitManualPayment(project.id, referenceId, screenshotPreview || undefined);
+    addToast('Payment Submitted!', 'Your order has been submitted for admin verification.', 'success');
     onSuccess();
   };
 
@@ -104,7 +90,7 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
             </span>
           </div>
           <h3 className="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">
-            {isFree ? 'Confirm Free College PPT' : 'Simple Checkout'}
+            {isFree ? 'Confirm Free College PPT' : 'Payment & Order Confirmation'}
           </h3>
         </div>
 
@@ -133,69 +119,46 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
 
         <form onSubmit={handleSubmitPayment} className="space-y-4 text-xs">
           
-          {/* If Paid Service: Show UPI QR and Copy UPI ID */}
+          {/* If Paid Service */}
           {!isFree && (
             <div className="space-y-3">
-              <div className="text-center font-bold text-[var(--text-primary)] flex items-center justify-center gap-1.5">
-                <QrCode className="w-4 h-4 text-blue-500" />
-                <span>Pay via UPI</span>
-              </div>
-
-              {/* QR Image Box */}
-              <div className="p-3 bg-white rounded-2xl shadow-sm border-2 border-blue-500/30 text-center mx-auto w-max">
-                <img
-                  src={paymentSettings.qrCodeUrl || '/phonepe-qr.png'}
-                  alt="UPI Payment QR Code"
-                  className="w-40 h-40 object-contain mx-auto"
-                />
-              </div>
-
-              {/* Copy UPI ID Pill */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)]">
-                <div>
-                  <span className="text-[10px] text-[var(--text-muted)] block">Official UPI ID:</span>
-                  <span className="font-mono font-bold text-xs text-[var(--text-primary)]">
-                    {paymentSettings.upiId}
-                  </span>
+              <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-800 dark:text-blue-300 space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-xs">
+                  <CreditCard className="w-4 h-4 text-blue-500" />
+                  <span>Direct Order Verification</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleCopyUpiId}
-                  className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 font-bold text-[11px] flex items-center gap-1 transition-colors"
-                >
-                  {copiedUpi ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedUpi ? 'Copied' : 'Copy UPI ID'}</span>
-                </button>
+                <p className="text-[11px] opacity-90 leading-relaxed">
+                  Confirm your order below. Your request will be assigned to a technical mentor and verified directly by the administration team.
+                </p>
               </div>
 
-              {/* UTR Input */}
+              {/* Reference / Transaction ID Input (Optional) */}
               <div className="space-y-1">
                 <label className="block font-semibold text-[var(--text-primary)]">
-                  After payment, enter your transaction / UTR number:
+                  Transaction / Reference ID (Optional):
                 </label>
                 <input
                   type="text"
-                  required
                   value={utrNumber}
                   onChange={e => setUtrNumber(e.target.value)}
-                  placeholder="Enter 12-digit UPI UTR / Transaction ID"
+                  placeholder="Enter reference ID or note (optional)"
                   className="w-full px-3.5 py-2.5 text-xs font-mono rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
                 />
               </div>
 
-              {/* Screenshot Upload (Optional) */}
+              {/* Document / Receipt Upload (Optional) */}
               <div>
                 <input
                   ref={screenshotInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.pdf"
                   onChange={handleScreenshotUpload}
                   className="hidden"
                 />
                 {screenshotPreview ? (
                   <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
                     <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                      ✓ Screenshot Attached
+                      ✓ Document Attached
                     </span>
                     <button
                       type="button"
@@ -212,7 +175,7 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
                     className="w-full py-2 text-[11px] text-[var(--text-secondary)] border border-dashed border-[var(--border-color)] rounded-xl hover:bg-[var(--bg-elevated)] flex items-center justify-center gap-1.5"
                   >
                     <UploadCloud className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Attach Screenshot (Optional)</span>
+                    <span>Attach Receipt or Requirement Note (Optional)</span>
                   </button>
                 )}
               </div>
@@ -236,7 +199,7 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({
             type="submit"
             className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
           >
-            <span>{isFree ? 'Submit Free PPT Request' : 'Submit Payment'}</span>
+            <span>{isFree ? 'Submit Free PPT Request' : `Confirm & Place Order (${formatCurrency(project.assessment.totalFinalPrice, currency)})`}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 

@@ -65,8 +65,8 @@ export const ProjectTrackerTimeline: React.FC<ProjectTrackerTimelineProps> = ({ 
         : isPaymentRejected
         ? `Rejected: ${project.paymentRejectedReason || 'Invalid UTR'}`
         : isPaymentPending
-        ? `Submitted UTR: ${project.utrNumber || 'Pending check'} • Awaiting admin bank verification`
-        : 'Scan PhonePe UPI QR code to complete payment',
+        ? `Submitted Reference: ${project.utrNumber || 'Pending check'} • Awaiting admin verification`
+        : 'Complete payment to begin project development',
       isCompleted: isPaymentVerified,
       isCurrent: project.status === 'payment_pending' || project.status === 'verification_pending',
       isAlert: isPaymentRejected || isPaymentPending

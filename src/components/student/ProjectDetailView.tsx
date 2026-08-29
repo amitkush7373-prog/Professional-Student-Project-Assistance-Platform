@@ -301,7 +301,7 @@ export const ProjectDetailView: React.FC = () => {
                   Payment Status: ⚪ PAYMENT PENDING
                 </div>
                 <div className="text-[var(--text-secondary)] text-xs">
-                  Scan the PhonePe UPI QR code ({formatCurrency(project.assessment.totalFinalPrice, currency)}) to submit your verification details.
+                  Complete order checkout ({formatCurrency(project.assessment.totalFinalPrice, currency)}) to submit your details and begin development.
                 </div>
               </div>
             </div>
@@ -312,7 +312,7 @@ export const ProjectDetailView: React.FC = () => {
               className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/25 flex items-center gap-1.5 transition-all shrink-0 w-full sm:w-auto justify-center"
             >
               <CreditCard className="w-4 h-4" />
-              <span>Pay Now via UPI QR</span>
+              <span>Complete Payment</span>
             </button>
           </div>
         )}

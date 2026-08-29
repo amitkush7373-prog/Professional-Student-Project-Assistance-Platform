@@ -38,7 +38,7 @@ export const DEFAULT_PAYMENT_SETTINGS: PaymentSettings = {
   qrCodeUrl: '/phonepe-qr.png',
   upiId: '7618820563-2@ybl',
   merchantName: 'Apex Student Project Assistance (PhonePe / UPI)',
-  instructions: 'Scan this official PhonePe / UPI QR Code using Google Pay, PhonePe, Paytm, or BHIM. After completing payment, upload your payment screenshot and enter the 12-digit UTR number for admin verification.'
+  instructions: 'Confirm your project order and reference details. The platform team will review your order requirements and begin development.'
 };
 
 interface AppContextType {
