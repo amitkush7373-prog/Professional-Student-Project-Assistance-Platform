@@ -14,13 +14,18 @@ import {
   AlertCircle,
   FileCode,
   ShieldCheck,
-  X
+  XCircle,
+  ExternalLink,
+  Copy,
+  Check,
+  ZoomIn
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ProjectTrackerTimeline } from './ProjectTrackerTimeline';
 import { ProjectChat } from './ProjectChat';
 import { DeliverablesVault } from './DeliverablesVault';
 import { ReviewModal } from './ReviewModal';
+import { PaymentGatewayModal } from '../checkout/PaymentGatewayModal';
 import { getStatusBadge, getPaymentStatusBadge, formatCurrency, formatDate } from '../../utils/formatters';
 
 export const ProjectDetailView: React.FC = () => {
@@ -41,7 +46,10 @@ export const ProjectDetailView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'timeline' | 'chat' | 'deliverables' | 'requirements'>('timeline');
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
+  const [isZoomedScreenshot, setIsZoomedScreenshot] = useState(false);
+  const [copiedUtr, setCopiedUtr] = useState(false);
 
   if (!project) {
     return (
@@ -58,12 +66,24 @@ export const ProjectDetailView: React.FC = () => {
     );
   }
 
+  const isVerified = project.paymentStatus === 'verified' || project.paymentStatus === 'confirmed';
+  const isPendingVerification = project.paymentStatus === 'verification_pending';
+  const isRejected = project.paymentStatus === 'rejected';
+  const isUnpaid = project.paymentStatus === 'pending';
+
   const statusBadge = getStatusBadge(project.status);
   const paymentBadge = getPaymentStatusBadge(project.paymentStatus);
 
   const handleOpenInvoice = () => {
     setActiveInvoiceProject(project);
     setIsInvoiceModalOpen(true);
+  };
+
+  const handleCopyUtr = (utr: string) => {
+    navigator.clipboard.writeText(utr);
+    setCopiedUtr(true);
+    addToast('UTR Copied', `Copied ${utr} to clipboard.`, 'info');
+    setTimeout(() => setCopiedUtr(false), 3000);
   };
 
   const handleSendRevision = (e: React.FormEvent) => {
@@ -94,7 +114,7 @@ export const ProjectDetailView: React.FC = () => {
 
           {/* Quick Actions */}
           <div className="flex items-center gap-2 flex-wrap">
-            {project.paymentStatus === 'confirmed' ? (
+            {isVerified ? (
               <button
                 onClick={handleOpenInvoice}
                 className="px-3 py-1.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5 transition-colors"
@@ -102,17 +122,15 @@ export const ProjectDetailView: React.FC = () => {
                 <FileText className="w-3.5 h-3.5 text-blue-500" />
                 <span>Invoice & Receipt</span>
               </button>
-            ) : (
+            ) : isRejected || isUnpaid ? (
               <button
-                onClick={() => {
-                  setActiveView('checkout');
-                }}
+                onClick={() => setIsPaymentModalOpen(true)}
                 className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/25 flex items-center gap-1.5 transition-all"
               >
                 <CreditCard className="w-3.5 h-3.5" />
-                <span>Pay Now ({formatCurrency(project.assessment.totalFinalPrice, currency)})</span>
+                <span>{isRejected ? 'Re-upload Payment Proof' : `Pay Now (${formatCurrency(project.assessment.totalFinalPrice, currency)})`}</span>
               </button>
-            )}
+            ) : null}
 
             {(project.status === 'completed' || project.status === 'download_available') && (
               <button
@@ -124,17 +142,19 @@ export const ProjectDetailView: React.FC = () => {
               </button>
             )}
 
-            <button
-              onClick={() => setIsRevisionModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center gap-1.5 transition-all"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Request Revision</span>
-            </button>
+            {isVerified && (
+              <button
+                onClick={() => setIsRevisionModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center gap-1.5 transition-all"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Request Revision</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Project Master Card */}
+        {/* Project Master Info Card */}
         <div className="p-6 rounded-3xl glass-panel border border-[var(--border-color)] space-y-4 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1.5">
@@ -159,7 +179,7 @@ export const ProjectDetailView: React.FC = () => {
 
             <div className="flex items-center gap-4 border-t lg:border-t-0 lg:border-l border-[var(--border-color)] pt-3 lg:pt-0 lg:pl-6">
               <div>
-                <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Total Investment</span>
+                <span className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Total Amount</span>
                 <div className="text-lg font-black text-blue-600 dark:text-blue-400 font-mono">
                   {formatCurrency(project.assessment.totalFinalPrice, currency)}
                 </div>
@@ -173,6 +193,129 @@ export const ProjectDetailView: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* 💳 EXPLICIT PAYMENT STATUS SECTION */}
+        {isPendingVerification && (
+          <div className="p-5 rounded-3xl bg-amber-500/15 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm text-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shrink-0 mt-0.5">
+                <Clock className="w-5 h-5 animate-pulse" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-sm text-amber-950 dark:text-amber-200">
+                    Payment Status: 🟡 VERIFICATION PENDING
+                  </span>
+                  {project.paymentSubmittedAt && (
+                    <span className="text-[10px] text-amber-800 dark:text-amber-300">
+                      Submitted on {formatDate(project.paymentSubmittedAt)}
+                    </span>
+                  )}
+                </div>
+                <p className="text-amber-900 dark:text-amber-200 text-xs leading-relaxed">
+                  Your payment of <span className="font-mono font-bold">{formatCurrency(project.assessment.totalFinalPrice, currency)}</span> with UTR <span className="font-mono font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">{project.utrNumber || 'N/A'}</span> has been received and is currently being verified against our bank statement. Development will start as soon as verified.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+              {project.paymentProofUrl && (
+                <button
+                  type="button"
+                  onClick={() => setIsZoomedScreenshot(true)}
+                  className="px-3.5 py-2 rounded-xl bg-amber-600/20 hover:bg-amber-600/30 text-amber-900 dark:text-amber-200 font-bold text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                  <span>View Proof</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {isVerified && (
+          <div className="p-5 rounded-3xl bg-emerald-500/15 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm text-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="font-bold text-sm text-emerald-950 dark:text-emerald-200">
+                  Payment Status: 🟢 VERIFIED
+                </div>
+                <div className="text-emerald-800 dark:text-emerald-300 text-xs">
+                  Verified on {project.paymentVerifiedAt ? formatDate(project.paymentVerifiedAt) : 'Recently'} by {project.paymentVerifiedBy || 'Admin'}. Project is actively in progress.
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleOpenInvoice}
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all shrink-0"
+            >
+              <FileText className="w-4 h-4" />
+              <span>Download Tax Invoice</span>
+            </button>
+          </div>
+        )}
+
+        {isRejected && (
+          <div className="p-5 rounded-3xl bg-red-500/15 border border-red-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm text-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center font-bold shrink-0 mt-0.5">
+                <XCircle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <div className="font-bold text-sm text-red-950 dark:text-red-200">
+                  Payment Status: 🔴 REJECTED
+                </div>
+                <div className="text-red-900 dark:text-red-200 text-xs leading-relaxed">
+                  <b>Reason:</b> {project.paymentRejectedReason || 'UTR could not be verified in bank statement.'}
+                </div>
+                <div className="text-[11px] text-red-800 dark:text-red-300">
+                  Please check your transaction statement and re-upload the valid UPI payment proof and 12-digit UTR.
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all shrink-0 w-full sm:w-auto justify-center"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Re-upload Proof</span>
+            </button>
+          </div>
+        )}
+
+        {isUnpaid && (
+          <div className="p-5 rounded-3xl bg-blue-500/15 border border-blue-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm text-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shrink-0">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="font-bold text-sm text-[var(--text-primary)]">
+                  Payment Status: ⚪ PAYMENT PENDING
+                </div>
+                <div className="text-[var(--text-secondary)] text-xs">
+                  Scan the PhonePe UPI QR code ({formatCurrency(project.assessment.totalFinalPrice, currency)}) to submit your verification details.
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/25 flex items-center gap-1.5 transition-all shrink-0 w-full sm:w-auto justify-center"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Pay Now via UPI QR</span>
+            </button>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex items-center border-b border-[var(--border-color)] gap-2 overflow-x-auto">
@@ -238,46 +381,29 @@ export const ProjectDetailView: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
-                  Required Functional Features ({project.requirement.requiredFeatures.length})
-                </h3>
-                <div className="space-y-1.5">
-                  {project.requirement.requiredFeatures.map((feat, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-[var(--text-primary)]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {project.files.length > 0 && (
+              {project.files && project.files.length > 0 && (
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
-                    Submitted Reference Files ({project.files.length})
+                    Submitted Files & Documents
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {project.files.map(f => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {project.files.map(file => (
                       <div
-                        key={f.id}
-                        className="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] flex items-center justify-between text-xs"
+                        key={file.id}
+                        className="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] flex items-center justify-between gap-3 text-xs"
                       >
-                        <div className="flex items-center gap-2 truncate">
+                        <div className="flex items-center gap-2 min-w-0">
                           <FileCode className="w-4 h-4 text-blue-500 shrink-0" />
-                          <span className="truncate font-semibold text-[var(--text-primary)]">{f.name}</span>
+                          <div className="truncate font-semibold text-[var(--text-primary)]">
+                            {file.name}
+                          </div>
                         </div>
-                        <span className="text-[10px] text-[var(--text-muted)] shrink-0">{f.sizeFormatted}</span>
+                        <span className="text-[10px] text-[var(--text-muted)] shrink-0 font-mono">
+                          {file.sizeFormatted}
+                        </span>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {project.requirement.specialInstructions && (
-                <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-xs space-y-1">
-                  <span className="font-bold text-[var(--text-primary)]">Special Instructions:</span>
-                  <p className="text-[var(--text-secondary)]">{project.requirement.specialInstructions}</p>
                 </div>
               )}
 
@@ -288,50 +414,36 @@ export const ProjectDetailView: React.FC = () => {
       </div>
 
       {/* Review Modal */}
-      <ReviewModal
-        isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
-        project={project}
-      />
+      {isReviewModalOpen && (
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          project={project}
+          onClose={() => setIsReviewModalOpen(false)}
+        />
+      )}
 
       {/* Revision Request Modal */}
       {isRevisionModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
-              <div className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 text-blue-500" />
-                <h4 className="text-base font-bold text-[var(--text-primary)]">Submit Revision Request</h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsRevisionModalOpen(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="max-w-lg w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">
+              Request Project Revision
+            </h3>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Specify what needs adjustment in the codebase, presentation slides, or project documentation.
+            </p>
 
             <form onSubmit={handleSendRevision} className="space-y-4">
-              <p className="text-xs text-[var(--text-secondary)]">
-                Specify any adjustments requested by your college professor or changes needed in the code/report.
-              </p>
+              <textarea
+                required
+                rows={4}
+                value={revisionNotes}
+                onChange={e => setRevisionNotes(e.target.value)}
+                placeholder="Explain the changes requested by your professor or review panel..."
+                className="w-full p-3 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+              />
 
-              <div>
-                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
-                  Revision Notes & Specific Changes *
-                </label>
-                <textarea
-                  rows={5}
-                  required
-                  value={revisionNotes}
-                  onChange={e => setRevisionNotes(e.target.value)}
-                  placeholder="Detail exact changes required (e.g. adjust learning rate graph, add chapter 4 UML sequence diagram, change database port to 5432)..."
-                  className="w-full p-3 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border-color)]">
+              <div className="flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsRevisionModalOpen(false)}
@@ -341,12 +453,56 @@ export const ProjectDetailView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-500/25"
                 >
-                  Relay to Mentor
+                  Submit Revision Request
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Gateway Modal (for Pay Now / Re-submit) */}
+      {isPaymentModalOpen && (
+        <PaymentGatewayModal
+          isOpen={isPaymentModalOpen}
+          project={project}
+          onClose={() => setIsPaymentModalOpen(false)}
+          onSuccess={() => {
+            setIsPaymentModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* Zoomed Screenshot View */}
+      {isZoomedScreenshot && project.paymentProofUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 animate-in fade-in duration-150">
+          <div className="max-w-xl w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+              <h4 className="text-xs font-bold text-[var(--text-primary)]">
+                Submitted Payment Proof — {project.orderNumber}
+              </h4>
+              <button onClick={() => setIsZoomedScreenshot(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                ✕
+              </button>
+            </div>
+            <div className="p-2 bg-black/50 rounded-2xl flex items-center justify-center">
+              <img
+                src={project.paymentProofUrl}
+                alt="Submitted Proof"
+                className="max-h-[65vh] w-auto object-contain rounded-xl"
+              />
+            </div>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setIsZoomedScreenshot(false)}
+                className="px-6 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold"
+              >
+                Close Preview
+              </button>
+            </div>
           </div>
         </div>
       )}

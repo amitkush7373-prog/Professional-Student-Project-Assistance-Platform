@@ -10,7 +10,8 @@ import {
   CreditCard,
   CheckCircle2,
   FileCheck,
-  QrCode
+  QrCode,
+  Clock
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { AdminOrdersManager } from './AdminOrdersManager';
@@ -22,11 +23,11 @@ import { AdminPaymentVerification } from './AdminPaymentVerification';
 import { AdminPaymentSettings } from './AdminPaymentSettings';
 
 export const AdminDashboard: React.FC = () => {
-  const { currentUser, projects, transactions } = useApp();
+  const { currentUser, paymentRecords, transactions } = useApp();
 
   const [activeTab, setActiveTab] = useState<'verifications' | 'orders' | 'payment_settings' | 'pricing' | 'analytics' | 'experts' | 'payments'>('verifications');
 
-  const pendingVerificationCount = projects.filter(p => p.paymentStatus === 'verification_pending').length;
+  const pendingVerificationCount = paymentRecords.filter(p => p.payment_status === 'verification_pending').length;
 
   return (
     <div className="w-full py-8 lg:py-12 bg-[var(--bg-primary)]">
@@ -57,11 +58,38 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* 🟡 PENDING PAYMENT VERIFICATIONS ALERT BANNER */}
+        {pendingVerificationCount > 0 && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shrink-0">
+                <Clock className="w-5 h-5 animate-pulse" />
+              </div>
+              <div>
+                <div className="font-bold text-sm text-amber-950 dark:text-amber-200">
+                  🟡 {pendingVerificationCount} {pendingVerificationCount === 1 ? 'Payment' : 'Payments'} Awaiting Admin Verification
+                </div>
+                <div className="text-[11px] text-amber-800 dark:text-amber-300">
+                  Students have submitted UTR and screenshots. Review and verify to move projects to In Progress.
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveTab('verifications')}
+              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shrink-0 transition-colors shadow-sm flex items-center justify-center gap-1"
+            >
+              <span>Review Payments</span>
+              <span>→</span>
+            </button>
+          </div>
+        )}
+
         {/* Tab Controls */}
         <div className="flex items-center border-b border-[var(--border-color)] gap-2 overflow-x-auto">
           {[
             { id: 'verifications', label: `Payment Verification (${pendingVerificationCount} Pending)`, icon: FileCheck, highlight: pendingVerificationCount > 0 },
-            { id: 'orders', label: `Orders Queue (${projects.length})`, icon: Layers },
+            { id: 'orders', label: `Orders Queue (${paymentRecords.length})`, icon: Layers },
             { id: 'payment_settings', label: 'Payment QR Settings', icon: QrCode },
             { id: 'pricing', label: 'Affordable Pricing Matrix (₹100–₹700)', icon: Zap },
             { id: 'analytics', label: 'Executive Analytics', icon: BarChart3 },

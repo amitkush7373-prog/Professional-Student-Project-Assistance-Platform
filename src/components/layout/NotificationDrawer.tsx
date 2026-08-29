@@ -15,6 +15,7 @@ import { formatRelativeTime } from '../../utils/formatters';
 
 export const NotificationDrawer: React.FC = () => {
   const {
+    currentUser,
     notifications,
     isNotificationDrawerOpen,
     setIsNotificationDrawerOpen,
@@ -152,12 +153,18 @@ export const NotificationDrawer: React.FC = () => {
                             e.stopPropagation();
                             markNotificationRead(item.id);
                             setIsNotificationDrawerOpen(false);
-                            setActiveView('student-dashboard');
+                            if (currentUser.role === 'admin') {
+                              setActiveView('admin-dashboard');
+                            } else if (currentUser.role === 'expert') {
+                              setActiveView('expert-dashboard');
+                            } else {
+                              setActiveView('student-dashboard');
+                            }
                           }}
                           className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                         >
-                          <span>View Details</span>
-                          <ArrowRight className="w-3 h-3" />
+                          <span>{currentUser.role === 'admin' ? 'Review in Admin Hub' : 'View Details'}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>

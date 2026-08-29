@@ -67,7 +67,7 @@ export type ProjectStatus =
   | 'download_available'
   | 'cancelled';
 
-export type PaymentStatus = 'pending' | 'verification_pending' | 'confirmed' | 'rejected' | 'refunded';
+export type PaymentStatus = 'pending' | 'verification_pending' | 'verified' | 'confirmed' | 'rejected' | 'refunded';
 
 export type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'wallet' | 'manual_upi';
 
@@ -203,7 +203,38 @@ export interface Project {
   utrNumber?: string;
   paymentSubmittedAt?: string;
   paymentVerifiedAt?: string;
+  paymentVerifiedBy?: string;
+  paymentRejectedAt?: string;
+  paymentRejectedBy?: string;
   paymentRejectedReason?: string;
+  paymentRecordId?: string;
+}
+
+export interface PaymentVerificationRecord {
+  payment_id: string;
+  order_id: string;
+  project_id: string;
+  user_id: string;
+  studentName: string;
+  studentEmail: string;
+  studentCollege?: string;
+  studentPhone?: string;
+  projectTitle: string;
+  category?: ProjectCategory;
+  serviceType?: CollegeServiceType;
+  projectLevel?: CollegeProjectLevel;
+  amount: number;
+  utr_number: string;
+  payment_screenshot?: string;
+  payment_status: PaymentStatus;
+  submitted_at: string;
+  verified_at?: string;
+  verified_by?: string;
+  rejected_at?: string;
+  rejected_by?: string;
+  rejection_reason?: string;
+  payment_method: PaymentMethod;
+  invoice_number?: string;
 }
 
 export interface Message {

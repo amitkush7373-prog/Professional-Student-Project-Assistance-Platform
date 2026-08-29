@@ -13,7 +13,8 @@ import {
   PaymentStatus,
   PaymentMethod,
   DeliverableItem,
-  PaymentSettings
+  PaymentSettings,
+  PaymentVerificationRecord
 } from '../types';
 import {
   INITIAL_USERS,
@@ -21,7 +22,8 @@ import {
   INITIAL_MESSAGES,
   INITIAL_REVIEWS,
   INITIAL_TRANSACTIONS,
-  INITIAL_SUPPORT_TICKETS
+  INITIAL_SUPPORT_TICKETS,
+  INITIAL_PAYMENTS
 } from '../data/initialData';
 import { DEFAULT_PRICING_CONFIG } from '../utils/pricingEngine';
 
@@ -58,6 +60,8 @@ interface AppContextType {
   setActiveView: (view: string) => void;
   selectedProjectId: string | null;
   setSelectedProjectId: (id: string | null) => void;
+  selectedPaymentVerificationId: string | null;
+  setSelectedPaymentVerificationId: (id: string | null) => void;
   legalTab: 'terms' | 'privacy' | 'refund' | 'integrity';
   setLegalTab: (tab: 'terms' | 'privacy' | 'refund' | 'integrity') => void;
 
@@ -88,11 +92,16 @@ interface AppContextType {
   updatePaymentSettings: (settings: PaymentSettings) => void;
   resetPaymentSettings: () => void;
 
-  // Payments & Verification Engine
+  // Payment Records & Verification Workflow
+  paymentRecords: PaymentVerificationRecord[];
+  getPaymentRecordByProject: (projectId: string) => PaymentVerificationRecord | undefined;
+  getPaymentRecordById: (paymentId: string) => PaymentVerificationRecord | undefined;
+  submitManualPayment: (projectId: string, utrNumber: string, paymentProofUrl?: string) => void;
+  verifyPayment: (identifier: string, approved: boolean, reason?: string) => void;
+
+  // Payments & Ledger
   transactions: Transaction[];
   processPayment: (projectId: string, method: PaymentMethod, details?: any) => Promise<boolean>;
-  submitManualPayment: (projectId: string, utrNumber: string, paymentProofUrl?: string) => void;
-  verifyPayment: (projectId: string, approved: boolean, reason?: string) => void;
   processRefund: (transactionId: string, reason: string) => void;
 
   // Reviews & Feedback
@@ -129,18 +138,19 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  THEME: 'apex_theme_v2',
-  CURRENCY: 'apex_currency_v2',
-  USERS: 'apex_users_v2',
-  CURRENT_USER_ID: 'apex_current_user_id_v2',
-  PROJECTS: 'apex_projects_v2',
-  MESSAGES: 'apex_messages_v2',
-  PRICING: 'apex_pricing_config_v2',
+  THEME: 'apex_theme_v3',
+  CURRENCY: 'apex_currency_v3',
+  USERS: 'apex_users_v3',
+  CURRENT_USER_ID: 'apex_current_user_id_v3',
+  PROJECTS: 'apex_projects_v3',
+  PAYMENT_RECORDS: 'apex_payment_records_v3',
+  MESSAGES: 'apex_messages_v3',
+  PRICING: 'apex_pricing_config_v3',
   PAYMENT_SETTINGS: 'apex_payment_settings_v3',
-  TRANSACTIONS: 'apex_transactions_v2',
-  REVIEWS: 'apex_reviews_v2',
-  NOTIFICATIONS: 'apex_notifications_v2',
-  SUPPORT_TICKETS: 'apex_support_tickets_v2'
+  TRANSACTIONS: 'apex_transactions_v3',
+  REVIEWS: 'apex_reviews_v3',
+  NOTIFICATIONS: 'apex_notifications_v3',
+  SUPPORT_TICKETS: 'apex_support_tickets_v3'
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -161,6 +171,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Navigation state
   const [activeView, setActiveView] = useState<string>('landing');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedPaymentVerificationId, setSelectedPaymentVerificationId] = useState<string | null>(null);
   const [legalTab, setLegalTab] = useState<'terms' | 'privacy' | 'refund' | 'integrity'>('integrity');
 
   // Modals state
@@ -200,6 +211,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
     } catch {
       return INITIAL_PROJECTS;
+    }
+  });
+
+  // Dedicated Payment Verification Records
+  const [paymentRecords, setPaymentRecords] = useState<PaymentVerificationRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.PAYMENT_RECORDS);
+      return saved ? JSON.parse(saved) : INITIAL_PAYMENTS;
+    } catch {
+      return INITIAL_PAYMENTS;
     }
   });
 
@@ -277,8 +298,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           id: 'notif_1',
           userId: 'user_student_1',
           title: 'Project Milestone Reached',
-          message: 'Dr. Vikram Sethi updated progress on AI Diagnostic Assistant to 68%.',
-          type: 'info',
+          message: 'Dr. Vikram Sethi updated progress on Customer Churn Analysis to 65%.',
+          type: 'project_update',
           read: false,
           timestamp: new Date(Date.now() - 3600000).toISOString()
         },
@@ -286,10 +307,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           id: 'notif_2',
           userId: 'user_student_1',
           title: 'Deliverables Ready to Download',
-          message: 'CampusConnect project completed! Download your verified source code and IEEE report.',
-          type: 'success',
+          message: 'Student Portfolio Website project completed! Download your verified source code and PPT.',
+          type: 'project_update',
           read: false,
           timestamp: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          id: 'notif_admin_1',
+          userId: 'user_admin_1',
+          title: '🔔 New Payment Verification Request',
+          message: 'Payment verification required for Order #APX-2026-6621 (Amount: ₹250, UTR: 202608291041)',
+          type: 'payment',
+          read: false,
+          timestamp: new Date(Date.now() - 1800000).toISOString()
         }
       ];
     } catch {
@@ -337,6 +367,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(projects));
   }, [projects]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.PAYMENT_RECORDS, JSON.stringify(paymentRecords));
+  }, [paymentRecords]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
@@ -414,7 +448,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addNotification({
       userId: currentUser.id,
       title: 'Order Created',
-      message: `Your project requirement "${newProject.requirement.title}" has been registered (#${orderNumber}).`,
+      message: `Your project requirement "${newProject.requirement.title}" has been registered (#${orderNumber}). Please complete payment.`,
       type: 'project_update',
       read: false
     });
@@ -603,18 +637,244 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addToast('Payment Settings Reset', 'Default UPI configuration restored.', 'info');
   };
 
+  const getPaymentRecordByProject = (projectId: string): PaymentVerificationRecord | undefined => {
+    return paymentRecords.find(p => p.project_id === projectId);
+  };
+
+  const getPaymentRecordById = (paymentId: string): PaymentVerificationRecord | undefined => {
+    return paymentRecords.find(p => p.payment_id === paymentId || p.order_id === paymentId || p.project_id === paymentId);
+  };
+
+  // Submit Manual UPI Payment with Screenshot & 12-Digit UTR
+  const submitManualPayment = (projectId: string, utrNumber: string, paymentProofUrl?: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const invoiceNum = 'INV-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+    const paymentId = 'pay_' + Date.now().toString(36);
+    const nowIso = new Date().toISOString();
+
+    const newPaymentRecord: PaymentVerificationRecord = {
+      payment_id: paymentId,
+      order_id: project.orderNumber,
+      project_id: project.id,
+      user_id: currentUser.id,
+      studentName: currentUser.name,
+      studentEmail: currentUser.email,
+      studentCollege: currentUser.college || project.requirement.college,
+      studentPhone: currentUser.phone || project.requirement.phone,
+      projectTitle: project.requirement.title,
+      category: project.requirement.category,
+      serviceType: project.requirement.serviceType,
+      projectLevel: project.requirement.projectLevel,
+      amount: project.assessment.totalFinalPrice,
+      utr_number: utrNumber,
+      payment_screenshot: paymentProofUrl || '/phonepe-qr.png',
+      payment_status: 'verification_pending',
+      submitted_at: nowIso,
+      payment_method: 'manual_upi',
+      invoice_number: invoiceNum
+    };
+
+    const newTxn: Transaction = {
+      id: 'txn_' + Date.now().toString(36),
+      projectId: project.id,
+      projectTitle: project.requirement.title,
+      studentId: currentUser.id,
+      studentName: currentUser.name,
+      studentEmail: currentUser.email,
+      amount: project.assessment.totalFinalPrice,
+      paymentMethod: 'manual_upi',
+      status: 'verification_pending',
+      transactionDate: nowIso,
+      invoiceNumber: invoiceNum,
+      gatewayRef: `UTR-${utrNumber || 'MANUAL-PENDING'}`,
+      upiIdOrCardEnding: paymentSettings.upiId,
+      utrNumber,
+      paymentProofUrl
+    };
+
+    // 1. Update Project Status to verification_pending (NOT in_progress)
+    setProjects(prev =>
+      prev.map(p => {
+        if (p.id === projectId) {
+          return {
+            ...p,
+            paymentStatus: 'verification_pending',
+            status: 'verification_pending',
+            utrNumber,
+            paymentProofUrl,
+            paymentSubmittedAt: nowIso,
+            paymentRecordId: paymentId,
+            updatedAt: nowIso
+          };
+        }
+        return p;
+      })
+    );
+
+    // 2. Add / Update Payment Record
+    setPaymentRecords(prev => [newPaymentRecord, ...prev.filter(r => r.project_id !== projectId)]);
+
+    // 3. Add to Transactions ledger
+    setTransactions(prev => [newTxn, ...prev]);
+
+    // 4. Notify Student
+    addNotification({
+      userId: currentUser.id,
+      title: 'Payment Submitted for Verification',
+      message: `Your payment of ₹${project.assessment.totalFinalPrice} (UTR: ${utrNumber}) has been submitted. Our team will verify it against the bank statement.`,
+      type: 'payment',
+      read: false
+    });
+
+    // 5. Notify Super Admin
+    addNotification({
+      userId: 'user_admin_1',
+      title: '🔔 New Payment Verification Request',
+      message: `Payment verification required for Order #${project.orderNumber} (Amount: ₹${project.assessment.totalFinalPrice}, UTR: ${utrNumber})`,
+      type: 'payment',
+      read: false
+    });
+
+    addToast('Payment Submitted for Verification', `UTR: ${utrNumber}. Admin verification pending.`, 'info');
+  };
+
+  // Admin Payment Verification (Approve or Reject)
+  const verifyPayment = (identifier: string, approved: boolean, reason?: string) => {
+    // Locate payment record by payment_id, project_id, or order_id
+    const targetRecord = paymentRecords.find(
+      r => r.payment_id === identifier || r.project_id === identifier || r.order_id === identifier
+    );
+    const targetProjectId = targetRecord ? targetRecord.project_id : identifier;
+    const project = projects.find(p => p.id === targetProjectId || p.orderNumber === identifier);
+    
+    if (!project && !targetRecord) return;
+
+    const nowIso = new Date().toISOString();
+    const adminName = currentUser.name || 'Super Admin (Operations)';
+    const resolvedStatus: PaymentStatus = approved ? 'verified' : 'rejected';
+
+    // 1. Update Payment Verification Records
+    setPaymentRecords(prev =>
+      prev.map(r => {
+        if (
+          r.payment_id === identifier ||
+          r.project_id === targetProjectId ||
+          (project && r.order_id === project.orderNumber)
+        ) {
+          return {
+            ...r,
+            payment_status: resolvedStatus,
+            verified_at: approved ? nowIso : undefined,
+            verified_by: approved ? adminName : undefined,
+            rejected_at: !approved ? nowIso : undefined,
+            rejected_by: !approved ? adminName : undefined,
+            rejection_reason: !approved ? reason || 'UTR could not be verified in bank statement.' : undefined
+          };
+        }
+        return r;
+      })
+    );
+
+    // 2. Update Project Entity
+    setProjects(prev =>
+      prev.map(p => {
+        if (p.id === targetProjectId || (project && p.id === project.id)) {
+          return {
+            ...p,
+            paymentStatus: resolvedStatus,
+            status: approved ? 'in_progress' : 'payment_pending',
+            progress: approved ? (p.progress < 20 ? 20 : p.progress) : p.progress,
+            paymentVerifiedAt: approved ? nowIso : undefined,
+            paymentVerifiedBy: approved ? adminName : undefined,
+            paymentRejectedAt: !approved ? nowIso : undefined,
+            paymentRejectedBy: !approved ? adminName : undefined,
+            paymentRejectedReason: !approved ? reason : undefined,
+            updatedAt: nowIso
+          };
+        }
+        return p;
+      })
+    );
+
+    // 3. Update Transactions
+    setTransactions(prev =>
+      prev.map(t => {
+        if (t.projectId === targetProjectId || (project && t.projectId === project.id)) {
+          return {
+            ...t,
+            status: approved ? 'confirmed' : 'rejected'
+          };
+        }
+        return t;
+      })
+    );
+
+    // 4. Dispatch Notifications
+    const studentId = project ? project.studentId : targetRecord?.user_id || 'user_student_1';
+    const orderNum = project ? project.orderNumber : targetRecord?.order_id || 'Order';
+    const amountVal = project ? project.assessment.totalFinalPrice : targetRecord?.amount || 0;
+
+    if (approved) {
+      addNotification({
+        userId: studentId,
+        title: 'Payment Verified Successfully 🟢',
+        message: `Your payment of ₹${amountVal} for Order #${orderNum} has been verified by Admin (${adminName}). Your project is now In Progress!`,
+        type: 'payment',
+        read: false
+      });
+      addToast('Payment Verified', `Order #${orderNum} verified. Status moved to In Progress.`, 'success');
+    } else {
+      addNotification({
+        userId: studentId,
+        title: 'Payment Verification Failed 🔴',
+        message: `Payment verification for Order #${orderNum} failed. Reason: ${reason || 'UTR could not be verified in bank statement.'}. Please re-submit valid payment proof.`,
+        type: 'payment',
+        read: false
+      });
+      addToast('Payment Rejected', `Order #${orderNum} marked as rejected. Student notified.`, 'error');
+    }
+  };
+
   // Process Online / Simulated Payment
   const processPayment = async (projectId: string, method: PaymentMethod, details?: any): Promise<boolean> => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return false;
 
     const invoiceNum = 'INV-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+    const paymentId = 'pay_' + Date.now().toString(36);
+    const nowIso = new Date().toISOString();
     const gatewayRef =
       method === 'upi'
         ? `UPI/${Date.now()}/${details?.vpa || 'OKAXIS'}`
         : method === 'card'
         ? `CARD_AUTH_${Math.random().toString(36).substr(2, 8).toUpperCase()}`
         : `NETBANK_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+
+    const newPaymentRecord: PaymentVerificationRecord = {
+      payment_id: paymentId,
+      order_id: project.orderNumber,
+      project_id: project.id,
+      user_id: currentUser.id,
+      studentName: currentUser.name,
+      studentEmail: currentUser.email,
+      studentCollege: currentUser.college || project.requirement.college,
+      studentPhone: currentUser.phone || project.requirement.phone,
+      projectTitle: project.requirement.title,
+      category: project.requirement.category,
+      serviceType: project.requirement.serviceType,
+      projectLevel: project.requirement.projectLevel,
+      amount: project.assessment.totalFinalPrice,
+      utr_number: gatewayRef,
+      payment_screenshot: '/phonepe-qr.png',
+      payment_status: 'verified',
+      submitted_at: nowIso,
+      verified_at: nowIso,
+      verified_by: 'Automated Payment Gateway',
+      payment_method: method,
+      invoice_number: invoiceNum
+    };
 
     const newTxn: Transaction = {
       id: 'txn_' + Date.now().toString(36),
@@ -626,28 +886,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       amount: project.assessment.totalFinalPrice,
       paymentMethod: method,
       status: 'confirmed',
-      transactionDate: new Date().toISOString(),
+      transactionDate: nowIso,
       invoiceNumber: invoiceNum,
       gatewayRef,
       upiIdOrCardEnding: details?.vpa || details?.cardEnding || 'UPI / Online'
     };
 
-    // Update project state
     setProjects(prev =>
       prev.map(p => {
         if (p.id === projectId) {
           return {
             ...p,
-            paymentStatus: 'confirmed',
+            paymentStatus: 'verified',
             status: 'in_progress',
             progress: 25,
-            updatedAt: new Date().toISOString()
+            paymentVerifiedAt: nowIso,
+            paymentVerifiedBy: 'Automated Payment Gateway',
+            paymentRecordId: paymentId,
+            updatedAt: nowIso
           };
         }
         return p;
       })
     );
 
+    setPaymentRecords(prev => [newPaymentRecord, ...prev.filter(r => r.project_id !== projectId)]);
     setTransactions(prev => [newTxn, ...prev]);
 
     addNotification({
@@ -661,116 +924,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addToast('Payment Confirmed!', `Payment of ₹${project.assessment.totalFinalPrice} verified. Your project is now In Progress.`, 'success');
 
     return true;
-  };
-
-  // Submit Manual UPI Payment with Screenshot & UTR
-  const submitManualPayment = (projectId: string, utrNumber: string, paymentProofUrl?: string) => {
-    const project = projects.find(p => p.id === projectId);
-    if (!project) return;
-
-    const invoiceNum = 'INV-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
-
-    const newTxn: Transaction = {
-      id: 'txn_' + Date.now().toString(36),
-      projectId: project.id,
-      projectTitle: project.requirement.title,
-      studentId: currentUser.id,
-      studentName: currentUser.name,
-      studentEmail: currentUser.email,
-      amount: project.assessment.totalFinalPrice,
-      paymentMethod: 'manual_upi',
-      status: 'verification_pending',
-      transactionDate: new Date().toISOString(),
-      invoiceNumber: invoiceNum,
-      gatewayRef: `UTR-${utrNumber || 'MANUAL-PENDING'}`,
-      upiIdOrCardEnding: paymentSettings.upiId,
-      utrNumber,
-      paymentProofUrl
-    };
-
-    setProjects(prev =>
-      prev.map(p => {
-        if (p.id === projectId) {
-          return {
-            ...p,
-            paymentStatus: 'verification_pending',
-            status: 'verification_pending',
-            utrNumber,
-            paymentProofUrl,
-            paymentSubmittedAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          };
-        }
-        return p;
-      })
-    );
-
-    setTransactions(prev => [newTxn, ...prev]);
-
-    addNotification({
-      userId: currentUser.id,
-      title: 'Payment Submitted for Verification',
-      message: `Your payment of ₹${project.assessment.totalFinalPrice} (UTR: ${utrNumber}) has been submitted. Our team will verify it shortly.`,
-      type: 'payment',
-      read: false
-    });
-
-    addToast('Payment Submitted for Verification', `UTR: ${utrNumber}. Admin verification pending.`, 'info');
-  };
-
-  // Admin Payment Verification (Approve or Reject)
-  const verifyPayment = (projectId: string, approved: boolean, reason?: string) => {
-    const project = projects.find(p => p.id === projectId);
-    if (!project) return;
-
-    setProjects(prev =>
-      prev.map(p => {
-        if (p.id === projectId) {
-          return {
-            ...p,
-            paymentStatus: approved ? 'confirmed' : 'rejected',
-            status: approved ? 'in_progress' : 'payment_pending',
-            progress: approved ? (p.progress < 20 ? 20 : p.progress) : p.progress,
-            paymentVerifiedAt: approved ? new Date().toISOString() : undefined,
-            paymentRejectedReason: !approved ? reason : undefined,
-            updatedAt: new Date().toISOString()
-          };
-        }
-        return p;
-      })
-    );
-
-    setTransactions(prev =>
-      prev.map(t => {
-        if (t.projectId === projectId) {
-          return {
-            ...t,
-            status: approved ? 'confirmed' : 'rejected'
-          };
-        }
-        return t;
-      })
-    );
-
-    if (approved) {
-      addNotification({
-        userId: project.studentId,
-        title: 'Payment Verified! 🟢',
-        message: `Your payment of ₹${project.assessment.totalFinalPrice} for Order ${project.orderNumber} has been verified. Project is now In Progress!`,
-        type: 'payment',
-        read: false
-      });
-      addToast('Payment Approved', `Order ${project.orderNumber} verified and moved to In Progress.`, 'success');
-    } else {
-      addNotification({
-        userId: project.studentId,
-        title: 'Payment Verification Requires Attention 🔴',
-        message: `Your payment for Order ${project.orderNumber} could not be verified. Reason: ${reason || 'Invalid UTR or screenshot mismatch.'}`,
-        type: 'payment',
-        read: false
-      });
-      addToast('Payment Rejected', `Order ${project.orderNumber} marked as rejected. Student notified.`, 'error');
-    }
   };
 
   // Refund Simulation
@@ -800,6 +953,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             };
           }
           return p;
+        })
+      );
+
+      setPaymentRecords(prev =>
+        prev.map(r => {
+          if (r.project_id === txn.projectId) {
+            return {
+              ...r,
+              payment_status: 'refunded',
+              rejection_reason: reason
+            };
+          }
+          return r;
         })
       );
 
@@ -933,6 +1099,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setActiveView,
         selectedProjectId,
         setSelectedProjectId,
+        selectedPaymentVerificationId,
+        setSelectedPaymentVerificationId,
         legalTab,
         setLegalTab,
         projects,
@@ -954,6 +1122,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         paymentSettings,
         updatePaymentSettings,
         resetPaymentSettings,
+        paymentRecords,
+        getPaymentRecordByProject,
+        getPaymentRecordById,
         transactions,
         processPayment,
         submitManualPayment,

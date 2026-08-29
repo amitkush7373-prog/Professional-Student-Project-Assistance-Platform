@@ -292,7 +292,7 @@ export const StudentDashboard: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
-                      {project.paymentStatus === 'confirmed' ? (
+                      {project.paymentStatus === 'confirmed' || project.paymentStatus === 'verified' ? (
                         <button
                           type="button"
                           onClick={() => {
@@ -303,6 +303,22 @@ export const StudentDashboard: React.FC = () => {
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>Receipt</span>
+                        </button>
+                      ) : project.paymentStatus === 'verification_pending' ? (
+                        <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                          <span>Verification Pending</span>
+                        </span>
+                      ) : project.paymentStatus === 'rejected' ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedProjectId(project.id);
+                            setActiveView('project-detail');
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1"
+                        >
+                          <span>Re-upload Proof</span>
                         </button>
                       ) : (
                         <button

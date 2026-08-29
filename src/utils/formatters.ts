@@ -133,18 +133,19 @@ export function getStatusBadge(status: ProjectStatus): { label: string; bg: stri
 
 export function getPaymentStatusBadge(status: PaymentStatus): { label: string; bg: string; text: string } {
   switch (status) {
+    case 'verified':
     case 'confirmed':
-      return { label: 'Paid & Verified', bg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400', text: 'text-emerald-600 dark:text-emerald-400' };
+      return { label: '🟢 Payment Verified', bg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30', text: 'text-emerald-600 dark:text-emerald-400' };
     case 'verification_pending':
-      return { label: 'Verification Pending', bg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400', text: 'text-amber-600 dark:text-amber-400' };
+      return { label: '🟡 Verification Pending', bg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30', text: 'text-amber-600 dark:text-amber-400' };
     case 'pending':
-      return { label: 'Pending Payment', bg: 'bg-orange-500/15 text-orange-600 dark:text-orange-400', text: 'text-orange-600 dark:text-orange-400' };
+      return { label: '⚪ Payment Pending', bg: 'bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30', text: 'text-orange-600 dark:text-orange-400' };
     case 'rejected':
-      return { label: 'Payment Rejected', bg: 'bg-red-500/15 text-red-600 dark:text-red-400', text: 'text-red-600 dark:text-red-400' };
+      return { label: '🔴 Payment Rejected', bg: 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30', text: 'text-red-600 dark:text-red-400' };
     case 'refunded':
-      return { label: 'Refunded', bg: 'bg-slate-500/15 text-slate-600 dark:text-slate-400', text: 'text-slate-600 dark:text-slate-400' };
+      return { label: 'Refunded', bg: 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border border-slate-500/30', text: 'text-slate-600 dark:text-slate-400' };
     default:
-      return { label: String(status), bg: 'bg-slate-500/15 text-slate-600', text: 'text-slate-600' };
+      return { label: String(status), bg: 'bg-slate-500/15 text-slate-600 border border-slate-500/30', text: 'text-slate-600' };
   }
 }
 
