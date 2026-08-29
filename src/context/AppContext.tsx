@@ -33,10 +33,10 @@ export interface ToastMessage {
 }
 
 export const DEFAULT_PAYMENT_SETTINGS: PaymentSettings = {
-  qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=apexproject@upi&pn=Apex%20Project%20Assistance&mc=8299&mode=02',
-  upiId: 'apexproject@upi',
-  merchantName: 'Apex Student Project Assistance',
-  instructions: 'Scan this official UPI QR Code using Google Pay, PhonePe, Paytm, or BHIM. After completing payment, upload your payment screenshot and enter the 12-digit UTR number for admin verification.'
+  qrCodeUrl: '/phonepe-qr.png',
+  upiId: '7618820563-2@ybl',
+  merchantName: 'Apex Student Project Assistance (PhonePe / UPI)',
+  instructions: 'Scan this official PhonePe / UPI QR Code using Google Pay, PhonePe, Paytm, or BHIM. After completing payment, upload your payment screenshot and enter the 12-digit UTR number for admin verification.'
 };
 
 interface AppContextType {
@@ -136,7 +136,7 @@ const STORAGE_KEYS = {
   PROJECTS: 'apex_projects_v2',
   MESSAGES: 'apex_messages_v2',
   PRICING: 'apex_pricing_config_v2',
-  PAYMENT_SETTINGS: 'apex_payment_settings_v2',
+  PAYMENT_SETTINGS: 'apex_payment_settings_v3',
   TRANSACTIONS: 'apex_transactions_v2',
   REVIEWS: 'apex_reviews_v2',
   NOTIFICATIONS: 'apex_notifications_v2',

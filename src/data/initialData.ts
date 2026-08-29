@@ -597,7 +597,7 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
     transactionDate: getPastDate(0),
     invoiceNumber: 'INV-2026-6621',
     gatewayRef: 'UTR-202608291041',
-    upiIdOrCardEnding: 'apexproject@upi',
+    upiIdOrCardEnding: '7618820563-2@ybl',
     utrNumber: '202608291041',
     paymentProofUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80'
   }

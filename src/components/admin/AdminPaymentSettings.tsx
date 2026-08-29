@@ -107,7 +107,7 @@ export const AdminPaymentSettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  const newQr = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${settings.upiId || 'apexproject@upi'}&pn=${encodeURIComponent(settings.merchantName || 'Apex')}&mc=8299&mode=02`;
+                  const newQr = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${settings.upiId || '7618820563-2@ybl'}&pn=${encodeURIComponent(settings.merchantName || 'Apex')}&mc=8299&mode=02`;
                   setSettings(prev => ({ ...prev, qrCodeUrl: newQr }));
                 }}
                 className="px-4 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--bg-elevated)]"
@@ -127,7 +127,7 @@ export const AdminPaymentSettings: React.FC = () => {
               required
               value={settings.upiId}
               onChange={e => setSettings(prev => ({ ...prev, upiId: e.target.value }))}
-              placeholder="e.g. apexproject@upi or yourname@okaxis"
+              placeholder="e.g. 7618820563-2@ybl"
               className="w-full px-3.5 py-2.5 font-mono text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
             />
           </div>
