@@ -15,7 +15,7 @@ import {
 import { useApp } from '../../context/AppContext';
 
 export const Footer: React.FC = () => {
-  const { setActiveView, setLegalTab } = useApp();
+  const { setActiveView, setLegalTab, openExitReviewModal } = useApp();
 
   const handleLegalClick = (tab: 'terms' | 'privacy' | 'refund' | 'integrity') => {
     setLegalTab(tab);
@@ -180,6 +180,16 @@ export const Footer: React.FC = () => {
               <li>
                 <button onClick={() => setActiveView('ai-ppt-agent')} className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline transition-colors flex items-center gap-1">
                   <span>⚡ AI Presentation Agent (Free)</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setActiveView('ai-report-agent')} className="text-blue-600 dark:text-blue-400 font-bold hover:underline transition-colors flex items-center gap-1">
+                  <span>📄 AI Report Generator</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={openExitReviewModal} className="text-amber-600 dark:text-amber-400 font-bold hover:underline transition-colors flex items-center gap-1">
+                  <span>⭐ Rate Experience / Leave Review</span>
                 </button>
               </li>
               <li>

@@ -31,6 +31,7 @@ import { AiReportGeneratorAgent } from './components/ai/AiReportGeneratorAgent';
 // Support & Legal
 import { HelpCenterPage } from './components/support/HelpCenterPage';
 import { LegalPages } from './components/legal/LegalPages';
+import { ExitReviewModal } from './components/feedback/ExitReviewModal';
 
 // Toast icons
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
@@ -149,6 +150,7 @@ export const App: React.FC = () => {
       {/* Global Modals & Drawers */}
       <NotificationDrawer />
       <AuthModal />
+      <ExitReviewModal />
       {invoiceProject && (
         <InvoiceModal
           isOpen={isInvoiceModalOpen}

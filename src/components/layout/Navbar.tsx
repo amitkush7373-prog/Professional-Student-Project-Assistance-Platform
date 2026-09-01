@@ -19,7 +19,8 @@ import {
   DollarSign,
   Zap,
   Lock,
-  LogOut
+  LogOut,
+  Star
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { UserRole } from '../../types';
@@ -37,7 +38,8 @@ export const Navbar: React.FC = () => {
     setActiveView,
     notifications,
     setIsNotificationDrawerOpen,
-    setIsAuthModalOpen
+    setIsAuthModalOpen,
+    openExitReviewModal
   } = useApp();
 
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
@@ -250,6 +252,16 @@ export const Navbar: React.FC = () => {
               )}
             </button>
 
+            {/* Star Review / Feedback Trigger */}
+            <button
+              onClick={openExitReviewModal}
+              className="p-2 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all flex items-center gap-1 text-xs font-bold"
+              title="Leave a Review / Rate Experience"
+            >
+              <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+              <span className="hidden xl:inline">Review</span>
+            </button>
+
             {/* Notifications Bell */}
             <button
               onClick={() => setIsNotificationDrawerOpen(true)}
@@ -391,6 +403,17 @@ export const Navbar: React.FC = () => {
                 className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10"
               >
                 Open {currentUser.role.toUpperCase()} Dashboard
+              </button>
+
+              <button
+                onClick={() => {
+                  openExitReviewModal();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 flex items-center gap-2"
+              >
+                <Star className="w-4 h-4 fill-amber-500" />
+                <span>Rate Your Experience / Leave Review</span>
               </button>
             </div>
           </div>

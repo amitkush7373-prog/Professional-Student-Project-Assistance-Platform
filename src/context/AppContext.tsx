@@ -3,6 +3,7 @@ import {
   User,
   UserRole,
   Project,
+  ProjectCategory,
   Message,
   PlatformReview,
   SupportTicket,
@@ -118,6 +119,19 @@ interface AppContextType {
   // Reviews & Feedback
   reviews: PlatformReview[];
   addReview: (projectId: string, rating: number, comment: string, whatWentWell: string, suggestions: string) => void;
+  addPlatformReview: (data: {
+    studentName?: string;
+    studentCollege?: string;
+    projectTitle?: string;
+    category?: ProjectCategory;
+    rating: number;
+    review: string;
+    whatWentWell?: string;
+    suggestions?: string;
+  }) => void;
+  isExitReviewModalOpen: boolean;
+  setIsExitReviewModalOpen: (open: boolean) => void;
+  openExitReviewModal: () => void;
 
   // Notifications
   notifications: NotificationItem[];
@@ -198,11 +212,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [activeInvoiceProject, setActiveInvoiceProject] = useState<Project | null>(null);
+  const [isExitReviewModalOpen, setIsExitReviewModalOpen] = useState(false);
 
   const openAuthModal = (portal: 'student' | 'expert' | 'admin' = 'student', mode: 'signin' | 'signup' | 'forgot' = 'signin') => {
     setAuthModalPortal(portal);
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
+  };
+
+  const openExitReviewModal = () => {
+    setIsExitReviewModalOpen(true);
   };
 
   // Users State
@@ -1177,6 +1196,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addToast('Review Submitted', 'Thank you for your feedback!', 'success');
   };
 
+  const addPlatformReview = (data: {
+    studentName?: string;
+    studentCollege?: string;
+    projectTitle?: string;
+    category?: ProjectCategory;
+    rating: number;
+    review: string;
+    whatWentWell?: string;
+    suggestions?: string;
+  }) => {
+    const newRev: PlatformReview = {
+      id: 'rev_' + Date.now().toString(36),
+      studentName: data.studentName || currentUser.name || 'Verified Scholar',
+      studentCollege: data.studentCollege || currentUser.college || 'Engineering Institute',
+      projectTitle: data.projectTitle || 'AI Academic & PPT/Report Platform',
+      category: data.category || 'ai-nlp-cv',
+      rating: data.rating,
+      review: data.review,
+      whatWentWell: data.whatWentWell || 'Super fast turnaround and high quality output',
+      suggestions: data.suggestions || '',
+      verified: true,
+      date: new Date().toISOString()
+    };
+
+    setReviews(prev => [newRev, ...prev]);
+    addToast('Review Published! ⭐', 'Thank you for your valuable feedback. It helps us empower more students.', 'success');
+  };
+
   // Notifications Engine
   const markNotificationRead = (id: string) => {
     setNotifications(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)));
@@ -1293,6 +1340,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         processRefund,
         reviews,
         addReview,
+        addPlatformReview,
+        isExitReviewModalOpen,
+        setIsExitReviewModalOpen,
+        openExitReviewModal,
         notifications,
         markNotificationRead,
         markAllNotificationsRead,
