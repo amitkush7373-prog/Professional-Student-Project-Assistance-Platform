@@ -11,10 +11,11 @@ import {
   Sparkles,
   CheckCircle2,
   KeyRound,
-  AlertCircle
+  AlertCircle,
+  Zap
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { UserRole } from '../../types';
+import { ShinchanPowerUp, ShinchanAnimationState } from './ShinchanPowerUp';
 
 export const AuthModal: React.FC = () => {
   const {
@@ -28,17 +29,9 @@ export const AuthModal: React.FC = () => {
     addToast
   } = useApp();
 
-  // Portal Type Selection: 'student' | 'expert' | 'admin'
+  // Portal Type: 'student' | 'expert' | 'admin'
   const [portalType, setPortalType] = useState<'student' | 'expert' | 'admin'>('student');
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signup');
-
-  useEffect(() => {
-    if (isAuthModalOpen) {
-      setPortalType(authModalPortal || 'student');
-      setMode(authModalMode || 'signin');
-      setErrorMessage('');
-    }
-  }, [isAuthModalOpen, authModalPortal, authModalMode]);
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -49,90 +42,185 @@ export const AuthModal: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Shinchan Power-Up Animation States
+  const [shinchanState, setShinchanState] = useState<ShinchanAnimationState>('idle');
+  const [shinchanStatusText, setShinchanStatusText] = useState<string>('');
+
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setPortalType(authModalPortal || 'student');
+      setMode(authModalMode || 'signin');
+      setErrorMessage('');
+      setShinchanState('idle');
+      setShinchanStatusText('');
+      setIsLoading(false);
+    }
+  }, [isAuthModalOpen, authModalPortal, authModalMode]);
+
   if (!isAuthModalOpen) return null;
 
+  // Shinchan Triggered Admin Authentication Sequence
   const handleAdminAuth = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    setIsLoading(true);
+    
+    // Check validation first
+    if (!adminPasscode.trim()) {
+      setErrorMessage('Please enter the admin passcode.');
+      return;
+    }
 
+    setIsLoading(true);
+    setShinchanState('charging');
+    setShinchanStatusText('Shinchan is charging admin access… ⚡');
+
+    // 1. Powering Stage
     setTimeout(() => {
-      setIsLoading(false);
-      // Valid admin passcodes
-      if (adminPasscode === 'admin123' || adminPasscode === 'apexadmin' || adminPasscode.toLowerCase() === 'superadmin') {
-        loginAsDemoUser('admin');
-        addToast('Admin Authorized', 'Logged in as Super Admin Operations Command.', 'success');
+      setShinchanState('powering');
+      setShinchanStatusText('ADMIN POWER ON! ⚡');
+    }, 600);
+
+    // 2. Final Authorization Stage (~1.2s)
+    setTimeout(() => {
+      if (
+        adminPasscode === 'admin123' ||
+        adminPasscode === 'apexadmin' ||
+        adminPasscode.toLowerCase() === 'superadmin'
+      ) {
+        setShinchanState('success');
+        setShinchanStatusText('Access Granted! ✌️');
+        setTimeout(() => {
+          setIsLoading(false);
+          loginAsDemoUser('admin');
+          addToast('Admin Authorized', 'Logged in as Super Admin Operations Command.', 'success');
+        }, 350);
       } else {
+        setShinchanState('error');
+        setShinchanStatusText('Oops! Wrong Passcode');
+        setIsLoading(false);
         setErrorMessage('Invalid Admin Security Passcode. Default demo code: admin123');
+        setTimeout(() => {
+          setShinchanState('idle');
+          setShinchanStatusText('');
+        }, 2000);
       }
-    }, 400);
+    }, 1200);
   };
 
+  // Shinchan Triggered Student/Expert Authentication Sequence
   const handleUserAuth = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
+
+    // Pre-validation
+    if (mode === 'signup') {
+      if (!name.trim()) {
+        setErrorMessage('Please enter your full name.');
+        return;
+      }
+      if (!email.trim()) {
+        setErrorMessage('Please enter a valid email address.');
+        return;
+      }
+    } else if (mode === 'signin') {
+      if (!email.trim()) {
+        setErrorMessage('Please enter your registered email.');
+        return;
+      }
+    }
+
+    // Begin Shinchan Power-Up Sequence (~1.2s)
     setIsLoading(true);
+    setShinchanState('charging');
+    setShinchanStatusText('Shinchan is powering you in… ⚡');
+
+    // Step 2: Electric surge after 550ms
+    setTimeout(() => {
+      setShinchanState('powering');
+      setShinchanStatusText('POWER ON! ⚡');
+    }, 550);
+
+    // Step 3: Complete Authentication after 1.15s
+    setTimeout(() => {
+      setShinchanState('success');
+      setShinchanStatusText('Action Kamen Victory! ✌️');
+
+      setTimeout(() => {
+        setIsLoading(false);
+        if (mode === 'signup') {
+          signUpUser({
+            name: name.trim(),
+            email: email.trim(),
+            college: college.trim() || (portalType === 'student' ? 'University Campus' : 'Engineering Department'),
+            role: portalType === 'expert' ? 'expert' : 'student'
+          });
+        } else if (mode === 'signin') {
+          signInUser(email, password, portalType === 'expert' ? 'expert' : 'student');
+        } else {
+          setIsAuthModalOpen(false);
+          addToast('Reset Link Sent', `Password reset instructions sent to ${email}.`, 'info');
+        }
+      }, 350);
+    }, 1150);
+  };
+
+  // Demo Login with Shinchan power animation
+  const handleDemoLoginTrigger = (role: 'student' | 'expert' | 'admin') => {
+    setIsLoading(true);
+    setShinchanState('charging');
+    setShinchanStatusText(`Powering up ${role.toUpperCase()} workspace… ⚡`);
 
     setTimeout(() => {
-      setIsLoading(false);
-      if (mode === 'signup') {
-        if (!name.trim()) {
-          setErrorMessage('Please enter your full name.');
-          return;
-        }
-        if (!email.trim()) {
-          setErrorMessage('Please enter a valid email address.');
-          return;
-        }
-        signUpUser({
-          name: name.trim(),
-          email: email.trim(),
-          college: college.trim() || (portalType === 'student' ? 'University Campus' : 'Engineering Department'),
-          role: portalType === 'expert' ? 'expert' : 'student'
-        });
-      } else if (mode === 'signin') {
-        if (!email.trim()) {
-          setErrorMessage('Please enter your registered email.');
-          return;
-        }
-        signInUser(email, password, portalType === 'expert' ? 'expert' : 'student');
-      } else {
-        setIsAuthModalOpen(false);
-        addToast('Reset Link Sent', `Password reset instructions sent to ${email}.`, 'info');
-      }
-    }, 400);
+      setShinchanState('powering');
+      setShinchanStatusText('POWER ON! ⚡');
+    }, 500);
+
+    setTimeout(() => {
+      setShinchanState('success');
+      setShinchanStatusText('Ready to Roll! ✌️');
+      setTimeout(() => {
+        loginAsDemoUser(role);
+      }, 300);
+    }, 1000);
   };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 animate-in fade-in duration-200">
-      {/* Backdrop */}
+      
+      {/* Dark Ambient Backdrop with Floating Light Orbs */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-sm"
-        onClick={() => setIsAuthModalOpen(false)}
+        className="fixed inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity"
+        onClick={() => !isLoading && setIsAuthModalOpen(false)}
       />
 
-      {/* Modal Dialog */}
-      <div className="relative w-full max-w-md bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl shadow-2xl overflow-hidden z-10">
+      {/* Glowing Ambient Radial Ring Behind Modal */}
+      <div className="fixed pointer-events-none w-96 h-96 rounded-full bg-blue-600/20 blur-[90px] animate-pulse" />
+
+      {/* Main Glassmorphic Modal Card */}
+      <div className="relative w-full max-w-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl shadow-2xl overflow-hidden z-10 transition-all duration-300">
         
-        {/* Header */}
-        <div className="relative p-6 border-b border-[var(--border-color)] bg-gradient-to-br from-blue-600/10 via-transparent to-indigo-500/10">
+        {/* Animated Top Header */}
+        <div className="relative p-6 sm:p-7 border-b border-[var(--border-color)] bg-gradient-to-br from-blue-600/15 via-transparent to-indigo-600/10">
           <button
+            disabled={isLoading}
             onClick={() => setIsAuthModalOpen(false)}
-            className="absolute top-4 right-4 p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
           
-          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-xs font-bold uppercase tracking-wider">ApexProject Security Gateway</span>
+          <div className="flex items-center gap-2 text-blue-500 dark:text-blue-400 mb-1">
+            <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: '4s' }} />
+            <span className="text-xs font-bold uppercase tracking-wider font-mono">
+              ApexProject Gateway • Verified Access
+            </span>
           </div>
 
-          <h3 className="text-xl font-extrabold text-[var(--text-primary)] tracking-tight">
+          <h3 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] tracking-tight">
             {portalType === 'admin'
               ? 'Super Admin Operations Portal'
               : mode === 'signin'
-              ? `Sign in to ${portalType === 'student' ? 'Student' : 'Mentor'} Workspace`
+              ? `Sign In to ${portalType === 'student' ? 'Student' : 'Mentor'} Workspace`
               : `Create ${portalType === 'student' ? 'Student' : 'Mentor'} Account`}
           </h3>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
@@ -144,14 +232,15 @@ export const AuthModal: React.FC = () => {
           </p>
         </div>
 
-        {/* Top 3 Portal Selector Tabs */}
+        {/* Portal Access Switcher (Student / Mentor / Admin) */}
         <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border-color)]">
           <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5 px-1">
-            Select Portal Access:
+            Select Workspace Role:
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => {
                 setPortalType('student');
                 setErrorMessage('');
@@ -168,6 +257,7 @@ export const AuthModal: React.FC = () => {
 
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => {
                 setPortalType('expert');
                 setErrorMessage('');
@@ -184,6 +274,7 @@ export const AuthModal: React.FC = () => {
 
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => {
                 setPortalType('admin');
                 setErrorMessage('');
@@ -195,12 +286,14 @@ export const AuthModal: React.FC = () => {
               }`}
             >
               <Shield className="w-3.5 h-3.5" />
-              <span>Admin Lock</span>
+              <span>Admin Hub</span>
             </button>
           </div>
         </div>
 
-        {/* If Admin Portal Selected */}
+        {/* ========================================================================= */}
+        {/* ADMIN PORTAL FORM */}
+        {/* ========================================================================= */}
         {portalType === 'admin' ? (
           <form onSubmit={handleAdminAuth} className="p-6 space-y-4 text-xs">
             <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 space-y-1">
@@ -214,7 +307,7 @@ export const AuthModal: React.FC = () => {
             </div>
 
             {errorMessage && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-semibold flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-semibold flex items-center gap-2 animate-in shake duration-200">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
@@ -225,25 +318,41 @@ export const AuthModal: React.FC = () => {
                 Admin Security Passcode / Master Key *
               </label>
               <div className="relative">
-                <KeyRound className="w-4 h-4 absolute left-3 top-3 text-[var(--text-muted)]" />
+                <KeyRound className="w-4 h-4 absolute left-3.5 top-3 text-[var(--text-muted)]" />
                 <input
                   type="password"
                   required
                   value={adminPasscode}
                   onChange={e => setAdminPasscode(e.target.value)}
                   placeholder="Enter admin passcode (e.g. admin123)"
-                  className="w-full pl-9 pr-3 py-2.5 font-mono text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                  className="w-full pl-10 pr-3 py-2.5 font-mono text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring transition-all"
                 />
               </div>
             </div>
 
+            {/* Shinchan Power-Up Easter Egg Row */}
+            <div className="pt-2 flex items-center justify-between">
+              <ShinchanPowerUp
+                state={shinchanState}
+                statusText={shinchanStatusText}
+              />
+            </div>
+
+            {/* Power Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
+              className={`w-full py-3 px-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
+                isLoading
+                  ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white shadow-cyan-500/50 animate-pulse'
+                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/25 hover:scale-[1.02]'
+              }`}
             >
               {isLoading ? (
-                <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <>
+                  <Zap className="w-4 h-4 fill-amber-300 text-amber-300 animate-spin" />
+                  <span>Powering Up System…</span>
+                </>
               ) : (
                 <>
                   <Shield className="w-4 h-4" />
@@ -253,14 +362,12 @@ export const AuthModal: React.FC = () => {
               )}
             </button>
 
-            {/* Instant 1-Click Super Admin Access */}
+            {/* 1-Click Super Admin Access */}
             <div className="pt-2 border-t border-[var(--border-color)] text-center">
               <button
                 type="button"
-                onClick={() => {
-                  loginAsDemoUser('admin');
-                  addToast('Admin Authorized', 'Logged in as Super Admin.', 'success');
-                }}
+                disabled={isLoading}
+                onClick={() => handleDemoLoginTrigger('admin')}
                 className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
               >
                 <span>⚡ 1-Click Super Admin Demo Login</span>
@@ -268,20 +375,23 @@ export const AuthModal: React.FC = () => {
             </div>
           </form>
         ) : (
-          /* Student or Expert Portal Form */
+          /* ========================================================================= */
+          /* STUDENT / EXPERT PORTAL FORM WITH SHINCHAN POWER-UP */
+          /* ========================================================================= */
           <form onSubmit={handleUserAuth} className="p-6 space-y-4 text-xs">
             
             {/* Mode Switcher: Sign In vs Sign Up */}
             <div className="flex rounded-xl p-1 bg-[var(--bg-surface)] border border-[var(--border-color)]">
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => {
                   setMode('signup');
                   setErrorMessage('');
                 }}
-                className={`flex-1 py-1.5 rounded-lg font-bold text-center transition-colors ${
+                className={`flex-1 py-2 rounded-lg font-bold text-center transition-all ${
                   mode === 'signup'
-                    ? 'bg-blue-600 text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -290,13 +400,14 @@ export const AuthModal: React.FC = () => {
 
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => {
                   setMode('signin');
                   setErrorMessage('');
                 }}
-                className={`flex-1 py-1.5 rounded-lg font-bold text-center transition-colors ${
+                className={`flex-1 py-2 rounded-lg font-bold text-center transition-all ${
                   mode === 'signin'
-                    ? 'bg-blue-600 text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -305,7 +416,7 @@ export const AuthModal: React.FC = () => {
             </div>
 
             {errorMessage && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-semibold flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-semibold flex items-center gap-2 animate-in shake duration-200">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
@@ -318,14 +429,14 @@ export const AuthModal: React.FC = () => {
                     Full Name *
                   </label>
                   <div className="relative">
-                    <UserIcon className="w-4 h-4 absolute left-3 top-3 text-[var(--text-muted)]" />
+                    <UserIcon className="w-4 h-4 absolute left-3.5 top-3 text-[var(--text-muted)]" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      placeholder="e.g. Amit Kushwaha"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                      placeholder="e.g. Aarav Sharma"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring transition-all"
                     />
                   </div>
                 </div>
@@ -335,14 +446,14 @@ export const AuthModal: React.FC = () => {
                     College / University *
                   </label>
                   <div className="relative">
-                    <GraduationCap className="w-4 h-4 absolute left-3 top-3 text-[var(--text-muted)]" />
+                    <GraduationCap className="w-4 h-4 absolute left-3.5 top-3 text-[var(--text-muted)]" />
                     <input
                       type="text"
                       required
                       value={college}
                       onChange={e => setCollege(e.target.value)}
-                      placeholder="e.g. IILM / DTU / IIT Delhi"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                      placeholder="e.g. DTU / IIT Delhi / BITS"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring transition-all"
                     />
                   </div>
                 </div>
@@ -354,14 +465,14 @@ export const AuthModal: React.FC = () => {
                 Email Address *
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-3 text-[var(--text-muted)]" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-3 text-[var(--text-muted)]" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="e.g. scholar@university.edu"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring transition-all"
                 />
               </div>
             </div>
@@ -373,6 +484,7 @@ export const AuthModal: React.FC = () => {
                   {mode === 'signin' && (
                     <button
                       type="button"
+                      disabled={isLoading}
                       onClick={() => setMode('forgot')}
                       className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                     >
@@ -381,26 +493,48 @@ export const AuthModal: React.FC = () => {
                   )}
                 </div>
                 <div className="relative">
-                  <Lock className="w-4 h-4 absolute left-3 top-3 text-[var(--text-muted)]" />
+                  <Lock className="w-4 h-4 absolute left-3.5 top-3 text-[var(--text-muted)]" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring transition-all"
                   />
                 </div>
               </div>
             )}
 
+            {/* Shinchan Power-Up Easter Egg Row */}
+            <div className="pt-1 flex items-center justify-between border-t border-[var(--border-color)]/50">
+              <ShinchanPowerUp
+                state={shinchanState}
+                statusText={shinchanStatusText}
+              />
+            </div>
+
+            {/* Power-Up Interactive Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
+              className={`w-full py-3.5 px-4 rounded-xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${
+                isLoading
+                  ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white shadow-cyan-500/50 scale-[1.02] ring-2 ring-cyan-400 animate-pulse'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/25 hover:scale-[1.02]'
+              }`}
             >
               {isLoading ? (
-                <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <>
+                  <Zap className="w-4 h-4 fill-amber-300 text-amber-300 animate-bounce" />
+                  <span className="font-mono tracking-wider">
+                    {shinchanState === 'charging'
+                      ? 'Powering Up… ⚡'
+                      : shinchanState === 'powering'
+                      ? 'POWER ON! ⚡'
+                      : 'Authenticating…'}
+                  </span>
+                </>
               ) : (
                 <>
                   <span>
@@ -423,8 +557,9 @@ export const AuthModal: React.FC = () => {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => loginAsDemoUser('student')}
-                  className="p-2 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-left transition-colors"
+                  disabled={isLoading}
+                  onClick={() => handleDemoLoginTrigger('student')}
+                  className="p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-left transition-all hover:scale-105"
                 >
                   <div className="font-bold text-xs text-[var(--text-primary)]">Demo Student</div>
                   <div className="text-[10px] text-[var(--text-muted)]">Aarav (DTU CS)</div>
@@ -432,8 +567,9 @@ export const AuthModal: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => loginAsDemoUser('expert')}
-                  className="p-2 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-left transition-colors"
+                  disabled={isLoading}
+                  onClick={() => handleDemoLoginTrigger('expert')}
+                  className="p-2.5 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-left transition-all hover:scale-105"
                 >
                   <div className="font-bold text-xs text-[var(--text-primary)]">Demo Mentor</div>
                   <div className="text-[10px] text-[var(--text-muted)]">Dr. Vikram (AI Lead)</div>
