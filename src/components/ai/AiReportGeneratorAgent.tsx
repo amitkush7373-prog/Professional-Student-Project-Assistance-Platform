@@ -30,7 +30,8 @@ import {
   Lightbulb,
   Cpu,
   Eye,
-  FileDown
+  FileDown,
+  LayoutTemplate
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -43,9 +44,10 @@ export interface ReportChapter {
   subsections?: {
     title: string;
     body: string;
-    table?: { headers: string[]; rows: string[][] };
+    table?: { caption?: string; headers: string[]; rows: string[][] };
+    figure?: { caption: string; diagramText: string };
     code?: { language: string; snippet: string; explanation: string };
-    formula?: string;
+    formula?: { equation: string; number?: string };
   }[];
 }
 
@@ -62,8 +64,554 @@ export interface GeneratedProjectReport {
   degreeName: string;
   abstractText: string;
   keywords: string[];
+  declarationText: string;
+  acknowledgementText: string;
   chapters: ReportChapter[];
   references: string[];
+}
+
+/**
+ * Pure Academic HTML Generator
+ * Generates 100% clean, standard university college project report HTML.
+ * Absolutely ZERO platform branding, zero web buttons, zero marketing text.
+ */
+export function generatePureAcademicHtml(report: GeneratedProjectReport): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>${report.title} - Academic Project Report</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 25mm 20mm 20mm 30mm; /* 30mm left margin for university hard-binding */
+      @bottom-center {
+        content: counter(page);
+        font-family: "Times New Roman", Times, serif;
+        font-size: 10pt;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-size: 12pt;
+      line-height: 1.6;
+      color: #000000;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+      clear: both;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      text-align: center;
+      padding-top: 35px;
+      page-break-after: always;
+      break-after: page;
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .report-title {
+      font-size: 20pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      line-height: 1.35;
+      margin: 15px 0 25px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .report-header-tag {
+      font-size: 13pt;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .report-subtext {
+      font-size: 11pt;
+      margin: 6px 0;
+    }
+
+    .degree-title {
+      font-size: 14pt;
+      font-weight: bold;
+      margin: 10px 0;
+      text-transform: uppercase;
+    }
+
+    .department-name {
+      font-size: 13pt;
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
+
+    .meta-box {
+      width: 100%;
+      margin: 35px 0;
+      border-collapse: collapse;
+    }
+
+    .meta-box td {
+      border: none;
+      padding: 6px 12px;
+      vertical-align: top;
+      font-size: 12pt;
+      line-height: 1.4;
+    }
+
+    .college-block {
+      margin-top: 30px;
+      line-height: 1.4;
+    }
+
+    .college-name {
+      font-size: 15pt;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .academic-session {
+      font-size: 11pt;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    /* Formal Academic Headings */
+    h1.chapter-heading {
+      font-size: 16pt;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      margin-top: 10px;
+      margin-bottom: 25px;
+      letter-spacing: 0.5px;
+    }
+
+    h2.section-heading {
+      font-size: 13pt;
+      font-weight: bold;
+      margin-top: 22px;
+      margin-bottom: 10px;
+    }
+
+    h3.subsection-heading {
+      font-size: 12pt;
+      font-weight: bold;
+      font-style: italic;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      text-align: justify;
+      text-justify: inter-word;
+      margin-top: 0;
+      margin-bottom: 12px;
+      text-indent: 0.35in;
+    }
+
+    p.no-indent {
+      text-indent: 0;
+    }
+
+    /* Certificate & Declarations */
+    .certificate-container {
+      page-break-after: always;
+      break-after: page;
+      padding-top: 20px;
+    }
+
+    .signatures-row {
+      margin-top: 75px;
+      display: flex;
+      justify-content: space-between;
+      page-break-inside: avoid;
+    }
+
+    .sig-box {
+      width: 44%;
+      border-top: 1px solid #000;
+      padding-top: 8px;
+      font-size: 11pt;
+      line-height: 1.35;
+    }
+
+    /* Table of Contents */
+    .toc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .toc-table td {
+      border: none;
+      padding: 6px 0;
+      font-size: 11.5pt;
+      vertical-align: bottom;
+    }
+
+    /* Academic Tables */
+    .academic-table-wrapper {
+      margin: 22px 0;
+      page-break-inside: avoid;
+    }
+
+    .table-caption {
+      font-size: 11pt;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    table.academic-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+
+    table.academic-table th, table.academic-table td {
+      border: 1px solid #000000;
+      padding: 7px 10px;
+      text-align: left;
+      font-size: 11pt;
+    }
+
+    table.academic-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Diagrams & Schematics */
+    .figure-container {
+      margin: 22px 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+
+    .figure-box {
+      border: 1px solid #444;
+      background: #fafafa;
+      padding: 16px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 9.5pt;
+      white-space: pre-wrap;
+      text-align: left;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .figure-caption {
+      font-size: 11pt;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Mathematical Equations */
+    .equation-box {
+      margin: 16px 0;
+      padding: 8px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      page-break-inside: avoid;
+      font-style: italic;
+    }
+
+    .equation-text {
+      text-align: center;
+      flex-grow: 1;
+      font-weight: bold;
+    }
+
+    .equation-num {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 11pt;
+    }
+
+    /* Code Blocks (Only when programming topic) */
+    .code-wrapper {
+      margin: 18px 0;
+      page-break-inside: avoid;
+    }
+
+    .code-block {
+      border: 1px solid #000;
+      background-color: #f8f9fa;
+      padding: 12px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 9.5pt;
+      line-height: 1.35;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .code-caption {
+      font-size: 10pt;
+      font-style: italic;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    /* References List */
+    ol.references-list {
+      padding-left: 25px;
+      margin-top: 15px;
+    }
+
+    ol.references-list li {
+      font-size: 11pt;
+      line-height: 1.45;
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. COVER PAGE -->
+  <div class="cover-page">
+    <div>
+      <div class="report-header-tag">A PROJECT REPORT ON</div>
+      <div class="report-title">${report.title}</div>
+      
+      <div class="report-subtext">Submitted in partial fulfillment of the requirements for the award of the degree of</div>
+      <div class="degree-title">${report.degreeName}</div>
+      <div class="report-subtext">in</div>
+      <div class="department-name">${report.department}</div>
+    </div>
+
+    <table class="meta-box">
+      <tr>
+        <td style="width: 50%; text-align: left;">
+          <strong>Submitted By:</strong><br>
+          ${report.studentName}<br>
+          Roll No: ${report.rollNumber}<br>
+          ${report.semester}
+        </td>
+        <td style="width: 50%; text-align: right;">
+          <strong>Under the Guidance of:</strong><br>
+          ${report.guideName}<br>
+          Department of ${report.department}
+        </td>
+      </tr>
+    </table>
+
+    <div class="college-block">
+      <div class="college-name">${report.collegeName}</div>
+      <div class="academic-session">Academic Session: ${report.academicYear}</div>
+    </div>
+  </div>
+
+  <!-- 2. CERTIFICATE OF AUTHENTICITY -->
+  <div class="certificate-container">
+    <h1 class="chapter-heading">Certificate</h1>
+    
+    <p>This is to certify that the project report titled <strong>"${report.title}"</strong> submitted by <strong>${report.studentName}</strong> (Roll No: ${report.rollNumber}) in partial fulfillment of the requirements for the award of <strong>${report.degreeName}</strong> in <strong>${report.department}</strong> at <strong>${report.collegeName}</strong> is an authentic and bonafide record of the project work carried out under my supervision during the academic year ${report.academicYear}.</p>
+
+    <p>To the best of my knowledge, the matter embodied in this report has not been submitted to any other University or Institute for the award of any degree or diploma.</p>
+
+    <div style="margin-top: 40px; font-size: 11pt;">
+      Place: ____________________<br>
+      Date: ____________________
+    </div>
+
+    <div class="signatures-row">
+      <div class="sig-box">
+        <strong>${report.guideName}</strong><br>
+        Project Supervisor / Guide<br>
+        Department of ${report.department}<br>
+        ${report.collegeName}
+      </div>
+      <div class="sig-box" style="text-align: right;">
+        <strong>${report.hodName}</strong><br>
+        Head of Department (HOD)<br>
+        Department of ${report.department}<br>
+        ${report.collegeName}
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CANDIDATE'S DECLARATION -->
+  <div class="page-break certificate-container">
+    <h1 class="chapter-heading">Candidate's Declaration</h1>
+    
+    <p>${report.declarationText || `I hereby declare that the work presented in this project report entitled "${report.title}" in partial fulfillment of the requirements for the award of the degree of ${report.degreeName} in ${report.department}, submitted to ${report.collegeName}, is an authentic record of my own research and experimental work carried out during the academic session ${report.academicYear} under the guidance of ${report.guideName}.`}</p>
+
+    <p>I further declare that the content, calculations, designs, and findings embodied in this project report have not been submitted for the award of any other degree or diploma in this or any other institution.</p>
+
+    <div style="margin-top: 50px; font-size: 11pt;">
+      Date: ____________________<br>
+      Place: ____________________
+    </div>
+
+    <div class="signatures-row" style="justify-content: flex-end;">
+      <div class="sig-box" style="text-align: right;">
+        <strong>${report.studentName}</strong><br>
+        Roll No: ${report.rollNumber}<br>
+        ${report.department}<br>
+        ${report.collegeName}
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ACKNOWLEDGEMENTS -->
+  <div class="page-break certificate-container">
+    <h1 class="chapter-heading">Acknowledgements</h1>
+    
+    <p>${report.acknowledgementText || `I would like to express my deepest sense of gratitude and respect to my project guide, ${report.guideName}, for their invaluable guidance, continuous encouragement, and constructive critique throughout the duration of this project work.`}</p>
+
+    <p>I am profoundly grateful to <strong>${report.hodName}</strong>, Head of Department of ${report.department}, for providing the necessary institutional facilities, laboratories, and academic support.</p>
+
+    <p>I also extend my sincere thanks to all faculty members, laboratory staff, and colleagues at <strong>${report.collegeName}</strong> who directly or indirectly aided in the successful completion of this project.</p>
+
+    <div class="signatures-row" style="justify-content: flex-end;">
+      <div class="sig-box" style="text-align: right;">
+        <strong>${report.studentName}</strong><br>
+        Roll No: ${report.rollNumber}
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. ABSTRACT -->
+  <div class="page-break certificate-container">
+    <h1 class="chapter-heading">Abstract</h1>
+    
+    <p>${report.abstractText}</p>
+
+    <p class="no-indent" style="margin-top: 25px;">
+      <strong>Keywords:</strong> <em>${report.keywords.join(', ')}</em>
+    </p>
+  </div>
+
+  <!-- 6. TABLE OF CONTENTS -->
+  <div class="page-break certificate-container">
+    <h1 class="chapter-heading">Table of Contents</h1>
+    
+    <table class="toc-table">
+      <tr>
+        <td><strong>Title Page</strong></td>
+        <td style="text-align: right;">—</td>
+      </tr>
+      <tr>
+        <td><strong>Certificate</strong></td>
+        <td style="text-align: right;">i</td>
+      </tr>
+      <tr>
+        <td><strong>Candidate's Declaration</strong></td>
+        <td style="text-align: right;">ii</td>
+      </tr>
+      <tr>
+        <td><strong>Acknowledgements</strong></td>
+        <td style="text-align: right;">iii</td>
+      </tr>
+      <tr>
+        <td><strong>Abstract</strong></td>
+        <td style="text-align: right;">iv</td>
+      </tr>
+      ${report.chapters.map((ch, idx) => `
+        <tr>
+          <td><strong>Chapter ${ch.number || idx + 1}: ${ch.title}</strong></td>
+          <td style="text-align: right;">${idx + 1}</td>
+        </tr>
+        ${ch.subsections?.map(sub => `
+          <tr>
+            <td style="padding-left: 20px; font-size: 11pt;">${sub.title}</td>
+            <td style="text-align: right; font-size: 11pt;">${idx + 1}</td>
+          </tr>
+        `).join('') || ''}
+      `).join('')}
+      <tr>
+        <td><strong>References & Bibliography</strong></td>
+        <td style="text-align: right;">${report.chapters.length + 1}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 7. MAIN CHAPTERS -->
+  ${report.chapters.map((ch, chIdx) => `
+    <div class="page-break">
+      <h1 class="chapter-heading">
+        Chapter ${ch.number || chIdx + 1}<br>
+        ${ch.title}
+      </h1>
+
+      <p>${ch.content}</p>
+
+      ${ch.subsections?.map(sub => `
+        <h2 class="section-heading">${sub.title}</h2>
+        <p>${sub.body}</p>
+
+        ${sub.formula ? `
+          <div class="equation-box">
+            <span class="equation-text">${sub.formula.equation}</span>
+            <span class="equation-num">(${sub.formula.number || `${ch.number || chIdx + 1}.1`})</span>
+          </div>
+        ` : ''}
+
+        ${sub.figure ? `
+          <div class="figure-container">
+            <div class="figure-box">${sub.figure.diagramText}</div>
+            <div class="figure-caption">${sub.figure.caption}</div>
+          </div>
+        ` : ''}
+
+        ${sub.table ? `
+          <div class="academic-table-wrapper">
+            ${sub.table.caption ? `<div class="table-caption">${sub.table.caption}</div>` : ''}
+            <table class="academic-table">
+              <thead>
+                <tr>
+                  ${sub.table.headers.map(h => `<th>${h}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${sub.table.rows.map(row => `
+                  <tr>
+                    ${row.map(cell => `<td>${cell}</td>`).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+
+        ${sub.code ? `
+          <div class="code-wrapper">
+            <div class="code-block">${sub.code.snippet}</div>
+            <div class="code-caption">Code Listing: ${sub.code.explanation}</div>
+          </div>
+        ` : ''}
+      `).join('') || ''}
+    </div>
+  `).join('')}
+
+  <!-- 8. REFERENCES & BIBLIOGRAPHY -->
+  <div class="page-break">
+    <h1 class="chapter-heading">References</h1>
+    
+    <ol class="references-list">
+      ${report.references.map(ref => `<li>${ref}</li>`).join('')}
+    </ol>
+  </div>
+
+</body>
+</html>`;
 }
 
 export const AiReportGeneratorAgent: React.FC = () => {
@@ -80,12 +628,10 @@ export const AiReportGeneratorAgent: React.FC = () => {
   const [academicYear, setAcademicYear] = useState('2025–2026');
   const [guideName, setGuideName] = useState('Dr. Rajesh Verma');
   const [degreeName, setDegreeName] = useState('Bachelor of Technology (B.Tech)');
-  const [reportFormatStyle, setReportFormatStyle] = useState<'standard' | 'ieee' | 'university'>('university');
 
   // Uploaded / Provided Materials
   const [sourceCodeSnippet, setSourceCodeSnippet] = useState('');
   const [presentationNotes, setPresentationNotes] = useState('');
-  const [datasetInfo, setDatasetInfo] = useState('');
   const [uploadedFileNames, setUploadedFileNames] = useState<string[]>([]);
   const [showAdvancedInputs, setShowAdvancedInputs] = useState(false);
 
@@ -94,31 +640,32 @@ export const AiReportGeneratorAgent: React.FC = () => {
   const [generationStep, setGenerationStep] = useState(0);
   const [generatedReport, setGeneratedReport] = useState<GeneratedProjectReport | null>(null);
   const [activeChapterId, setActiveChapterId] = useState<string>('cover');
+  const [viewMode, setViewMode] = useState<'paper-studio' | 'chapter-reader'>('paper-studio');
   const [isCopied, setIsCopied] = useState(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
 
   const generationSteps = [
-    'Analyzing provided project materials, dataset, and college guidelines...',
+    'Analyzing academic domain, objectives, and college format guidelines...',
     'Synthesizing formal Abstract, Problem Statement, and Project Objectives...',
     'Compiling comprehensive Literature Survey and comparative benchmarking...',
-    'Structuring System Architecture, Flowcharts, and Mathematical Models...',
-    'Generating Methodology, Implementation details, and Code Analysis (if applicable)...',
-    'Drafting Experimental Results, Performance Graphs, and Testing Tables...',
+    'Structuring System Architecture, Schematics, and Mathematical Models...',
+    'Generating Methodology, Implementation details, and Calculations/Code...',
+    'Drafting Experimental Results, Performance Benchmark Tables, and Testing...',
     'Assembling formal Certificate, Declaration, Acknowledgements, and References...',
-    'Applying academic margins, headers, footers, and page numbers...'
+    'Formatting academic margins, headers, footers, and page numbers...'
   ];
 
   const quickSamples = [
     {
-      title: 'Solar Water Heater Thermal Analysis (Mechanical / Non-Coding)',
+      title: 'Solar Water Heater Thermal Analysis (Mechanical / Thermal / Zero Code)',
       prompt: 'Design and Performance Evaluation of Flat-Plate Solar Water Heater using Thermosiphon Natural Circulation. Include heat transfer equations, copper absorber design, PUF insulation, experimental efficiency, and payback period.'
     },
     {
-      title: 'AI Crop Disease Detection using CNN & OpenCV (Software / AI)',
+      title: 'AI Crop Disease Detection using CNN & OpenCV (Software / Deep Learning / Code)',
       prompt: 'Deep Learning-based Automated Crop Disease Identification System using MobileNetV2 and OpenCV with leaf dataset preprocessing, real-time inference pipeline, confusion matrix, and accuracy analysis.'
     },
     {
-      title: 'Solar Energy Microgrid Integration & Supply Chain Economics (Energy / Economics)',
+      title: 'Renewable Solar Microgrid Integration & Supply Chain Economics (Energy / Economics / Zero Code)',
       prompt: 'Renewable Solar PV Microgrid Integration with Battery Energy Storage Systems (BESS) and Supply Chain Cost Modeling. Include power loss equations, LCOE comparative tables, and grid synchronization.'
     }
   ];
@@ -131,7 +678,6 @@ export const AiReportGeneratorAgent: React.FC = () => {
     }
   };
 
-  // Generate Report Synthesis
   const handleGenerateReport = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectTitle.trim()) {
@@ -152,43 +698,42 @@ export const AiReportGeneratorAgent: React.FC = () => {
           setGeneratedReport(synthesized);
           setActiveChapterId('cover');
           setIsGenerating(false);
-          addToast('Report Generated Successfully!', 'Complete college project report ready for review and download.', 'success');
+          addToast('Report Ready!', 'Pure academic college project report synthesized successfully.', 'success');
           return prev;
         }
       });
-    }, 400);
+    }, 380);
   };
 
-  // Synthesize complete academic report based on domain & inputs
   const synthesizeReportData = (): GeneratedProjectReport => {
     const lower = `${projectTitle} ${description} ${sourceCodeSnippet}`.toLowerCase();
     
-    // Check if topic is non-coding
-    const isSolarWaterHeater = /solar water heater|water heater|flat[- ]plate|heat exchanger|thermal analysis/i.test(lower);
-    const isMicrogrid = /microgrid|solar.*energy|renewable energy|power grid|supply chain economics/i.test(lower);
-    const isSoftwareAi = /crop|disease|vision|opencv|cnn|deep learning|machine learning|python|react|blockchain|smart contract|web/i.test(lower);
+    // Intelligent Domain Classifier
+    const isSolarWaterHeater = /solar water heater|water heater|flat[- ]plate|heat exchanger|thermal analysis|thermosiphon/i.test(lower);
+    const isMicrogrid = /microgrid|solar.*energy|renewable energy|power grid|supply chain economics|lcoe|bess/i.test(lower);
+    const isSoftwareAi = /crop|disease|vision|opencv|cnn|deep learning|machine learning|python|react|blockchain|smart contract|web|java|node/i.test(lower);
 
     let abstract = '';
     let keywords: string[] = [];
     const chapters: ReportChapter[] = [];
 
     // =========================================================================
-    // REPORT DOMAIN 1: SOLAR WATER HEATER / MECHANICAL THERMAL
+    // DOMAIN 1: SOLAR WATER HEATER (MECHANICAL / THERMAL -> ZERO CODE)
     // =========================================================================
     if (isSolarWaterHeater) {
-      keywords = ['Solar Thermal Energy', 'Flat-Plate Collector', 'Thermosiphon Circulation', 'Heat Removal Factor', 'Hottel-Whillier-Bliss'];
-      abstract = `This project presents the design, thermal analysis, and experimental evaluation of a high-efficiency flat-plate solar water heater operating on the natural thermosiphon principle. Conventional domestic water heating accounts for significant electricity consumption, creating an urgent demand for zero-emission solar thermal alternatives. In this study, an engineered collector utilizing high-conductivity copper riser tubes coated with black chrome selective absorber surface and low-iron tempered glass glazing was modeled and fabricated. Thermal performance was analyzed using the governing Hottel-Whillier-Bliss formulation. Experimental trials yielded a peak water temperature of 68.5°C at an incident solar radiation of 950 W/m² with an average daily thermal efficiency of 64.2%. Techno-economic assessment demonstrates an annual electricity displacement of ~1,800 kWh and a financial payback period of 2.6 years, proving high viability for sustainable domestic applications.`;
+      keywords = ['Solar Thermal Energy', 'Flat-Plate Collector', 'Thermosiphon Natural Circulation', 'Heat Removal Factor', 'Hottel-Whillier-Bliss'];
+      abstract = `This project presents the design, thermal modeling, and experimental performance evaluation of a high-efficiency flat-plate solar water heater operating on the natural thermosiphon principle. Domestic water heating represents over 25% of residential electrical consumption, creating an imperative for zero-emission solar thermal alternatives. In this research, an engineered collector utilizing high-conductivity copper riser tubes coated with black chrome selective absorber surface and low-iron tempered glass glazing was modeled and fabricated. Thermal performance was analyzed using the governing Hottel-Whillier-Bliss formulation. Experimental trials yielded a peak water temperature of 68.5°C at an incident solar radiation of 950 W/m² with an average daily thermal efficiency of 64.2%. Techno-economic assessment demonstrates an annual electricity displacement of ~1,800 kWh and a financial payback period of 2.6 years, proving high viability for domestic sustainable heating.`;
 
       chapters.push(
         {
           id: 'chap1',
           number: '1',
           title: 'Introduction & Background',
-          content: `With escalating global energy demands and fossil fuel depletion, harnessing solar thermal energy is vital for domestic and industrial decarbonization. Water heating accounts for over 25% of household electricity consumption in urban and semi-urban sectors. Solar water heating systems convert direct and diffuse solar irradiance into useful thermal energy without electrical consumption.`,
+          content: `With escalating global energy demands and fossil fuel depletion, harnessing solar thermal energy is vital for domestic and industrial decarbonization. Water heating accounts for significant electrical consumption in urban and semi-urban residential sectors. Solar water heating systems convert direct and diffuse solar irradiance into useful thermal energy without grid electricity.`,
           subsections: [
             {
               title: '1.1 Motivation & Context',
-              body: 'Conventional electric geysers impose severe peak-hour electrical grid stress. The motivation of this research is to design an optimized, low-cost, and maintenance-free thermosiphon flat-plate solar water heater.'
+              body: 'Conventional electric geysers impose severe peak-hour electrical grid stress. The primary motivation of this project is to develop an optimized, low-cost, and maintenance-free thermosiphon flat-plate solar water heater tailored for domestic applications.'
             },
             {
               title: '1.2 Scope of the Study',
@@ -200,14 +745,14 @@ export const AiReportGeneratorAgent: React.FC = () => {
           id: 'chap2',
           number: '2',
           title: 'Problem Statement & Objectives',
-          content: 'Modern solar thermal systems often suffer from high thermal radiation losses, nighttime reverse thermosiphoning, and high fabrication costs. This project addresses these bottlenecks.',
+          content: 'Modern solar thermal systems often suffer from high thermal radiation losses, nighttime reverse thermosiphoning, and high fabrication costs.',
           subsections: [
             {
               title: '2.1 Core Problem Statement',
               body: 'Legacy solar collectors exhibit thermal efficiencies below 45% due to improper insulation and poor absorptance-to-emittance ratios of conventional black paint.'
             },
             {
-              title: '2.2 Project Objectives',
+              title: '2.2 Measurable Project Objectives',
               body: '1. Design an optimized flat-plate collector with selective black chrome coating.\n2. Model the natural thermosiphon circulation loop.\n3. Compute useful heat gain using Hottel-Whillier-Bliss equations.\n4. Validate experimental daily thermal efficiency above 60% with a sub-3-year payback.'
             }
           ]
@@ -219,9 +764,10 @@ export const AiReportGeneratorAgent: React.FC = () => {
           content: 'Extensive literature on flat-plate collectors and solar thermodynamics was reviewed to establish benchmark parameters.',
           subsections: [
             {
-              title: '3.1 Historical Development & Survey',
+              title: '3.1 Historical Survey & Comparative Benchmarking',
               body: 'Duffie and Beckman established the baseline mathematical formulation for collector heat loss. Subsequent studies by Kalogirou demonstrated that selective surfaces significantly suppress radiative re-emission.',
               table: {
+                caption: 'Table 3.1: Comparative Performance Summary of Solar Collector Studies',
                 headers: ['Author / Study', 'Collector Type', 'Working Fluid', 'Peak Thermal Efficiency'],
                 rows: [
                   ['Duffie & Beckman (2013)', 'Standard Flat-Plate', 'Water', '48.5%'],
@@ -241,6 +787,26 @@ export const AiReportGeneratorAgent: React.FC = () => {
             {
               title: '4.1 Thermosiphon Circulation Mechanism',
               body: 'Solar radiation penetrates the 4mm low-iron tempered glass glazing and is absorbed by the copper plate. Heat is transferred by conduction to water in the riser tubes. As water temperature increases, its density decreases, causing it to rise naturally into the upper storage tank while cooler, denser water descends.'
+            },
+            {
+              title: '4.2 Thermal Circulation Schematic',
+              body: 'The fluid loop maintains steady circulation proportional to incident solar radiation.',
+              figure: {
+                caption: 'Figure 4.1: Thermosiphon Natural Circulation Flow Diagram',
+                diagramText: `[ Solar Radiation (Gt) ] ===> [ Low-Iron Glass Glazing (tau = 0.91) ]
+                                          |
+                                          v
+                              [ Selective Absorber Plate (alpha = 0.95) ]
+                                          | (Conduction)
+                                          v
+                              [ Copper Riser Tubes (9 Nos) ]
+                                          | (Buoyancy Lift: Hot Water)
+                                          v
+                              [ Insulated Storage Tank (100L SS304) ]
+                                          | (Downcomer Pipe: Cold Water)
+                                          v
+                              [ Collector Inlet Header ]`
+              }
             }
           ]
         },
@@ -251,7 +817,7 @@ export const AiReportGeneratorAgent: React.FC = () => {
           content: 'High-grade materials were selected to maximize solar absorption, minimize heat loss, and resist corrosion.',
           subsections: [
             {
-              title: '5.1 Component Breakdown',
+              title: '5.1 Component Breakdown & Properties',
               body: '• Absorber Plate: Copper sheet (0.8mm) with black chrome selective coating (alpha = 0.95, epsilon = 0.10).\n• Glazing: Low-iron tempered glass (4mm, transmittance tau = 0.91).\n• Insulation: Polyurethane foam (PUF 50mm, k = 0.024 W/mK).\n• Storage Tank: Stainless Steel SS304 inner tank (100L capacity).'
             }
           ]
@@ -263,9 +829,20 @@ export const AiReportGeneratorAgent: React.FC = () => {
           content: 'The thermal performance was formulated using fundamental heat transfer and energy balance relations.',
           subsections: [
             {
-              title: '6.1 Hottel-Whillier-Bliss Useful Heat Equation',
-              body: 'Useful heat gain Q_u is given by:\n\nQ_u = A_c * F_R * [S - U_L * (T_in - T_a)]\n\nWhere:\n• A_c: Gross collector area (2.0 m²)\n• F_R: Heat removal factor (0.82)\n• S: Absorbed solar radiation = (tau * alpha) * G_t\n• U_L: Overall heat loss coefficient (4.1 W/m²·K)\n• T_in: Fluid inlet temperature (°C)\n• T_a: Ambient air temperature (°C)',
-              formula: 'eta = Q_u / (A_c * G_t) = F_R * (tau * alpha) - F_R * U_L * [(T_in - T_a) / G_t]'
+              title: '6.1 Hottel-Whillier-Bliss Useful Heat Formulation',
+              body: 'The useful heat gain Qu extracted by the collector fluid is governed by the Hottel-Whillier-Bliss equation:',
+              formula: {
+                equation: 'Qu = Ac * FR * [ S - UL * (Tin - Ta) ]',
+                number: '6.1'
+              }
+            },
+            {
+              title: '6.2 Collector Instantaneous Efficiency',
+              body: 'Instantaneous thermal efficiency eta is expressed as:',
+              formula: {
+                equation: 'eta = Qu / (Ac * Gt) = FR * (tau * alpha) - FR * UL * [ (Tin - Ta) / Gt ]',
+                number: '6.2'
+              }
             }
           ]
         },
@@ -276,7 +853,7 @@ export const AiReportGeneratorAgent: React.FC = () => {
           content: 'Outdoor testing was conducted in compliance with standard test procedures across varying solar irradiance cycles.',
           subsections: [
             {
-              title: '7.1 Testing Observations',
+              title: '7.1 Testing Observations & Data Acquisition',
               body: 'Thermocouples were installed at collector inlet, outlet, absorber plate center, and storage tank top and bottom. Data was logged at 15-minute intervals from 08:00 to 17:00.'
             }
           ]
@@ -289,9 +866,10 @@ export const AiReportGeneratorAgent: React.FC = () => {
           subsections: [
             {
               title: '8.1 Benchmark Metric Summary',
-              body: '• Peak Water Temperature: 68.5°C\n• Average Daily Thermal Efficiency: 64.2%\n• Overall Heat Loss Coefficient (U_L): 4.1 W/m²·K\n• Total Useful Heat Gain (Daily): 18.4 MJ',
+              body: '• Peak Water Temperature: 68.5°C\n• Average Daily Thermal Efficiency: 64.2%\n• Overall Heat Loss Coefficient (UL): 4.1 W/m²·K\n• Total Useful Heat Gain (Daily): 18.4 MJ',
               table: {
-                headers: ['Time of Day', 'Solar Radiation (W/m²)', 'Ambient Temp (°C)', 'Tank Water Temp (°C)', 'Efficiency (%)'],
+                caption: 'Table 8.1: Diurnal Solar Radiation, Temperature & Efficiency Data',
+                headers: ['Time (Hrs)', 'Solar Radiation (W/m²)', 'Ambient Temp (°C)', 'Tank Water Temp (°C)', 'Thermal Efficiency (%)'],
                 rows: [
                   ['09:00', '520', '24.5', '28.0', '56.4%'],
                   ['11:00', '810', '28.0', '48.5', '62.8%'],
@@ -325,7 +903,7 @@ export const AiReportGeneratorAgent: React.FC = () => {
       );
     }
     // =========================================================================
-    // REPORT DOMAIN 2: SOFTWARE / AI / ML / WEB (CODING WITH EXPLANATION)
+    // DOMAIN 2: AI / SOFTWARE / ML (CODING WITH EXPLANATION)
     // =========================================================================
     else if (isSoftwareAi) {
       keywords = ['Computer Vision', 'Deep Learning', 'Convolutional Neural Networks', 'OpenCV', 'Automated Diagnostic Pipeline', 'Precision Agriculture'];
@@ -370,6 +948,7 @@ export const AiReportGeneratorAgent: React.FC = () => {
               title: '3.1 Comparative Analysis Matrix',
               body: 'Prior systems utilizing handcrafted texture descriptors (GLCM, SIFT) suffered from high error rates under natural shadows.',
               table: {
+                caption: 'Table 3.1: Deep Learning Architecture Performance Comparison',
                 headers: ['Model Architecture', 'Input Resolution', 'Parameters (Millions)', 'Accuracy (%)', 'Inference Time (CPU)'],
                 rows: [
                   ['VGG-16 Baseline', '224x224', '138.4 M', '89.2%', '650 ms'],
@@ -389,6 +968,26 @@ export const AiReportGeneratorAgent: React.FC = () => {
             {
               title: '4.1 Preprocessing Pipeline',
               body: '1. Ingestion: Loading raw RGB frames via OpenCV.\n2. Resizing: Bilinear interpolation resizing to 224×224 pixels.\n3. Normalization: Pixel intensity scaled to [0.0, 1.0].\n4. Augmentation: Random rotations, flips, and zoom to prevent overfitting.'
+            },
+            {
+              title: '4.2 Architectural Data Flow',
+              body: 'The modular data pipeline is illustrated below:',
+              figure: {
+                caption: 'Figure 4.1: End-to-End Deep Learning Classification Pipeline',
+                diagramText: `[ Raw Leaf Image Input ] ===> [ OpenCV Preprocessing & Normalization ]
+                                                |
+                                                v
+                              [ Feature Extraction: MobileNetV2 Backbone ]
+                                                |
+                                                v
+                              [ Global Average Pooling 2D Layer ]
+                                                |
+                                                v
+                              [ Dense Dropout Layer (Rate = 0.3) ]
+                                                |
+                                                v
+                              [ Softmax Multi-Class Output Layer ] ===> [ Prediction JSON ]`
+              }
             }
           ]
         },
@@ -400,7 +999,7 @@ export const AiReportGeneratorAgent: React.FC = () => {
           subsections: [
             {
               title: '5.1 Architecture Blueprint',
-              body: '[Image Acquisition] -> [OpenCV Normalization] -> [MobileNetV2 Feature Extractor] -> [Softmax Dense Layer] -> [JSON Diagnostic Response]'
+              body: 'The classification service operates as a decoupled micro-service with RESTful JSON endpoints.'
             }
           ]
         },
@@ -458,6 +1057,7 @@ class PlantDiseaseClassifier:
               title: '7.1 Empirical Metrics',
               body: '• Overall Test Accuracy: 96.4%\n• Precision: 96.1%\n• Recall (Sensitivity): 96.8%\n• F1-Score: 96.4%\n• CPU Execution Latency: 165ms',
               table: {
+                caption: 'Table 7.1: Detailed Per-Class Evaluation Metrics',
                 headers: ['Disease Class', 'Precision (%)', 'Recall (%)', 'F1-Score (%)', 'Total Test Samples'],
                 rows: [
                   ['Healthy Leaf', '98.2%', '97.5%', '97.8%', '225'],
@@ -490,10 +1090,6 @@ class PlantDiseaseClassifier:
             {
               title: '9.1 Advantages & Impact',
               body: '• Completely open-source stack (Python, TensorFlow, OpenCV).\n• Lightweight footprint (< 15MB model size) ready for smartphone deployment.\n• Instant diagnostic feedback for farmers without Internet connectivity.'
-            },
-            {
-              title: '9.2 Future Scope',
-              body: 'Upcoming versions will incorporate multi-spectral drone imagery and automated fertilizer dosage recommendation systems.'
             }
           ]
         },
@@ -507,7 +1103,7 @@ class PlantDiseaseClassifier:
       );
     }
     // =========================================================================
-    // REPORT DOMAIN 3: GENERAL / ENERGY / MANAGEMENT / ENGINEERING
+    // DOMAIN 3: GENERAL / ENERGY / MANAGEMENT / ELECTRICAL (ZERO CODE)
     // =========================================================================
     else {
       keywords = ['Renewable Energy', 'Microgrid Architecture', 'Energy Storage Systems (BESS)', 'Techno-Economic Modeling', 'Power Quality'];
@@ -546,7 +1142,18 @@ class PlantDiseaseClassifier:
           subsections: [
             {
               title: '3.1 Electrical Power Flow Blueprint',
-              body: '[Solar PV Array (DC)] -> [MPPT Converter] -> [DC Common Bus] <-> [LiFePO4 BESS Storage]\n                                                 |\n                                                 v\n[Utility Grid Interface] <------------------ [Bidirectional Inverter] -> [AC Campus Loads]'
+              body: 'The electrical topology connects DC generation arrays with storage and AC grid buses.',
+              figure: {
+                caption: 'Figure 3.1: Microgrid Electrical Distribution Architecture',
+                diagramText: `[ Solar PV Array (DC) ] ===> [ MPPT DC/DC Converter ] ===> [ DC Common Bus (400V) ]
+                                                                             ^
+                                                                             | (Bidirectional)
+                                                                             v
+                                                                 [ LiFePO4 BESS Storage ]
+                                                                             |
+                                                                             v
+[ Utility Grid ] <=================== [ Bidirectional Grid-Tied Inverter ] ===> [ AC Loads ]`
+              }
             }
           ]
         },
@@ -560,6 +1167,7 @@ class PlantDiseaseClassifier:
               title: '4.1 Component Economic Breakdown',
               body: 'Solar panels account for 38% and battery storage units for 32% of total capital expenditure.',
               table: {
+                caption: 'Table 4.1: Component Capital Expenditure & Lifespan Matrix',
                 headers: ['Component Category', 'CapEx Share (%)', 'Lifespan (Years)', 'Supply Chain Risk Level'],
                 rows: [
                   ['Solar PV Modules', '38%', '25 Years', 'Moderate (Silicon Supply)'],
@@ -579,8 +1187,11 @@ class PlantDiseaseClassifier:
           subsections: [
             {
               title: '5.1 Energy Balance Formulations',
-              body: 'Net generated power balance:\n\nP_net(t) = P_gen(t) - P_load(t) - P_loss(t)\n\nConduction losses: P_loss = I² * R_line\n\nBattery State of Charge:\nSoC(t+1) = SoC(t) + [eta_charge * P_charge * dt] / C_batt',
-              formula: 'eta_roundtrip = E_discharge / E_charge > 88%'
+              body: 'Net generated power balance and battery state transitions are formulated as follows:',
+              formula: {
+                equation: 'P_net(t) = P_gen(t) - P_load(t) - (I^2 * R_line)',
+                number: '5.1'
+              }
             }
           ]
         },
@@ -619,6 +1230,8 @@ class PlantDiseaseClassifier:
       degreeName,
       abstractText: abstract,
       keywords,
+      declarationText: `I hereby declare that the work presented in this project report entitled "${projectTitle}" in partial fulfillment of the requirements for the award of the degree of ${degreeName} in ${department}, submitted to ${collegeName}, is an authentic record of my own research and project work carried out during the academic session ${academicYear} under the supervision of ${guideName}.`,
+      acknowledgementText: `I would like to express my deepest sense of gratitude and respect to my project guide, ${guideName}, for their invaluable mentorship, continuous encouragement, and constructive feedback throughout the duration of this project work. I am also grateful to Prof. S. K. Mukherjee (HOD) and ${collegeName} for providing institutional support.`,
       chapters,
       references: [
         'IEEE Transactions on Sustainable Energy, Vol. 14, No. 2, pp. 845–856, 2023.',
@@ -630,95 +1243,55 @@ class PlantDiseaseClassifier:
     };
   };
 
-  // Download PDF using standard browser print engine with dedicated styling
+  /**
+   * Pure Academic PDF Downloader
+   * Creates an isolated hidden iframe with ONLY the academic report and triggers print.
+   * Zero browser UI, zero platform branding, starts directly with Cover Page.
+   */
   const handleDownloadPdf = () => {
-    window.print();
+    if (!generatedReport) return;
+
+    const html = generatePureAcademicHtml(generatedReport);
+    const printFrame = document.createElement('iframe');
+    printFrame.style.position = 'fixed';
+    printFrame.style.right = '0';
+    printFrame.style.bottom = '0';
+    printFrame.style.width = '0';
+    printFrame.style.height = '0';
+    printFrame.style.border = '0';
+    document.body.appendChild(printFrame);
+
+    const frameDoc = printFrame.contentWindow?.document;
+    if (!frameDoc) return;
+
+    frameDoc.open();
+    frameDoc.write(html);
+    frameDoc.close();
+
+    setTimeout(() => {
+      printFrame.contentWindow?.focus();
+      printFrame.contentWindow?.print();
+      setTimeout(() => {
+        try {
+          document.body.removeChild(printFrame);
+        } catch {
+          // Frame already removed
+        }
+      }, 1500);
+    }, 400);
+
+    addToast('Opening PDF Print Engine', 'Academic document prepared with Cover Page, Certificate, and standard margins.', 'info');
   };
 
-  // Download DOCX / Word formatted document
+  /**
+   * Pure Academic Word (.DOCX / .DOC) Downloader
+   * Generates a pure Word XML document with formal cover page, certificate, table of contents, and chapters.
+   */
   const handleDownloadDocx = () => {
     if (!generatedReport) return;
 
-    const reportHtml = `<!DOCTYPE html>
-<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head>
-  <meta charset="utf-8">
-  <title>${generatedReport.title}</title>
-  <style>
-    body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: #000000; margin: 1in; }
-    h1 { font-size: 18pt; text-align: center; text-transform: uppercase; margin-top: 24pt; page-break-before: always; }
-    h2 { font-size: 14pt; margin-top: 18pt; border-bottom: 1pt solid #000000; padding-bottom: 4pt; }
-    h3 { font-size: 12pt; margin-top: 12pt; }
-    p { text-align: justify; text-justify: inter-word; margin-bottom: 10pt; }
-    .cover { text-align: center; page-break-after: always; padding-top: 2in; }
-    .cover h1 { font-size: 22pt; margin-bottom: 30pt; }
-    .meta-box { margin-top: 40pt; font-size: 13pt; line-height: 2; }
-    table { width: 100%; border-collapse: collapse; margin: 14pt 0; }
-    th, td { border: 1pt solid #000000; padding: 6pt 10pt; text-align: left; font-size: 11pt; }
-    th { background-color: #f2f2f2; }
-    pre { background: #f8f9fa; border: 1pt solid #ccc; padding: 10pt; font-family: Courier New, monospace; font-size: 10pt; }
-    .cert-box { border: 2pt solid #000; padding: 30pt; margin: 20pt 0; page-break-after: always; }
-    .signatures { margin-top: 60pt; display: flex; justify-content: space-between; }
-  </style>
-</head>
-<body>
-  <div class="cover">
-    <h1>${generatedReport.title}</h1>
-    <p style="font-size: 14pt; margin-top: 20pt;">A PROJECT REPORT</p>
-    <p style="font-size: 12pt;">Submitted in partial fulfillment of the requirements for the award of degree of</p>
-    <p style="font-size: 14pt; font-weight: bold;">${generatedReport.degreeName}</p>
-    <p style="font-size: 12pt;">in</p>
-    <p style="font-size: 13pt; font-weight: bold;">${generatedReport.department}</p>
-    <div class="meta-box">
-      <p>Submitted by:<br><strong>${generatedReport.studentName}</strong> (Roll No: ${generatedReport.rollNumber})</p>
-      <p>Under the guidance of:<br><strong>${generatedReport.guideName}</strong></p>
-      <p style="margin-top: 30pt;"><strong>${generatedReport.collegeName}</strong><br>Academic Session: ${generatedReport.academicYear}</p>
-    </div>
-  </div>
-
-  <div class="cert-box">
-    <h2 style="text-align: center; border: none;">CERTIFICATE OF AUTHENTICITY</h2>
-    <p>This is to certify that the project report titled <strong>"${generatedReport.title}"</strong> submitted by <strong>${generatedReport.studentName}</strong> (Roll No: ${generatedReport.rollNumber}) in partial fulfillment of the requirements for the award of <strong>${generatedReport.degreeName}</strong> in <strong>${generatedReport.department}</strong> at <strong>${generatedReport.collegeName}</strong> is an authentic record of bonafide project work carried out during the academic year ${generatedReport.academicYear}.</p>
-    <p style="margin-top: 40pt;">Date: ____________________</p>
-    <table style="border: none; margin-top: 60pt;">
-      <tr style="border: none;">
-        <td style="border: none; width: 50%;">_______________________<br><strong>${generatedReport.guideName}</strong><br>Project Supervisor / Guide</td>
-        <td style="border: none; width: 50%; text-align: right;">_______________________<br><strong>${generatedReport.hodName}</strong><br>Head of Department (HOD)</td>
-      </tr>
-    </table>
-  </div>
-
-  <h1>ABSTRACT</h1>
-  <p>${generatedReport.abstractText}</p>
-  <p><strong>Keywords:</strong> ${generatedReport.keywords.join(', ')}</p>
-
-  ${generatedReport.chapters.map(ch => `
-    <h1>Chapter ${ch.number || ''}: ${ch.title}</h1>
-    <p>${ch.content}</p>
-    ${ch.subsections?.map(sub => `
-      <h2>${sub.title}</h2>
-      <p>${sub.body}</p>
-      ${sub.table ? `
-        <table>
-          <thead><tr>${sub.table.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-          <tbody>${sub.table.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
-        </table>
-      ` : ''}
-      ${sub.code ? `
-        <pre><code>${sub.code.snippet}</code></pre>
-        <p><em>Code Logic: ${sub.code.explanation}</em></p>
-      ` : ''}
-    `).join('') || ''}
-  `).join('')}
-
-  <h1>REFERENCES & BIBLIOGRAPHY</h1>
-  <ol>
-    ${generatedReport.references.map(ref => `<li>${ref}</li>`).join('')}
-  </ol>
-</body>
-</html>`;
-
-    const blob = new Blob([reportHtml], { type: 'application/msword;charset=utf-8' });
+    const html = generatePureAcademicHtml(generatedReport);
+    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -727,7 +1300,7 @@ class PlantDiseaseClassifier:
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    addToast('Report Downloaded (.DOCX)', 'Academic Word report saved with cover page, certificate, and references.', 'success');
+    addToast('Report Downloaded (.DOC)', 'Pure academic Word document saved. Opens in MS Word and Google Docs.', 'success');
   };
 
   const handleCopyMarkdown = () => {
@@ -792,7 +1365,7 @@ class PlantDiseaseClassifier:
           </button>
         </div>
 
-        {/* Form Workspace (When no report is currently generated) */}
+        {/* Input Form Workspace */}
         {!generatedReport && (
           <form onSubmit={handleGenerateReport} className="space-y-6">
             <div className="rounded-3xl glass-panel border border-[var(--border-color)] p-6 sm:p-8 space-y-6 shadow-2xl bg-gradient-to-b from-[var(--bg-surface)] to-[var(--bg-surface)]/90">
@@ -803,7 +1376,7 @@ class PlantDiseaseClassifier:
                   <span>Enter Project Information & Attach Materials</span>
                 </div>
                 <span className="text-[11px] font-mono text-emerald-500 font-bold">
-                  Fast Synthesis (~5 Mins Target) • Export PDF & DOCX
+                  Pure Academic Output • Download PDF & Word DOCX
                 </span>
               </div>
 
@@ -818,7 +1391,7 @@ class PlantDiseaseClassifier:
                     required
                     value={projectTitle}
                     onChange={e => setProjectTitle(e.target.value)}
-                    placeholder="e.g. AI-based Crop Disease Detection using CNN / Design of Flat-Plate Solar Water Heater / Microgrid Supply Chain Modeling"
+                    placeholder="e.g. Design and Analysis of Flat-Plate Solar Water Heater / AI-based Crop Disease Detection using CNN"
                     className="w-full px-4 py-3 text-xs sm:text-sm rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)]/80 text-[var(--text-primary)] focus-ring font-medium"
                   />
                 </div>
@@ -837,11 +1410,11 @@ class PlantDiseaseClassifier:
                 </div>
               </div>
 
-              {/* Academic Details (Cover Page & Certificate) */}
+              {/* Academic Metadata */}
               <div className="pt-4 border-t border-[var(--border-color)] space-y-3">
                 <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-1.5">
                   <GraduationCap className="w-4 h-4 text-blue-500" />
-                  <span>Student & College Metadata (For Cover Page & Certificate)</span>
+                  <span>Institutional Metadata (For Cover Page & Certificate)</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -905,7 +1478,7 @@ class PlantDiseaseClassifier:
                 </div>
               </div>
 
-              {/* Attach Materials: Files, Code, PPT Notes */}
+              {/* Attach Materials */}
               <div className="pt-4 border-t border-[var(--border-color)] space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-1.5">
@@ -918,11 +1491,10 @@ class PlantDiseaseClassifier:
                     className="text-xs font-semibold text-blue-500 hover:text-blue-400 flex items-center gap-1"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5" />
-                    <span>{showAdvancedInputs ? 'Hide Text Boxes' : 'Paste Code / Dataset Text'}</span>
+                    <span>{showAdvancedInputs ? 'Hide Text Boxes' : 'Paste Code / Notes Text'}</span>
                   </button>
                 </div>
 
-                {/* File Upload Box */}
                 <div className="p-4 rounded-2xl border-2 border-dashed border-[var(--border-color)] hover:border-blue-500/50 bg-[var(--bg-primary)]/40 text-center transition-colors">
                   <label className="cursor-pointer block space-y-2">
                     <Upload className="w-6 h-6 mx-auto text-blue-500" />
@@ -952,7 +1524,6 @@ class PlantDiseaseClassifier:
                   )}
                 </div>
 
-                {/* Optional Text Paste Boxes */}
                 {showAdvancedInputs && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 animate-in fade-in duration-200">
                     <div>
@@ -983,7 +1554,7 @@ class PlantDiseaseClassifier:
                 )}
               </div>
 
-              {/* Quick Inspiration Chips */}
+              {/* Sample Topic Buttons */}
               <div className="pt-3 border-t border-[var(--border-color)] space-y-2">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1">
                   <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
@@ -1007,7 +1578,7 @@ class PlantDiseaseClassifier:
                 </div>
               </div>
 
-              {/* Submit CTA */}
+              {/* Submit Button */}
               <div className="pt-4 border-t border-[var(--border-color)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="text-xs text-[var(--text-muted)] flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -1038,7 +1609,7 @@ class PlantDiseaseClassifier:
           </form>
         )}
 
-        {/* Generation Progress Indicator */}
+        {/* Progress Modal */}
         {isGenerating && (
           <div className="p-8 rounded-3xl glass-panel border border-blue-500/30 bg-blue-500/5 space-y-5 text-center max-w-2xl mx-auto shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
@@ -1063,11 +1634,11 @@ class PlantDiseaseClassifier:
           </div>
         )}
 
-        {/* Generated Report Studio & Viewer */}
+        {/* Report Viewing & Download Studio */}
         {generatedReport && (
           <div className="space-y-6 animate-in fade-in duration-200">
             
-            {/* Toolbar */}
+            {/* Top Studio Control Bar */}
             <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-[var(--border-color)] flex flex-wrap items-center justify-between gap-4 shadow-xl bg-[var(--bg-surface)]">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500 font-mono">
@@ -1079,28 +1650,28 @@ class PlantDiseaseClassifier:
               </div>
 
               <div className="flex items-center gap-2 flex-wrap">
-                {/* Download PDF */}
+                {/* Download PDF (Pure Academic Document) */}
                 <button
                   onClick={handleDownloadPdf}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 flex items-center gap-1.5 transition-all"
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 flex items-center gap-1.5 transition-all hover:scale-105"
                 >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Download PDF</span>
+                  <Printer className="w-4 h-4" />
+                  <span>Download PDF (Pure Report)</span>
                 </button>
 
-                {/* Download DOCX */}
+                {/* Download DOCX (Pure Word File) */}
                 <button
                   onClick={handleDownloadDocx}
-                  className="px-4 py-2 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center gap-1.5 transition-all"
+                  className="px-4 py-2.5 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center gap-1.5 transition-all hover:scale-105"
                 >
-                  <FileDown className="w-3.5 h-3.5" />
-                  <span>Download DOCX</span>
+                  <FileDown className="w-4 h-4" />
+                  <span>Download Word DOCX</span>
                 </button>
 
                 {/* Copy Markdown */}
                 <button
                   onClick={handleCopyMarkdown}
-                  className="px-3.5 py-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-secondary)] flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-secondary)] flex items-center gap-1.5 transition-colors"
                 >
                   {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{isCopied ? 'Copied' : 'Copy'}</span>
@@ -1109,76 +1680,112 @@ class PlantDiseaseClassifier:
                 {/* New Report */}
                 <button
                   onClick={() => setGeneratedReport(null)}
-                  className="px-3 py-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  className="px-3 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   New Report
                 </button>
               </div>
             </div>
 
-            {/* Main Stage: Sidebar Table of Contents (4 cols) & Document Reader (8 cols) */}
+            {/* Document Stage: Table of Contents (3 cols) & Pure Academic Paper Canvas (9 cols) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               
               {/* Left Sidebar Table of Contents */}
-              <div className="lg:col-span-4 space-y-2 max-h-[700px] overflow-y-auto pr-1">
+              <div className="lg:col-span-3 space-y-2 max-h-[750px] overflow-y-auto pr-1">
                 <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2 px-1">
-                  Table of Contents
+                  Report Sections
                 </div>
 
                 <button
                   onClick={() => setActiveChapterId('cover')}
-                  className={`w-full p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
                     activeChapterId === 'cover'
                       ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
                       : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
                   }`}
                 >
-                  <span>Title & Cover Page</span>
+                  <span>1. Title & Cover Page</span>
                   <span className="font-mono text-[10px] opacity-70">Front</span>
                 </button>
 
                 <button
                   onClick={() => setActiveChapterId('certificate')}
-                  className={`w-full p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
                     activeChapterId === 'certificate'
                       ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
                       : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
                   }`}
                 >
-                  <span>Certificate & Declaration</span>
+                  <span>2. Certificate of Authenticity</span>
                   <span className="font-mono text-[10px] opacity-70">i</span>
                 </button>
 
                 <button
+                  onClick={() => setActiveChapterId('declaration')}
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                    activeChapterId === 'declaration'
+                      ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
+                      : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
+                  }`}
+                >
+                  <span>3. Candidate's Declaration</span>
+                  <span className="font-mono text-[10px] opacity-70">ii</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveChapterId('acknowledgement')}
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                    activeChapterId === 'acknowledgement'
+                      ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
+                      : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
+                  }`}
+                >
+                  <span>4. Acknowledgements</span>
+                  <span className="font-mono text-[10px] opacity-70">iii</span>
+                </button>
+
+                <button
                   onClick={() => setActiveChapterId('abstract')}
-                  className={`w-full p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
                     activeChapterId === 'abstract'
                       ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
                       : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
                   }`}
                 >
-                  <span>Abstract & Keywords</span>
-                  <span className="font-mono text-[10px] opacity-70">ii</span>
+                  <span>5. Abstract & Keywords</span>
+                  <span className="font-mono text-[10px] opacity-70">iv</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveChapterId('toc')}
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                    activeChapterId === 'toc'
+                      ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
+                      : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
+                  }`}
+                >
+                  <span>6. Table of Contents</span>
+                  <span className="font-mono text-[10px] opacity-70">v</span>
                 </button>
 
                 {generatedReport.chapters.map((ch, idx) => (
                   <button
                     key={ch.id}
                     onClick={() => setActiveChapterId(ch.id)}
-                    className={`w-full p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                    className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
                       activeChapterId === ch.id
                         ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
                         : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
                     }`}
                   >
-                    <span className="truncate max-w-[200px]">Chapter {ch.number}: {ch.title}</span>
+                    <span className="truncate max-w-[170px]">Chapter {ch.number}: {ch.title}</span>
                     <span className="font-mono text-[10px] opacity-70">p.{idx + 1}</span>
                   </button>
                 ))}
 
                 <button
                   onClick={() => setActiveChapterId('references')}
-                  className={`w-full p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                  className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
                     activeChapterId === 'references'
                       ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
                       : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
@@ -1189,56 +1796,54 @@ class PlantDiseaseClassifier:
                 </button>
               </div>
 
-              {/* Right Document Canvas Reader */}
-              <div className="lg:col-span-8 space-y-6">
-                <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-8 sm:p-12 rounded-3xl border border-slate-300 dark:border-slate-700 shadow-2xl min-h-[600px] font-serif leading-relaxed">
+              {/* Right: Realistic Academic Physical Paper Sheet (Pure White Paper Canvas) */}
+              <div className="lg:col-span-9 flex justify-center">
+                <div className="w-full max-w-[850px] bg-white text-black p-10 sm:p-16 rounded-xl border border-slate-300 shadow-2xl min-h-[750px] font-serif leading-relaxed text-black selection:bg-blue-100">
                   
-                  {/* COVER PAGE */}
+                  {/* 1. COVER PAGE */}
                   {activeChapterId === 'cover' && (
-                    <div className="space-y-8 text-center py-6">
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-widest font-mono font-bold text-blue-600 dark:text-blue-400">
+                    <div className="space-y-10 text-center py-6">
+                      <div className="space-y-3">
+                        <div className="text-xs uppercase tracking-widest font-sans font-bold text-slate-700">
                           A PROJECT REPORT ON
                         </div>
-                        <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white leading-snug">
+                        <h1 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-black leading-snug">
                           {generatedReport.title}
                         </h1>
                       </div>
 
-                      <div className="py-4 space-y-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                        <p>Submitted in partial fulfillment of the requirements for the award of degree of</p>
-                        <p className="font-bold text-slate-900 dark:text-white text-base">{generatedReport.degreeName}</p>
-                        <p>in</p>
-                        <p className="font-bold text-slate-900 dark:text-white">{generatedReport.department}</p>
+                      <div className="py-6 space-y-1.5 text-xs sm:text-sm text-slate-800">
+                        <p className="no-indent">Submitted in partial fulfillment of the requirements for the award of the degree of</p>
+                        <p className="font-bold text-base text-black">{generatedReport.degreeName}</p>
+                        <p className="no-indent">in</p>
+                        <p className="font-bold text-sm text-black">{generatedReport.department}</p>
                       </div>
 
-                      <div className="p-6 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-xs font-sans">
+                      <div className="p-6 border border-slate-300 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-xs font-sans">
                         <div>
-                          <div className="font-bold text-slate-500 uppercase text-[10px]">Submitted By:</div>
-                          <div className="font-bold text-sm text-slate-900 dark:text-white">{generatedReport.studentName}</div>
-                          <div className="text-slate-600 dark:text-slate-300">Roll No: {generatedReport.rollNumber}</div>
-                          <div className="text-slate-600 dark:text-slate-300">{generatedReport.semester}</div>
+                          <div className="font-bold text-slate-600 uppercase text-[10px]">Submitted By:</div>
+                          <div className="font-bold text-sm text-black">{generatedReport.studentName}</div>
+                          <div className="text-slate-700">Roll No: {generatedReport.rollNumber}</div>
+                          <div className="text-slate-700">{generatedReport.semester}</div>
                         </div>
                         <div>
-                          <div className="font-bold text-slate-500 uppercase text-[10px]">Under the Supervision of:</div>
-                          <div className="font-bold text-sm text-slate-900 dark:text-white">{generatedReport.guideName}</div>
-                          <div className="text-slate-600 dark:text-slate-300">Department of {generatedReport.department}</div>
+                          <div className="font-bold text-slate-600 uppercase text-[10px]">Under the Supervision of:</div>
+                          <div className="font-bold text-sm text-black">{generatedReport.guideName}</div>
+                          <div className="text-slate-700">Department of {generatedReport.department}</div>
                         </div>
                       </div>
 
-                      <div className="pt-6 space-y-1 text-xs">
-                        <div className="font-bold text-base text-slate-900 dark:text-white">{generatedReport.collegeName}</div>
-                        <div className="text-slate-500 font-mono">Academic Year: {generatedReport.academicYear}</div>
+                      <div className="pt-8 space-y-1 text-xs">
+                        <div className="font-bold text-base uppercase text-black">{generatedReport.collegeName}</div>
+                        <div className="text-slate-600 italic">Academic Session: {generatedReport.academicYear}</div>
                       </div>
                     </div>
                   )}
 
-                  {/* CERTIFICATE & DECLARATION */}
+                  {/* 2. CERTIFICATE */}
                   {activeChapterId === 'certificate' && (
                     <div className="space-y-6 py-4">
-                      <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight uppercase">Certificate of Authenticity</h2>
-                      </div>
+                      <h2 className="text-xl font-bold text-center uppercase tracking-tight">Certificate</h2>
                       
                       <p className="text-xs sm:text-sm leading-relaxed text-justify">
                         This is to certify that the project report titled <strong>"{generatedReport.title}"</strong> submitted by <strong>{generatedReport.studentName}</strong> (Roll No: {generatedReport.rollNumber}) in partial fulfillment of the requirements for the award of <strong>{generatedReport.degreeName}</strong> in <strong>{generatedReport.department}</strong> at <strong>{generatedReport.collegeName}</strong> is an authentic record of bonafide project work carried out under my supervision during the academic year {generatedReport.academicYear}.
@@ -1249,48 +1854,130 @@ class PlantDiseaseClassifier:
                       </p>
 
                       <div className="pt-12 grid grid-cols-2 gap-8 text-xs font-sans">
-                        <div className="space-y-1">
-                          <div className="border-t border-slate-400 pt-2 font-bold">{generatedReport.guideName}</div>
-                          <div className="text-slate-500">Project Guide / Supervisor</div>
+                        <div className="space-y-1 border-t border-black pt-2">
+                          <div className="font-bold">{generatedReport.guideName}</div>
+                          <div className="text-slate-600">Project Guide / Supervisor</div>
                         </div>
-                        <div className="space-y-1 text-right">
-                          <div className="border-t border-slate-400 pt-2 font-bold">{generatedReport.hodName}</div>
-                          <div className="text-slate-500">Head of Department (HOD)</div>
+                        <div className="space-y-1 text-right border-t border-black pt-2">
+                          <div className="font-bold">{generatedReport.hodName}</div>
+                          <div className="text-slate-600">Head of Department (HOD)</div>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* ABSTRACT */}
+                  {/* 3. CANDIDATE'S DECLARATION */}
+                  {activeChapterId === 'declaration' && (
+                    <div className="space-y-6 py-4">
+                      <h2 className="text-xl font-bold text-center uppercase tracking-tight">Candidate's Declaration</h2>
+                      
+                      <p className="text-xs sm:text-sm leading-relaxed text-justify">
+                        {generatedReport.declarationText}
+                      </p>
+
+                      <p className="text-xs sm:text-sm leading-relaxed text-justify">
+                        I further declare that the content, calculations, designs, and findings embodied in this project report have not been submitted for the award of any other degree or diploma in this or any other institution.
+                      </p>
+
+                      <div className="pt-16 flex justify-end text-xs font-sans">
+                        <div className="space-y-1 text-right border-t border-black pt-2 w-48">
+                          <div className="font-bold">{generatedReport.studentName}</div>
+                          <div className="text-slate-600">Roll No: {generatedReport.rollNumber}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. ACKNOWLEDGEMENTS */}
+                  {activeChapterId === 'acknowledgement' && (
+                    <div className="space-y-6 py-4">
+                      <h2 className="text-xl font-bold text-center uppercase tracking-tight">Acknowledgements</h2>
+                      
+                      <p className="text-xs sm:text-sm leading-relaxed text-justify">
+                        {generatedReport.acknowledgementText}
+                      </p>
+
+                      <div className="pt-16 flex justify-end text-xs font-sans">
+                        <div className="space-y-1 text-right border-t border-black pt-2 w-48">
+                          <div className="font-bold">{generatedReport.studentName}</div>
+                          <div className="text-slate-600">Roll No: {generatedReport.rollNumber}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. ABSTRACT */}
                   {activeChapterId === 'abstract' && (
                     <div className="space-y-4 py-4">
-                      <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight uppercase">Abstract</h2>
-                      </div>
+                      <h2 className="text-xl font-bold text-center uppercase tracking-tight">Abstract</h2>
                       
                       <p className="text-xs sm:text-sm leading-relaxed text-justify">
                         {generatedReport.abstractText}
                       </p>
 
-                      <div className="pt-4 text-xs">
+                      <div className="pt-4 text-xs font-sans">
                         <strong>Keywords: </strong>
-                        <span className="italic text-slate-600 dark:text-slate-300">
+                        <span className="italic text-slate-700">
                           {generatedReport.keywords.join(', ')}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  {/* SPECIFIC CHAPTER VIEW */}
+                  {/* 6. TABLE OF CONTENTS */}
+                  {activeChapterId === 'toc' && (
+                    <div className="space-y-4 py-4">
+                      <h2 className="text-xl font-bold text-center uppercase tracking-tight">Table of Contents</h2>
+                      
+                      <div className="space-y-2 pt-2 text-xs font-sans">
+                        <div className="flex justify-between border-b pb-1 font-bold">
+                          <span>Certificate</span>
+                          <span>i</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-1 font-bold">
+                          <span>Candidate's Declaration</span>
+                          <span>ii</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-1 font-bold">
+                          <span>Acknowledgements</span>
+                          <span>iii</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-1 font-bold">
+                          <span>Abstract</span>
+                          <span>iv</span>
+                        </div>
+                        {generatedReport.chapters.map((ch, idx) => (
+                          <div key={ch.id} className="space-y-1 pt-1">
+                            <div className="flex justify-between font-bold">
+                              <span>Chapter {ch.number || idx + 1}: {ch.title}</span>
+                              <span>{idx + 1}</span>
+                            </div>
+                            {ch.subsections?.map((sub, sIdx) => (
+                              <div key={sIdx} className="flex justify-between pl-4 text-slate-700">
+                                <span>{sub.title}</span>
+                                <span>{idx + 1}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                        <div className="flex justify-between border-t pt-2 font-bold">
+                          <span>References & Bibliography</span>
+                          <span>{generatedReport.chapters.length + 1}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CHAPTER CONTENT */}
                   {generatedReport.chapters.map(ch => {
                     if (activeChapterId !== ch.id) return null;
                     return (
                       <div key={ch.id} className="space-y-6 py-4">
-                        <div className="border-b border-slate-200 dark:border-slate-700 pb-3">
-                          <div className="text-xs font-mono text-blue-600 dark:text-blue-400 uppercase font-bold">
+                        <div className="text-center border-b border-slate-300 pb-3">
+                          <div className="text-xs font-mono uppercase font-bold text-slate-600">
                             Chapter {ch.number}
                           </div>
-                          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                          <h2 className="text-xl font-bold tracking-tight text-black">
                             {ch.title}
                           </h2>
                         </div>
@@ -1301,29 +1988,52 @@ class PlantDiseaseClassifier:
 
                         {ch.subsections?.map((sub, sIdx) => (
                           <div key={sIdx} className="space-y-3 pt-2">
-                            <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white border-l-2 border-blue-500 pl-3">
+                            <h3 className="text-sm sm:text-base font-bold text-black border-l-2 border-black pl-3">
                               {sub.title}
                             </h3>
                             <p className="text-xs sm:text-sm leading-relaxed text-justify whitespace-pre-line">
                               {sub.body}
                             </p>
 
-                            {/* Table If Included */}
+                            {/* Mathematical Formula */}
+                            {sub.formula && (
+                              <div className="my-3 p-3 bg-slate-50 border border-slate-300 rounded font-mono text-xs flex justify-between items-center text-black">
+                                <span className="font-bold flex-1 text-center">{sub.formula.equation}</span>
+                                <span className="text-slate-600">({sub.formula.number || `${ch.number}.${sIdx + 1}`})</span>
+                              </div>
+                            )}
+
+                            {/* Diagram / Schematic */}
+                            {sub.figure && (
+                              <div className="my-4 space-y-1 font-sans">
+                                <div className="p-3 bg-slate-50 border border-slate-300 rounded font-mono text-xs text-black whitespace-pre-wrap">
+                                  {sub.figure.diagramText}
+                                </div>
+                                <div className="text-center text-xs font-bold text-slate-800">
+                                  {sub.figure.caption}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Table */}
                             {sub.table && (
-                              <div className="my-4 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden font-sans text-xs">
-                                <table className="w-full text-left border-collapse">
+                              <div className="my-4 space-y-1 font-sans text-xs">
+                                {sub.table.caption && (
+                                  <div className="text-center font-bold text-slate-800">{sub.table.caption}</div>
+                                )}
+                                <table className="w-full text-left border-collapse border border-slate-400">
                                   <thead>
-                                    <tr className="bg-slate-100 dark:bg-slate-800 font-bold">
+                                    <tr className="bg-slate-100 font-bold border-b border-slate-400">
                                       {sub.table.headers.map((h, hIdx) => (
-                                        <th key={hIdx} className="p-3 border-b border-slate-200 dark:border-slate-700">{h}</th>
+                                        <th key={hIdx} className="p-2 border border-slate-400">{h}</th>
                                       ))}
                                     </tr>
                                   </thead>
                                   <tbody>
                                     {sub.table.rows.map((row, rIdx) => (
-                                      <tr key={rIdx} className="border-b border-slate-100 dark:border-slate-800">
+                                      <tr key={rIdx} className="border-b border-slate-300">
                                         {row.map((cell, cIdx) => (
-                                          <td key={cIdx} className="p-2.5">{cell}</td>
+                                          <td key={cIdx} className="p-2 border border-slate-300">{cell}</td>
                                         ))}
                                       </tr>
                                     ))}
@@ -1332,22 +2042,15 @@ class PlantDiseaseClassifier:
                               </div>
                             )}
 
-                            {/* Code Snippet If Applicable */}
+                            {/* Code Snippet (Only if coding topic) */}
                             {sub.code && (
-                              <div className="my-4 space-y-2 font-sans">
-                                <div className="p-4 rounded-xl bg-slate-950 text-sky-300 font-mono text-xs overflow-x-auto shadow-inner">
+                              <div className="my-4 space-y-1 font-sans">
+                                <div className="p-3 bg-slate-900 text-slate-100 rounded font-mono text-xs overflow-x-auto">
                                   <pre><code>{sub.code.snippet}</code></pre>
                                 </div>
-                                <p className="text-xs text-slate-500 italic">
-                                  <strong>Logic Explanation:</strong> {sub.code.explanation}
-                                </p>
-                              </div>
-                            )}
-
-                            {/* Formula If Applicable */}
-                            {sub.formula && (
-                              <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs text-center font-bold text-blue-600 dark:text-blue-400">
-                                {sub.formula}
+                                <div className="text-xs text-slate-600 italic">
+                                  <strong>Logic:</strong> {sub.code.explanation}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1359,9 +2062,7 @@ class PlantDiseaseClassifier:
                   {/* REFERENCES */}
                   {activeChapterId === 'references' && (
                     <div className="space-y-4 py-4">
-                      <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight uppercase">References & Bibliography</h2>
-                      </div>
+                      <h2 className="text-xl font-bold text-center uppercase tracking-tight">References & Bibliography</h2>
                       
                       <ol className="space-y-2 text-xs sm:text-sm list-decimal pl-5">
                         {generatedReport.references.map((ref, rIdx) => (
