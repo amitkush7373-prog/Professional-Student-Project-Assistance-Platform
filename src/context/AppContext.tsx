@@ -35,9 +35,9 @@ export interface ToastMessage {
 }
 
 export const DEFAULT_PAYMENT_SETTINGS: PaymentSettings = {
-  qrCodeUrl: '/phonepe-qr.png',
-  upiId: '7618820563-2@ybl',
-  merchantName: 'Apex Student Project Assistance (PhonePe / UPI)',
+  qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=apexassist@okaxis&pn=Apex%20Project%20Assistance&mc=8299&mode=02',
+  upiId: 'apexassist@okaxis',
+  merchantName: 'Apex Student Project Assistance (UPI)',
   instructions: 'Confirm your project order and reference details. The platform team will review your order requirements and begin development.'
 };
 
@@ -48,6 +48,17 @@ interface AppContextType {
   setCurrentUser: (user: User) => void;
   switchRole: (role: UserRole) => void;
   loginAsDemoUser: (role: UserRole) => void;
+  signUpUser: (data: {
+    name: string;
+    email: string;
+    college?: string;
+    role: UserRole;
+    phone?: string;
+    branch?: string;
+    semester?: string;
+  }) => User;
+  signInUser: (email: string, password?: string, preferredRole?: UserRole) => boolean;
+  logoutUser: () => void;
 
   // Theming & Localization
   theme: 'dark' | 'light';
@@ -127,6 +138,12 @@ interface AppContextType {
   // Quick Modals
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
+  authModalPortal: 'student' | 'expert' | 'admin';
+  setAuthModalPortal: (portal: 'student' | 'expert' | 'admin') => void;
+  authModalMode: 'signin' | 'signup' | 'forgot';
+  setAuthModalMode: (mode: 'signin' | 'signup' | 'forgot') => void;
+  openAuthModal: (portal?: 'student' | 'expert' | 'admin', mode?: 'signin' | 'signup' | 'forgot') => void;
+  requestRoleSwitch: (targetRole: UserRole) => void;
   isNotificationDrawerOpen: boolean;
   setIsNotificationDrawerOpen: (open: boolean) => void;
   isInvoiceModalOpen: boolean;
@@ -176,9 +193,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Modals state
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalPortal, setAuthModalPortal] = useState<'student' | 'expert' | 'admin'>('student');
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [activeInvoiceProject, setActiveInvoiceProject] = useState<Project | null>(null);
+
+  const openAuthModal = (portal: 'student' | 'expert' | 'admin' = 'student', mode: 'signin' | 'signup' | 'forgot' = 'signin') => {
+    setAuthModalPortal(portal);
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
 
   // Users State
   const [users, setUsers] = useState<User[]>(() => {
@@ -194,11 +219,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentUser, setCurrentUser] = useState<User>(() => {
     try {
       const savedId = localStorage.getItem(STORAGE_KEYS.CURRENT_USER_ID);
+      const savedUsers = localStorage.getItem(STORAGE_KEYS.USERS);
+      const allUsers: User[] = savedUsers ? JSON.parse(savedUsers) : INITIAL_USERS;
       if (savedId) {
-        const found = INITIAL_USERS.find(u => u.id === savedId);
+        const found = allUsers.find(u => u.id === savedId);
         if (found) return found;
       }
-      return INITIAL_USERS[0]; // Aarav Sharma (student)
+      return allUsers[0] || INITIAL_USERS[0];
     } catch {
       return INITIAL_USERS[0];
     }
@@ -400,14 +427,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
   }, [notifications]);
 
-  // Role switching
+  // Role switching with authentication enforcement
+  const requestRoleSwitch = (targetRole: UserRole) => {
+    if (currentUser.role === targetRole) {
+      if (targetRole === 'student') setActiveView('student-dashboard');
+      else if (targetRole === 'expert') setActiveView('expert-dashboard');
+      else if (targetRole === 'admin') setActiveView('admin-dashboard');
+      return;
+    }
+    // Opening authentication modal for the target role
+    openAuthModal(targetRole, 'signin');
+    addToast(
+      'Sign In Required',
+      `Please sign in with your ${targetRole === 'student' ? 'Student' : targetRole === 'expert' ? 'Mentor' : 'Super Admin'} credentials to switch workspaces.`,
+      'info'
+    );
+  };
+
   const switchRole = (role: UserRole) => {
-    const userForRole = users.find(u => u.role === role) || users[0];
-    setCurrentUser(userForRole);
-    if (role === 'student') setActiveView('student-dashboard');
-    else if (role === 'expert') setActiveView('expert-dashboard');
-    else if (role === 'admin') setActiveView('admin-dashboard');
-    addToast('Role Switched', `Active workspace: ${role.toUpperCase()}`, 'info');
+    requestRoleSwitch(role);
   };
 
   const loginAsDemoUser = (role: UserRole) => {
@@ -420,6 +458,126 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       else if (role === 'admin') setActiveView('admin-dashboard');
       addToast('Welcome Back!', `Logged in as ${target.name} (${role.toUpperCase()})`, 'success');
     }
+  };
+
+  const signUpUser = (data: {
+    name: string;
+    email: string;
+    college?: string;
+    role: UserRole;
+    phone?: string;
+    branch?: string;
+    semester?: string;
+  }): User => {
+    const cleanName = data.name.trim();
+    const cleanEmail = data.email.trim().toLowerCase();
+    const cleanCollege = data.college?.trim() || 'University Scholar';
+
+    // Check if user already exists
+    const existing = users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (existing) {
+      const updatedUser: User = {
+        ...existing,
+        name: cleanName || existing.name,
+        college: cleanCollege || existing.college,
+        role: data.role || existing.role
+      };
+      setUsers(prev => prev.map(u => (u.id === existing.id ? updatedUser : u)));
+      setCurrentUser(updatedUser);
+      setIsAuthModalOpen(false);
+
+      if (updatedUser.role === 'student') setActiveView('student-dashboard');
+      else if (updatedUser.role === 'expert') setActiveView('expert-dashboard');
+      else setActiveView('admin-dashboard');
+
+      addToast('Account Found & Logged In', `Welcome back, ${updatedUser.name}!`, 'success');
+      return updatedUser;
+    }
+
+    const avatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanName || 'Student')}&backgroundColor=2563eb,3b82f6,1d4ed8`;
+
+    const newUser: User = {
+      id: 'user_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+      name: cleanName || 'Student Scholar',
+      email: cleanEmail,
+      phone: data.phone || '+91 98765 43210',
+      role: data.role,
+      avatar,
+      college: cleanCollege,
+      branch: data.branch || (data.role === 'student' ? 'Computer Science & Engineering' : 'Software Engineering'),
+      semester: data.semester || (data.role === 'student' ? 'Semester 4' : undefined),
+      year: data.role === 'student' ? '2nd_year' : undefined,
+      bio: data.role === 'student'
+        ? `Student scholar at ${cleanCollege} working on academic engineering projects.`
+        : `Verified Technical Mentor & Developer at ${cleanCollege}.`,
+      skills: data.role === 'expert' ? ['Python', 'Web Development', 'AI/ML', 'Documentation', 'Viva Prep'] : undefined,
+      rating: data.role === 'expert' ? 5.0 : undefined,
+      activeProjectsCount: 0,
+      completedProjectsCount: 0,
+      isAvailable: true,
+      createdAt: new Date().toISOString()
+    };
+
+    setUsers(prev => [newUser, ...prev]);
+    setCurrentUser(newUser);
+    setIsAuthModalOpen(false);
+
+    // Welcome Notification
+    setNotifications(prev => [
+      {
+        id: 'notif_' + Date.now().toString(36),
+        userId: newUser.id,
+        title: '🎉 Welcome to ApexProject!',
+        message: `Hello ${newUser.name}! Your account is active. Explore verified projects, request free PPTs, or submit new requirements.`,
+        type: 'system',
+        read: false,
+        timestamp: new Date().toISOString()
+      },
+      ...prev
+    ]);
+
+    // Navigate to their role dashboard directly
+    if (newUser.role === 'student') {
+      setActiveView('student-dashboard');
+    } else if (newUser.role === 'expert') {
+      setActiveView('expert-dashboard');
+    } else {
+      setActiveView('admin-dashboard');
+    }
+
+    addToast('Account Created & Logged In!', `Welcome to ApexProject, ${newUser.name}!`, 'success');
+    return newUser;
+  };
+
+  const signInUser = (email: string, _password?: string, preferredRole?: UserRole): boolean => {
+    const cleanEmail = email.trim().toLowerCase();
+    const existing = users.find(u => u.email.toLowerCase() === cleanEmail);
+
+    if (existing) {
+      setCurrentUser(existing);
+      setIsAuthModalOpen(false);
+      if (existing.role === 'student') setActiveView('student-dashboard');
+      else if (existing.role === 'expert') setActiveView('expert-dashboard');
+      else setActiveView('admin-dashboard');
+      addToast('Welcome Back!', `Logged in as ${existing.name} (${existing.role.toUpperCase()})`, 'success');
+      return true;
+    }
+
+    // Auto-create/sign-up if logging in for first time with new email
+    const nameFromEmail = cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    signUpUser({
+      name: nameFromEmail || 'Student Scholar',
+      email: cleanEmail,
+      college: 'University Campus',
+      role: preferredRole || 'student'
+    });
+    return true;
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(INITIAL_USERS[0]);
+    setActiveView('landing');
+    addToast('Signed Out', 'You have returned to default guest overview.', 'info');
   };
 
   const toggleTheme = () => {
@@ -669,7 +827,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       projectLevel: project.requirement.projectLevel,
       amount: project.assessment.totalFinalPrice,
       utr_number: utrNumber,
-      payment_screenshot: paymentProofUrl || '/phonepe-qr.png',
+      payment_screenshot: paymentProofUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80',
       payment_status: 'verification_pending',
       submitted_at: nowIso,
       payment_method: 'manual_upi',
@@ -867,7 +1025,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       projectLevel: project.requirement.projectLevel,
       amount: project.assessment.totalFinalPrice,
       utr_number: gatewayRef,
-      payment_screenshot: '/phonepe-qr.png',
+      payment_screenshot: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80',
       payment_status: 'verified',
       submitted_at: nowIso,
       verified_at: nowIso,
@@ -1091,6 +1249,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCurrentUser,
         switchRole,
         loginAsDemoUser,
+        signUpUser,
+        signInUser,
+        logoutUser,
         theme,
         toggleTheme,
         currency,
@@ -1144,6 +1305,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         removeToast,
         isAuthModalOpen,
         setIsAuthModalOpen,
+        authModalPortal,
+        setAuthModalPortal,
+        authModalMode,
+        setAuthModalMode,
+        openAuthModal,
+        requestRoleSwitch,
         isNotificationDrawerOpen,
         setIsNotificationDrawerOpen,
         isInvoiceModalOpen,

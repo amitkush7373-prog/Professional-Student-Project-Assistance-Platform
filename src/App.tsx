@@ -25,6 +25,8 @@ import { StudentDashboard } from './components/student/StudentDashboard';
 import { ProjectDetailView } from './components/student/ProjectDetailView';
 import { ExpertDashboard } from './components/expert/ExpertDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AiPptGeneratorAgent } from './components/ai/AiPptGeneratorAgent';
+import { AiReportGeneratorAgent } from './components/ai/AiReportGeneratorAgent';
 
 // Support & Legal
 import { HelpCenterPage } from './components/support/HelpCenterPage';
@@ -87,6 +89,12 @@ export const App: React.FC = () => {
 
       case 'checkout':
         return <CheckoutPage />;
+
+      case 'ai-ppt-agent':
+        return <AiPptGeneratorAgent />;
+
+      case 'ai-report-agent':
+        return <AiReportGeneratorAgent />;
 
       case 'student-dashboard':
         return <StudentDashboard />;

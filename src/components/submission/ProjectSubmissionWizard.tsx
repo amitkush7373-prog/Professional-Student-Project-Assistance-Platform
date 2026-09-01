@@ -243,10 +243,10 @@ export const ProjectSubmissionWizard: React.FC = () => {
   };
 
   const stepsHeader = [
-    { num: 1, label: 'What You Need & Year' },
+    { num: 1, label: 'Service & Academic Details' },
     { num: 2, label: 'Project Requirements' },
-    { num: 3, label: 'Upload Files (Optional)' },
-    { num: 4, label: 'Deadline & Confirmation' }
+    { num: 3, label: 'Project Materials' },
+    { num: 4, label: 'AI Complexity & Delivery' }
   ];
 
   return (
@@ -255,15 +255,15 @@ export const ProjectSubmissionWizard: React.FC = () => {
         
         {/* Top Header */}
         <div className="text-center max-w-3xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-sm">
-            <PiggyBank className="w-3.5 h-3.5" />
-            <span>Simple. Affordable. Student-Friendly. • ₹100 MAXIMUM</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+            <span>AI Automated Academic Project Assistant</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] tracking-tight">
             College Project Assistance & Submission
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
-            Simple, transparent, and pocket-friendly. Answer only what's necessary for your project.
+            AI automatically evaluates project complexity, computes exact delivery time, and synthesizes deliverables.
           </p>
         </div>
 
@@ -312,8 +312,8 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {[
                       { id: 'college-project' as CollegeServiceType, title: 'College Project', desc: '1st, 2nd, 3rd & final-year projects', icon: GraduationCap, color: 'text-blue-500' },
-                      { id: 'ppt-presentation' as CollegeServiceType, title: 'PPT / Presentation', desc: '5-15 slides deck (₹100–₹200)', icon: Presentation, color: 'text-pink-500' },
-                      { id: 'project-review' as CollegeServiceType, title: 'Project Review', desc: 'Structure, code & error audit (₹100)', icon: CheckCircle2, color: 'text-emerald-500' },
+                      { id: 'ppt-presentation' as CollegeServiceType, title: 'PPT / Presentation', desc: '5-15 slides deck (FREE)', icon: Presentation, color: 'text-pink-500' },
+                      { id: 'project-review' as CollegeServiceType, title: 'Project Review', desc: 'Structure, code & error audit', icon: CheckCircle2, color: 'text-emerald-500' },
                       { id: 'data-science' as CollegeServiceType, title: 'Data Science', desc: 'Data cleaning, EDA & pandas projects', icon: BarChart3, color: 'text-cyan-500' },
                       { id: 'ai-ml' as CollegeServiceType, title: 'AI / Machine Learning', desc: 'ML models, vision & NLP assistance', icon: Brain, color: 'text-purple-500' },
                       { id: 'technical-help' as CollegeServiceType, title: 'Technical Help', desc: 'Coding, debugging & web assistance', icon: Laptop, color: 'text-amber-500' }
@@ -366,9 +366,9 @@ export const ProjectSubmissionWizard: React.FC = () => {
                               key={y.id}
                               type="button"
                               onClick={() => handleYearChange(y.id)}
-                              className={`py-2 text-[11px] font-bold rounded-xl border transition-all ${
+                              className={`py-2 px-1 text-center rounded-xl border text-xs font-semibold transition-all ${
                                 studyYear === y.id
-                                  ? 'border-blue-600 bg-blue-600 text-white shadow-sm'
+                                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                                   : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
                               }`}
                             >
@@ -379,11 +379,11 @@ export const ProjectSubmissionWizard: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Semester</label>
+                        <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Current Semester</label>
                         <select
                           value={semester}
                           onChange={e => setSemester(e.target.value)}
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
                         >
                           {getSemestersForYear(studyYear).map(sem => (
                             <option key={sem} value={sem}>{sem}</option>
@@ -394,106 +394,64 @@ export const ProjectSubmissionWizard: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Your Full Name *</label>
+                        <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Your College / University</label>
                         <input
                           type="text"
-                          required
-                          value={studentName}
-                          onChange={e => setStudentName(e.target.value)}
-                          placeholder="e.g. Aarav Sharma"
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                          value={college}
+                          onChange={e => setCollege(e.target.value)}
+                          placeholder="e.g. DTU, VIT, SRM, IIT, NIT, Mumbai Univ..."
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">College / University Name *</label>
+                        <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Branch / Department</label>
                         <input
                           type="text"
-                          required
-                          value={college}
-                          onChange={e => setCollege(e.target.value)}
-                          placeholder="e.g. Delhi Technological University"
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                          value={courseBranch}
+                          onChange={e => setCourseBranch(e.target.value)}
+                          placeholder="e.g. Computer Science, Mechanical, Civil..."
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
                         />
                       </div>
                     </div>
                   </div>
-
-                  {/* If College Project: Select Project Level */}
-                  {serviceType === 'college-project' && (
-                    <div className="pt-4 border-t border-[var(--border-color)] space-y-3">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        What type of college project is this?
-                      </label>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                        {[
-                          { id: 'basic' as CollegeProjectLevel, title: '🟢 Basic College Project', desc: 'Simple 1st-year / basic semester task' },
-                          { id: 'mini' as CollegeProjectLevel, title: '🔵 Mini Project', desc: 'Standard college mini project' },
-                          { id: 'major' as CollegeProjectLevel, title: '🟣 Major Project', desc: 'Larger final-year capstone project' },
-                          { id: 'ppt_only' as CollegeProjectLevel, title: '🟡 Presentation / PPT Only', desc: 'Clean slides for viva (₹100–₹150)' },
-                          { id: 'review_only' as CollegeProjectLevel, title: '🟠 Project Review Only', desc: 'Check code & review errors' },
-                          { id: 'project_ppt_review' as CollegeProjectLevel, title: '⚪ Project + PPT + Review', desc: 'Complete all-in-one package' }
-                        ].map(lvl => (
-                          <div
-                            key={lvl.id}
-                            onClick={() => setProjectLevel(lvl.id)}
-                            className={`p-3 rounded-xl border cursor-pointer transition-all ${
-                              projectLevel === lvl.id
-                                ? 'border-blue-600 bg-blue-500/10 shadow-sm font-semibold'
-                                : 'border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)]'
-                            }`}
-                          >
-                            <div className="text-xs font-bold text-[var(--text-primary)]">{lvl.title}</div>
-                            <div className="text-[10px] text-[var(--text-muted)] mt-0.5">{lvl.desc}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                 </div>
               )}
 
-              {/* STEP 2: Progressive Smart Requirements Form */}
+              {/* STEP 2: Project Requirements & Topic Details */}
               {currentStep === 2 && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div className="border-b border-[var(--border-color)] pb-3">
-                    <h3 className="text-base font-bold text-[var(--text-primary)]">
-                      {serviceType === 'ppt-presentation' ? 'PPT & Presentation Requirements' : serviceType === 'project-review' ? 'Project Review Scope' : 'Tell Us About Your Project'}
-                    </h3>
-                    <p className="text-xs text-[var(--text-secondary)]">Only relevant questions for your chosen assistance.</p>
+                    <h3 className="text-base font-bold text-[var(--text-primary)]">Project Title & Requirements</h3>
+                    <p className="text-xs text-[var(--text-secondary)]">Provide the topic or problem statement given by your professor.</p>
                   </div>
 
-                  {/* Project / PPT Title */}
                   <div>
                     <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
-                      {serviceType === 'ppt-presentation' ? 'Presentation Topic / Title *' : 'Project Name / Topic *'}
+                      Project Topic / Title *
                     </label>
                     <input
                       type="text"
                       required
                       value={title}
                       onChange={e => setTitle(e.target.value)}
-                      placeholder={serviceType === 'ppt-presentation' ? 'e.g. Cloud Computing & Virtualization Architecture' : 'e.g. Student Attendance Management System with SQLite'}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring"
+                      placeholder="e.g. AI-based Crop Disease Detection / Solar Water Heater Design / Smart Attendance System..."
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus-ring font-medium"
                     />
                   </div>
 
-                  {/* CASE A: PPT Presentation Specific Service */}
+                  {/* CASE A: PPT Specific Service */}
                   {serviceType === 'ppt-presentation' && (
                     <div className="space-y-4 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)]">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                          Select Number of Slides
-                        </h4>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                          College PPT — FREE
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3 text-center">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                        Select Slide Count
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                         {[
-                          { id: '5_7_slides' as PPTTier, title: '5–7 Slides', priceText: 'FREE (₹0)', desc: 'Quick Seminar / Viva' },
-                          { id: '8_10_slides' as PPTTier, title: '8–10 Slides', priceText: 'FREE (₹0)', desc: 'Standard College PPT' },
-                          { id: '11_15_slides' as PPTTier, title: '11–15 Slides', priceText: '₹30', desc: 'Complete Defense Deck' }
+                          { id: '5_7_slides' as PPTTier, title: '5–7 Slides', priceText: '100% FREE', desc: 'Mini seminar & class presentation' },
+                          { id: '8_10_slides' as PPTTier, title: '8–10 Slides', priceText: '100% FREE', desc: 'Standard project defense deck' },
+                          { id: '11_15_slides' as PPTTier, title: '11–15 Slides', priceText: '₹30', desc: 'Detailed capstone / major project' }
                         ].map(s => (
                           <div
                             key={s.id}
@@ -517,7 +475,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   {serviceType === 'project-review' && (
                     <div className="space-y-4 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)]">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        Select Review Package (₹30–₹70)
+                        Select Review Package
                       </h4>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                         {[
@@ -544,19 +502,19 @@ export const ProjectSubmissionWizard: React.FC = () => {
                     </div>
                   )}
 
-                  {/* CASE C: 1st Year / Basic College Project Simplified Checklist */}
-                  {(studyYear === '1st_year' || projectLevel === 'basic') && serviceType !== 'ppt-presentation' && serviceType !== 'project-review' && (
+                  {/* CASE C: College Project Checklist */}
+                  {serviceType !== 'ppt-presentation' && serviceType !== 'project-review' && (
                     <div className="space-y-3 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
                       <div className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                        What do you need for this project? (Check all that apply)
+                        What deliverables do you require? (Select all that apply)
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                         {[
                           { checked: needsProject, set: setNeedsProject, label: '✓ Project Source Code' },
-                          { checked: needsPPT, set: setNeedsPPT, label: '✓ College PPT (100% FREE)' },
-                          { checked: needsDocumentation, set: setNeedsDocumentation, label: '✓ Project Report / Docs (+₹30)' },
-                          { checked: needsReview, set: setNeedsReview, label: '✓ Project Review (+₹30)' },
-                          { checked: needsVivaPrep, set: setNeedsVivaPrep, label: '✓ Viva / Q&A Prep (+₹30)' },
+                          { checked: needsPPT, set: setNeedsPPT, label: '✓ College PPT (FREE)' },
+                          { checked: needsDocumentation, set: setNeedsDocumentation, label: '✓ Project Report / Docs' },
+                          { checked: needsReview, set: setNeedsReview, label: '✓ Project Review' },
+                          { checked: needsVivaPrep, set: setNeedsVivaPrep, label: '✓ Viva / Q&A Prep' },
                           { checked: needsCodingHelp, set: setNeedsCodingHelp, label: '✓ Basic Coding Help' }
                         ].map((item, idx) => (
                           <label key={idx} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)] hover:bg-[var(--bg-elevated)]">
@@ -576,7 +534,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   {/* Short Description */}
                   <div>
                     <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
-                      Short Description / Instructions
+                      Short Description / Guidelines
                     </label>
                     <textarea
                       rows={3}
@@ -587,11 +545,11 @@ export const ProjectSubmissionWizard: React.FC = () => {
                     />
                   </div>
 
-                  {/* CASE D: Technical Stack Selection (For Data Science, AI/ML, Tech Help) */}
+                  {/* CASE D: Technical Stack Selection */}
                   {(serviceType === 'data-science' || serviceType === 'ai-ml' || serviceType === 'technical-help' || (studyYear !== '1st_year' && projectLevel !== 'basic')) && (
                     <div className="space-y-3 pt-3 border-t border-[var(--border-color)]">
                       <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        Relevant Technologies / Libraries
+                        Relevant Technologies / Frameworks
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {[
@@ -623,7 +581,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
               {currentStep === 3 && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div className="border-b border-[var(--border-color)] pb-3">
-                    <h3 className="text-base font-bold text-[var(--text-primary)]">Upload Project / Reference Files</h3>
+                    <h3 className="text-base font-bold text-[var(--text-primary)]">Upload Project Materials & Guidelines</h3>
                     <p className="text-xs text-[var(--text-secondary)]">
                       Attach your problem statement, college guidelines, dataset, notes, or existing code. (Optional)
                     </p>
@@ -637,95 +595,100 @@ export const ProjectSubmissionWizard: React.FC = () => {
                 </div>
               )}
 
-              {/* STEP 4: Deadline & Transparent Confirmation */}
+              {/* STEP 4: AI Complexity & Estimated Completion Time */}
               {currentStep === 4 && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div className="border-b border-[var(--border-color)] pb-3">
-                    <h3 className="text-base font-bold text-[var(--text-primary)]">Deadline & Final Price Confirmation</h3>
-                    <p className="text-xs text-[var(--text-secondary)]">More time available = Lower price. Choose your target deadline.</p>
+                    <div className="flex items-center gap-2 text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">
+                      <Sparkles className="w-4 h-4 animate-pulse" />
+                      <span>AI Analysis Complete</span>
+                    </div>
+                    <h3 className="text-base font-bold text-[var(--text-primary)]">
+                      Estimated Completion Time & Project Confirmation
+                    </h3>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Delivery time is automatically computed based on project modules, dataset size, and implementation complexity.
+                    </p>
                   </div>
 
-                  {/* Deadline Selector */}
-                  <div className="space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                      Select Target Delivery Deadline
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                      {[
-                        { id: 'standard' as UrgencyLevel, title: '7+ Days', tag: 'Best Savings (₹0 Extra)' },
-                        { id: 'priority' as UrgencyLevel, title: '4–6 Days', tag: '+₹10 Priority' },
-                        { id: 'urgent' as UrgencyLevel, title: '2–3 Days', tag: '+₹20 Urgent' },
-                        { id: 'same-day' as UrgencyLevel, title: '1 Day (Tomorrow)', tag: '+₹30 Priority' }
-                      ].map(urg => (
-                        <div
-                          key={urg.id}
-                          onClick={() => setUrgency(urg.id)}
-                          className={`p-3 rounded-xl border text-center cursor-pointer transition-all ${
-                            urgency === urg.id
-                              ? 'border-blue-600 bg-blue-500/10 shadow-md font-bold'
-                              : 'border-[var(--border-color)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)]'
-                          }`}
-                        >
-                          <div className="text-xs font-bold text-[var(--text-primary)]">{urg.title}</div>
-                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">{urg.tag}</div>
+                  {/* AI Complexity & Delivery Estimation Card */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-600/10 via-indigo-600/10 to-transparent border border-blue-500/30 space-y-5 shadow-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-4">
+                      <div>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                          AI Complexity Evaluation
+                        </span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide ${
+                            assessment.estimatedComplexity === 'small'
+                              ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                              : assessment.estimatedComplexity === 'medium'
+                              ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                              : 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30'
+                          }`}>
+                            {assessment.estimatedComplexity === 'small' ? '⚡ Small / Simple Project' : assessment.estimatedComplexity === 'medium' ? '🔷 Medium Project' : '🚀 Large / Complex Project'}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Deadline Savings Comparison Box */}
-                    <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-2.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                          <Clock className="w-4 h-4 text-blue-500" />
-                          <span>Choose your deadline for maximum student savings.</span>
-                        </span>
-                        <span className="text-[10px] text-emerald-500 font-bold">
-                          Save up to {formatCurrency(deadlineComparison.savingsWithStandard, currency)}
-                        </span>
                       </div>
 
-                      <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                        {[
-                          { id: 'same-day' as UrgencyLevel, label: '1 Day', price: deadlineComparison.sameDayPrice },
-                          { id: 'urgent' as UrgencyLevel, label: '2–3 Days', price: deadlineComparison.urgentPrice },
-                          { id: 'priority' as UrgencyLevel, label: '4–6 Days', price: deadlineComparison.priorityPrice },
-                          { id: 'standard' as UrgencyLevel, label: '7+ Days (Best)', price: deadlineComparison.standardPrice, highlight: true }
-                        ].map(d => (
-                          <button
-                            key={d.id}
-                            type="button"
-                            onClick={() => setUrgency(d.id)}
-                            className={`p-2 rounded-xl border transition-all ${
-                              urgency === d.id
-                                ? 'border-blue-500 bg-blue-500/10 font-bold text-blue-600 dark:text-blue-400'
-                                : 'border-[var(--border-color)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]'
-                            }`}
-                          >
-                            <div className="text-[10px] text-[var(--text-muted)]">{d.label}</div>
-                            <div className={`font-mono font-black text-xs ${d.highlight ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
-                              {formatCurrency(d.price, currency)}
-                            </div>
-                          </button>
-                        ))}
+                      <div className="sm:text-right">
+                        <div className="text-[11px] font-bold text-[var(--text-muted)] uppercase">
+                          Estimated Completion Time
+                        </div>
+                        <div className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 font-mono">
+                          {assessment.estimatedDeliveryText || '~25 minutes'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 text-xs">
+                      <div className="flex items-start gap-2 p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)]">
+                        <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                        <p className="text-[var(--text-secondary)] leading-relaxed">
+                          <strong className="text-[var(--text-primary)]">AI Analysis Reasoning:</strong> {assessment.complexityReasoning}
+                        </p>
+                      </div>
+
+                      {/* Complexity Range Guide */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                        <div className={`p-3 rounded-xl border ${assessment.estimatedComplexity === 'small' ? 'border-emerald-500 bg-emerald-500/10 font-bold' : 'border-[var(--border-color)] bg-[var(--bg-surface)] opacity-70'}`}>
+                          <div className="font-bold text-emerald-500">Small Project</div>
+                          <div className="text-[var(--text-muted)] mt-0.5">Simple task / PPT / Analysis</div>
+                          <div className="font-mono text-emerald-600 dark:text-emerald-400 font-bold mt-1">Max 30 mins</div>
+                        </div>
+                        <div className={`p-3 rounded-xl border ${assessment.estimatedComplexity === 'medium' ? 'border-blue-500 bg-blue-500/10 font-bold' : 'border-[var(--border-color)] bg-[var(--bg-surface)] opacity-70'}`}>
+                          <div className="font-bold text-blue-500">Medium Project</div>
+                          <div className="text-[var(--text-muted)] mt-0.5">Multi-module / Data / ML</div>
+                          <div className="font-mono text-blue-600 dark:text-blue-400 font-bold mt-1">2–4 hours</div>
+                        </div>
+                        <div className={`p-3 rounded-xl border ${assessment.estimatedComplexity === 'large' ? 'border-purple-500 bg-purple-500/10 font-bold' : 'border-[var(--border-color)] bg-[var(--bg-surface)] opacity-70'}`}>
+                          <div className="font-bold text-purple-500">Large Project</div>
+                          <div className="text-[var(--text-muted)] mt-0.5">Full stack / Capstone / AI</div>
+                          <div className="font-mono text-purple-600 dark:text-purple-400 font-bold mt-1">Max 12 hours</div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Transparent Itemized Breakdown Box */}
-                  <div className="p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] space-y-2">
-                    <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2">
-                      Itemized Transparent Price Breakdown
+                  {/* Transparent Price / Deliverables Summary */}
+                  <div className="p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] space-y-3">
+                    <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2 flex items-center justify-between">
+                      <span>Order Summary & Deliverables</span>
+                      <span className="font-mono text-blue-500">{assessment.totalFinalPrice === 0 ? '100% FREE' : formatCurrency(assessment.totalFinalPrice, currency)}</span>
                     </div>
+
                     <div className="space-y-1.5 text-xs">
                       {assessment.breakdownItems?.map((item, idx) => (
                         <div key={idx} className="flex justify-between text-[var(--text-secondary)]">
-                          <span>{item.label}:</span>
+                          <span>{item.label}</span>
                           <span className="font-mono font-bold text-[var(--text-primary)]">{formatCurrency(item.amount, currency)}</span>
                         </div>
                       ))}
                       <div className="flex justify-between font-bold text-sm text-[var(--text-primary)] border-t border-[var(--border-color)] pt-2">
-                        <span>Total Investment (Max ₹100 Capped):</span>
-                        <span className="font-mono font-black text-blue-600 dark:text-blue-400">{formatCurrency(assessment.totalFinalPrice, currency)}</span>
+                        <span>Total:</span>
+                        <span className="font-mono font-black text-blue-600 dark:text-blue-400">
+                          {assessment.totalFinalPrice === 0 ? 'FREE (₹0)' : formatCurrency(assessment.totalFinalPrice, currency)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -753,7 +716,7 @@ export const ProjectSubmissionWizard: React.FC = () => {
                   onClick={handleNextStep}
                   className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all flex items-center gap-1.5 hover:scale-105"
                 >
-                  <span>{currentStep === 4 ? (assessment.totalFinalPrice === 0 ? 'Submit Free PPT Request (₹0)' : 'Proceed to Simple Payment') : 'Continue'}</span>
+                  <span>{currentStep === 4 ? (assessment.totalFinalPrice === 0 ? 'Submit Free Request (₹0)' : 'Confirm & Proceed') : 'Continue'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -767,32 +730,32 @@ export const ProjectSubmissionWizard: React.FC = () => {
             <div className="rounded-3xl glass-panel border border-[var(--border-color)] p-6 shadow-xl space-y-4">
               <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
                 <div className="flex items-center gap-2">
-                  <Calculator className="w-4 h-4 text-blue-500" />
+                  <Clock className="w-4 h-4 text-blue-500" />
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                    Live Estimated Price
+                    Estimated Delivery
                   </h4>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
-                  {assessment.totalFinalPrice === 0 ? 'College PPT — FREE' : 'Max ₹100 Capped'}
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold uppercase">
+                  {assessment.estimatedComplexity} Complexity
                 </span>
               </div>
 
-              {/* Price Banner */}
+              {/* Delivery Banner */}
               <div className="p-4 rounded-2xl bg-gradient-to-tr from-blue-600/10 to-indigo-600/10 border border-blue-500/30 text-center space-y-1">
-                <div className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Student Price</div>
-                <div className="text-3xl sm:text-4xl font-black text-blue-600 dark:text-blue-400 font-mono">
-                  {formatCurrency(assessment.totalFinalPrice, currency)}
+                <div className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">AI Turnaround Time</div>
+                <div className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 font-mono">
+                  {assessment.estimatedDeliveryText || '~25 minutes'}
                 </div>
                 <div className="text-[10px] text-emerald-500 font-semibold flex items-center justify-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Simple. Affordable. Student-Friendly.</span>
+                  <span>Automatically analyzed complexity</span>
                 </div>
               </div>
 
               {/* Deliverables Checklist */}
               <div className="space-y-2 pt-1 text-xs">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  What You Receive:
+                  Deliverables Included:
                 </div>
                 <ul className="space-y-1.5">
                   {assessment.deliverablesList.map((deliv, idx) => (
@@ -808,20 +771,20 @@ export const ProjectSubmissionWizard: React.FC = () => {
               <div className="pt-3 border-t border-[var(--border-color)] space-y-1.5 text-[11px] text-[var(--text-secondary)]">
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Admin Verified UPI Payment & Official Receipt</span>
+                  <span>Academic Rubric & Verification Guarantee</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                  <span>On-time delivery before college review date</span>
+                  <span>Delivery within 12 hours maximum</span>
                 </div>
               </div>
 
             </div>
 
-            {/* Affordable Student Callout */}
+            {/* AI Assistant Callout */}
             <div className="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-xs text-[var(--text-muted)] flex items-start gap-2.5">
               <Sparkles className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-              <span>“Built for Students, Priced for Students. High quality college assistance without breaking your budget.”</span>
+              <span>“AI-powered project assistance designed for college academic excellence. Fast, modular, and verified.”</span>
             </div>
 
           </div>

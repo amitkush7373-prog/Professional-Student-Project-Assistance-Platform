@@ -12,7 +12,9 @@ import {
   FileText,
   AlertCircle,
   Star,
-  ExternalLink
+  ExternalLink,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Project, ProjectStatus } from '../../types';
@@ -83,16 +85,40 @@ export const StudentDashboard: React.FC = () => {
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              setActiveView('submit');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/25 transition-all flex items-center gap-2 hover:scale-105 shrink-0"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Submit New Project</span>
-          </button>
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            <button
+              onClick={() => {
+                setActiveView('ai-ppt-agent');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-4 sm:px-5 py-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 hover:scale-105 shadow-sm"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-500" />
+              <span>⚡ AI PPT Agent (Free)</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveView('ai-report-agent');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-4 sm:px-5 py-3 rounded-2xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 hover:scale-105 shadow-sm"
+            >
+              <FileText className="w-4 h-4 text-blue-500" />
+              <span>📄 AI Report Generator</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveView('submit');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-5 sm:px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/25 transition-all flex items-center gap-2 hover:scale-105"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Submit Project</span>
+            </button>
+          </div>
         </div>
 
         {/* 4 Metric Stats Cards */}

@@ -120,11 +120,11 @@ export const ProjectAssessmentReview: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] space-y-1">
-              <div className="text-[11px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Target Delivery</div>
+              <div className="text-[11px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">AI Delivery Time</div>
               <div className="text-base font-extrabold text-purple-600 dark:text-purple-400">
-                {formatDate(deadlineDate)}
+                {assessment.estimatedDeliveryText || '~25 minutes'}
               </div>
-              <div className="text-[10px] text-[var(--text-muted)]">{selectedUrgency.toUpperCase()} Delivery</div>
+              <div className="text-[10px] text-[var(--text-muted)]">Max 12 hours turnaround</div>
             </div>
 
             <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] space-y-1">

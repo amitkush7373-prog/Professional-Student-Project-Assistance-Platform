@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import {
   QrCode,
@@ -39,7 +40,7 @@ export const AdminPaymentSettings: React.FC = () => {
 
   return (
     <form onSubmit={handleSave} className="space-y-6 animate-in fade-in duration-200">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
         <div>
@@ -73,10 +74,10 @@ export const AdminPaymentSettings: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Left Settings Form (7 cols) */}
         <div className="lg:col-span-7 space-y-5 rounded-3xl glass-panel border border-[var(--border-color)] p-6 sm:p-8 shadow-xl text-xs">
-          
+
           {/* Upload QR Image */}
           <div>
             <label className="block font-bold text-[var(--text-primary)] mb-1">

@@ -109,6 +109,7 @@ export interface EvaluateProjectParams {
   addons?: ProjectAddon[];
   pptSlideCount?: PPTTier;
   reviewType?: ReviewTier;
+  needsProject?: boolean;
   needsPPT?: boolean;
   needsDocumentation?: boolean;
   needsReview?: boolean;
@@ -130,12 +131,50 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
 
   const breakdownItems: { label: string; amount: number }[] = [];
   let baseAmount = 50;
-  let resolvedComplexity: 'small' | 'medium' | 'large' = 'small';
-  let rationale = '';
-
   const service = params.serviceType || 'college-project';
+  const textCorpus = `${params.descriptionText || ''} ${params.problemStatement || ''}`.toLowerCase();
+  const techCount = params.technologies?.length || 0;
 
-  // 1. PPT Only Service Flow (5-10 slides is FREE ₹0!)
+  // 1. AI Automatic Complexity Analysis
+  let resolvedComplexity: 'small' | 'medium' | 'large' = 'small';
+  let estimatedDeliveryText = '~25 minutes';
+  let estimatedMinutes = 25;
+  let complexityReasoning = 'Standard single-module task with automated generation.';
+
+  if (service === 'ppt-presentation') {
+    resolvedComplexity = 'small';
+    estimatedDeliveryText = '~20 minutes';
+    estimatedMinutes = 20;
+    complexityReasoning = 'Presentation generation and visual layout structuring.';
+  } else if (service === 'project-review') {
+    resolvedComplexity = 'small';
+    estimatedDeliveryText = '~30 minutes';
+    estimatedMinutes = 30;
+    complexityReasoning = 'Algorithmic review, logic verification, and rubric evaluation.';
+  } else {
+    // Check for Large / Complex Project criteria
+    const hasComplexKeywords = /full[- ]?stack|deep learning|neural network|microservices?|distributed|multi[- ]?tier|blockchain|transformer|bert|llm|cloud deployment|ansys|solidworks|finite element|capstone|large dataset|multi[- ]?module/i.test(textCorpus);
+    const hasMultipleComponents = params.needsProject && params.needsDocumentation && params.needsVivaPrep;
+    
+    if (params.projectLevel === 'major' || hasComplexKeywords || (techCount >= 4 && hasMultipleComponents)) {
+      resolvedComplexity = 'large';
+      estimatedDeliveryText = '~6 hours';
+      estimatedMinutes = 360;
+      complexityReasoning = 'Full-scope multi-tier architecture with extensive processing, documentation, and testing.';
+    } else if (params.projectLevel === 'mini' || techCount >= 2 || /machine learning|data analysis|react|node|spring|database|mini project|classification|opencv|yolo|api integration|dashboard|embedded/i.test(textCorpus)) {
+      resolvedComplexity = 'medium';
+      estimatedDeliveryText = '~2.5 hours';
+      estimatedMinutes = 150;
+      complexityReasoning = 'Modular software/engineering project with data processing and structured implementation.';
+    } else {
+      resolvedComplexity = 'small';
+      estimatedDeliveryText = '~25 minutes';
+      estimatedMinutes = 25;
+      complexityReasoning = 'Basic college assignment / simple topic with focused single-module scope.';
+    }
+  }
+
+  // 2. Base Amount Resolution
   if (service === 'ppt-presentation') {
     const slideTier = params.pptSlideCount || '8_10_slides';
     baseAmount = config.pptRates[slideTier] !== undefined ? config.pptRates[slideTier] : 0;
@@ -146,41 +185,23 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
       label: isFree ? `${slideLabel} — FREE` : slideLabel,
       amount: baseAmount
     });
-    resolvedComplexity = 'small';
-    rationale = isFree
-      ? 'College presentation slides (5–10 slides) provided 100% FREE for college students.'
-      : `Extended college presentation deck (${slideLabel.toLowerCase()}).`;
-  }
-  // 2. Project Review Only Service Flow (₹30–₹70)
-  else if (service === 'project-review') {
+  } else if (service === 'project-review') {
     const revTier = params.reviewType || 'basic';
     baseAmount = config.reviewRates[revTier] || 30;
     const revLabel = revTier === 'technical' ? 'Technical Code Review' : revTier === 'final' ? 'Final Comprehensive Review' : 'Basic Project Review';
     breakdownItems.push({ label: revLabel, amount: baseAmount });
-    resolvedComplexity = 'small';
-    rationale = `${revLabel} checking logic, syntax, formatting, and submission rubric.`;
-  }
-  // 3. College Project & Technical Help Flows (₹30, ₹50, ₹80, ₹100 MAX)
-  else {
-    const level = params.projectLevel || 'basic';
-    if (level === 'basic' || params.complexity === 'small') {
+  } else {
+    if (resolvedComplexity === 'small') {
       baseAmount = config.basePrices.basicCollege || 50;
-      resolvedComplexity = 'small';
       breakdownItems.push({ label: 'Basic College Project / Task', amount: baseAmount });
-      rationale = 'Small task / 1st-year college assignment assistance.';
-    } else if (level === 'major' || params.complexity === 'large') {
+    } else if (resolvedComplexity === 'large') {
       baseAmount = config.basePrices.majorProject || 100;
-      resolvedComplexity = 'large';
       breakdownItems.push({ label: 'Major Project / Comprehensive Task', amount: baseAmount });
-      rationale = 'More involved final-year / complex project assistance.';
     } else {
       baseAmount = config.basePrices.miniProject || 80;
-      resolvedComplexity = 'medium';
       breakdownItems.push({ label: 'College Mini Project / Standard Task', amount: baseAmount });
-      rationale = 'Standard college mini project (Web / Python / Data Science / ML).';
     }
 
-    // Direct checkbox additions
     if (params.needsPPT) {
       breakdownItems.push({ label: 'College PPT (5–10 Slides) — FREE', amount: 0 });
     }
@@ -204,21 +225,12 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
     });
   }
 
-  // Urgency Fee (₹0, ₹10, ₹20, ₹30)
-  const urgencyAdder = config.urgencyAdders[params.urgency] || 0;
-  if (urgencyAdder > 0) {
-    const urgencyLabel = params.urgency === 'same-day' ? '1 Day Priority' : params.urgency === 'urgent' ? '2–3 Days Priority' : '4–6 Days Priority';
-    breakdownItems.push({ label: urgencyLabel, amount: urgencyAdder });
-  }
-
-  // Sum total
+  // Sum total without urgency markup
   const unconstrainedTotal = breakdownItems.reduce((s, i) => s + i.amount, 0);
 
-  // If service is basic free PPT with no paid extras, total is strictly 0
   const isFreePptService = service === 'ppt-presentation' && (params.pptSlideCount === '5_7_slides' || params.pptSlideCount === '8_10_slides' || !params.pptSlideCount);
   const minFloor = isFreePptService && unconstrainedTotal === 0 ? 0 : 30;
 
-  // Enforce Hard Student Limit: strictly ₹30, ₹50, ₹80, ₹100 MAXIMUM (or ₹0 for Free PPT)
   const totalFinalPrice = isFreePptService && unconstrainedTotal === 0
     ? 0
     : Math.min(maxCap, Math.max(minFloor, unconstrainedTotal));
@@ -244,38 +256,34 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
 
   return {
     estimatedComplexity: resolvedComplexity,
-    estimatedEffortHours: resolvedComplexity === 'small' ? 4 : resolvedComplexity === 'medium' ? 8 : 16,
-    recommendedTimelineDays: params.urgency === 'same-day' ? 1 : params.urgency === 'urgent' ? 2 : params.urgency === 'priority' ? 4 : 7,
+    estimatedEffortHours: resolvedComplexity === 'small' ? 1 : resolvedComplexity === 'medium' ? 3 : 8,
+    recommendedTimelineDays: 1,
     estimatedPrice: totalFinalPrice,
     basePrice: baseAmount,
     complexityFee: 0,
     techFee: 0,
-    urgencyFee: urgencyAdder,
-    addOnsTotal: Math.max(0, unconstrainedTotal - baseAmount - urgencyAdder),
+    urgencyFee: 0,
+    addOnsTotal: Math.max(0, unconstrainedTotal - baseAmount),
     taxAmount: 0,
     totalFinalPrice,
-    assignedExpertTier: 'Verified Engineering Project Specialist',
+    assignedExpertTier: 'AI Automated Engine',
     deliverablesList: deliverables,
     revisionsAllowed: 3,
-    rationale,
-    breakdownItems
+    rationale: complexityReasoning,
+    breakdownItems,
+    estimatedDeliveryText,
+    estimatedMinutes,
+    complexityReasoning
   };
 }
 
-/**
- * Calculates deadline pricing comparison for student savings UX (up to ₹100 MAX)
- */
 export function getDeadlineComparisonPrices(params: Omit<EvaluateProjectParams, 'urgency'>) {
-  const sameDayPrice = evaluateProjectRequirements({ ...params, urgency: 'same-day' }).totalFinalPrice;
-  const urgentPrice = evaluateProjectRequirements({ ...params, urgency: 'urgent' }).totalFinalPrice;
-  const priorityPrice = evaluateProjectRequirements({ ...params, urgency: 'priority' }).totalFinalPrice;
-  const standardPrice = evaluateProjectRequirements({ ...params, urgency: 'standard' }).totalFinalPrice;
-
+  const assessment = evaluateProjectRequirements({ ...params, urgency: 'standard' });
   return {
-    sameDayPrice,
-    urgentPrice,
-    priorityPrice,
-    standardPrice,
-    savingsWithStandard: Math.max(0, urgentPrice - standardPrice)
+    sameDayPrice: assessment.totalFinalPrice,
+    urgentPrice: assessment.totalFinalPrice,
+    priorityPrice: assessment.totalFinalPrice,
+    standardPrice: assessment.totalFinalPrice,
+    savingsWithStandard: 0
   };
 }

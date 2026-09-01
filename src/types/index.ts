@@ -160,6 +160,9 @@ export interface ProjectAssessment {
   revisionsAllowed: number;
   rationale: string;
   breakdownItems?: { label: string; amount: number }[];
+  estimatedDeliveryText?: string;
+  estimatedMinutes?: number;
+  complexityReasoning?: string;
 }
 
 export interface DeliverableItem {

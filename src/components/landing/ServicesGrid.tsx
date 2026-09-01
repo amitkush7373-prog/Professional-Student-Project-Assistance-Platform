@@ -217,6 +217,16 @@ export const ServicesGrid: React.FC = () => {
   });
 
   const handleSelectService = (category: ProjectCategory) => {
+    if (category === 'viva-preparation' || category === 'ppt-presentation') {
+      setActiveView('ai-ppt-agent');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (category === 'documentation' || category === 'documentation-srs') {
+      setActiveView('ai-report-agent');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setDraftSubmission({
       category,
       complexity: 'medium',

@@ -598,7 +598,7 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
     transactionDate: getPastDate(0),
     invoiceNumber: 'INV-2026-6621',
     gatewayRef: 'UTR-202608291041',
-    upiIdOrCardEnding: '7618820563-2@ybl',
+    upiIdOrCardEnding: 'apexassist@okaxis',
     utrNumber: '202608291041',
     paymentProofUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80'
   }
@@ -687,7 +687,7 @@ export const INITIAL_PAYMENTS: PaymentVerificationRecord[] = [
     projectLevel: 'ppt_only',
     amount: 250,
     utr_number: '202608291041',
-    payment_screenshot: '/phonepe-qr.png',
+    payment_screenshot: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80',
     payment_status: 'verification_pending',
     submitted_at: getPastDate(0),
     payment_method: 'manual_upi',

@@ -178,8 +178,13 @@ export const Footer: React.FC = () => {
                 </button>
               </li>
               <li>
-                <button onClick={() => setActiveView('admin-dashboard')} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  Admin Command Center
+                <button onClick={() => setActiveView('ai-ppt-agent')} className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline transition-colors flex items-center gap-1">
+                  <span>⚡ AI Presentation Agent (Free)</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setActiveView('admin-dashboard')} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+                  <span>🛡️ Staff Admin Hub (Passcode)</span>
                 </button>
               </li>
             </ul>

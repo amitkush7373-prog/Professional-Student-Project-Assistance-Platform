@@ -83,14 +83,11 @@ export const HeroSection: React.FC = () => {
               </button>
 
               <button
-                onClick={() => {
-                  setDraftSubmission({ serviceType: 'ppt-presentation' });
-                  setActiveView('submit');
-                }}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 transition-colors flex items-center justify-center gap-2"
+                onClick={() => setActiveView('ai-ppt-agent')}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 transition-all flex items-center justify-center gap-2 shadow-sm hover:scale-105"
               >
-                <Presentation className="w-4 h-4 text-emerald-500" />
-                <span>Get Free College PPT (₹0)</span>
+                <Sparkles className="w-4 h-4 text-emerald-500" />
+                <span>⚡ Instant AI PPT Agent (FREE ₹0)</span>
               </button>
             </div>
 
