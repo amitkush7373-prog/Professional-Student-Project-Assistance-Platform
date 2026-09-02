@@ -95,10 +95,12 @@ export const AdminExpertsManager: React.FC = () => {
                   </div>
                 </div>
 
-                <span className="text-xs font-bold text-amber-500 flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                  {exp.rating || 4.95}
-                </span>
+                {exp.rating && (
+                  <span className="text-xs font-bold text-amber-500 flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                    {exp.rating}
+                  </span>
+                )}
               </div>
 
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed line-clamp-2">

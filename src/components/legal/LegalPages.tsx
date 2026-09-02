@@ -173,7 +173,7 @@ export const LegalPages: React.FC = () => {
               <div className="border-b border-[var(--border-color)] pb-4 space-y-1">
                 <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Section 4.0</span>
                 <h2 className="text-xl font-black text-[var(--text-primary)]">Refund & Escrow Protection Policy</h2>
-                <p className="text-xs text-[var(--text-muted)]">100% Milestone Satisfaction Guarantee</p>
+                <p className="text-xs text-[var(--text-muted)]">Milestone & Escrow Release Policy</p>
               </div>
 
               <div className="space-y-3">

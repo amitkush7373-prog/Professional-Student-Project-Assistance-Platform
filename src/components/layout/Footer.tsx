@@ -35,8 +35,8 @@ export const Footer: React.FC = () => {
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Verified Industry Mentors</h4>
-                <p className="text-[11px] text-[var(--text-muted)]">Ex-FAANG & PhD Researchers</p>
+                <h4 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Verified Mentorship</h4>
+                <p className="text-[11px] text-[var(--text-muted)]">Code Guidance & Tutoring</p>
               </div>
             </div>
 
@@ -45,8 +45,8 @@ export const Footer: React.FC = () => {
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">100% On-Time Guarantee</h4>
-                <p className="text-[11px] text-[var(--text-muted)]">Live Countdown & Milestone Tracking</p>
+                <h4 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Automated Delivery</h4>
+                <p className="text-[11px] text-[var(--text-muted)]">Real-Time Progress & Milestones</p>
               </div>
             </div>
 
@@ -65,8 +65,8 @@ export const Footer: React.FC = () => {
                 <Award className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Academic Code Compliance</h4>
-                <p className="text-[11px] text-[var(--text-muted)]">Tutoring, Guidance & Clean SRS</p>
+                <h4 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Academic Ethics Compliance</h4>
+                <p className="text-[11px] text-[var(--text-muted)]">Tutoring, Guidance & Clean Documentation</p>
               </div>
             </div>
           </div>

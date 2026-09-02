@@ -16,7 +16,7 @@ import { useApp } from '../../context/AppContext';
 import { QuickEstimatorWidget } from './QuickEstimatorWidget';
 
 export const HeroSection: React.FC = () => {
-  const { setActiveView, setDraftSubmission } = useApp();
+  const { setActiveView, setDraftSubmission, reviews } = useApp();
 
   return (
     <div className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-[var(--border-color)]">
@@ -91,17 +91,21 @@ export const HeroSection: React.FC = () => {
               </button>
             </div>
 
-            {/* Student Ratings Proof */}
-            <div className="flex items-center justify-center lg:justify-start gap-4 pt-2 text-xs text-[var(--text-muted)]">
-              <div className="flex items-center gap-1 text-amber-500 font-bold">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                ))}
-                <span className="text-[var(--text-primary)] ml-1">4.96/5 Rating</span>
+            {/* Dynamic Real Reviews (Rendered ONLY when actual user reviews exist) */}
+            {reviews.length > 0 && (
+              <div className="flex items-center justify-center lg:justify-start gap-3 pt-2 text-xs text-[var(--text-muted)]">
+                <div className="flex items-center gap-1 text-amber-500 font-bold">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                  ))}
+                  <span className="text-[var(--text-primary)] ml-1">
+                    {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)}/5
+                  </span>
+                </div>
+                <span>•</span>
+                <span>{reviews.length} {reviews.length === 1 ? 'Verified Review' : 'Verified Reviews'}</span>
               </div>
-              <span>•</span>
-              <span>2,400+ College Submissions Assisted</span>
-            </div>
+            )}
 
           </div>
 

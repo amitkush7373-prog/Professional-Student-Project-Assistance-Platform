@@ -76,12 +76,14 @@ export const ExpertDashboard: React.FC = () => {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  Verified Senior Mentor
+                  Verified Mentor
                 </span>
-                <span className="text-xs font-bold text-amber-500 flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                  {currentUser.rating || 4.98} Rating
-                </span>
+                {currentUser.rating && (
+                  <span className="text-xs font-bold text-amber-500 flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                    {currentUser.rating} Rating
+                  </span>
+                )}
               </div>
               <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
                 {currentUser.name}

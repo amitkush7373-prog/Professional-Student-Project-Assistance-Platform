@@ -38,9 +38,8 @@ export const INITIAL_USERS: User[] = [
     branch: 'Computer Science & Data Systems',
     bio: '10+ years mentoring engineering students across Python, AI/ML mini projects, Java, and college PPT presentations.',
     skills: ['Python', 'Data Science', 'Machine Learning', 'FastAPI', 'Java', 'PPT Design'],
-    rating: 4.98,
-    activeProjectsCount: 3,
-    completedProjectsCount: 142,
+    activeProjectsCount: 1,
+    completedProjectsCount: 1,
     isAvailable: true,
     createdAt: '2025-01-10T10:00:00Z'
   },
@@ -55,9 +54,8 @@ export const INITIAL_USERS: User[] = [
     branch: 'Software Engineering',
     bio: 'Specialist in React, JavaScript, HTML/CSS, college project reports, and viva explanation sessions.',
     skills: ['React', 'JavaScript', 'Node.js', 'PostgreSQL', 'Documentation', 'Viva Prep'],
-    rating: 4.95,
-    activeProjectsCount: 2,
-    completedProjectsCount: 98,
+    activeProjectsCount: 1,
+    completedProjectsCount: 0,
     isAvailable: true,
     createdAt: '2025-03-20T10:00:00Z'
   },
@@ -72,9 +70,8 @@ export const INITIAL_USERS: User[] = [
     branch: 'Data Science',
     bio: 'Expert in Data Cleaning, Pandas, Power BI, college project reviews, and error troubleshooting.',
     skills: ['Python', 'Pandas', 'Power BI', 'SQL', 'Project Review', 'Debugging'],
-    rating: 4.92,
-    activeProjectsCount: 2,
-    completedProjectsCount: 84,
+    activeProjectsCount: 0,
+    completedProjectsCount: 0,
     isAvailable: true,
     createdAt: '2025-04-12T10:00:00Z'
   },
@@ -497,47 +494,7 @@ print(classification_report(y_test, y_pred_rf))
   }
 ];
 
-export const INITIAL_REVIEWS: PlatformReview[] = [
-  {
-    id: 'rev_01',
-    studentName: 'Aarav Sharma',
-    studentCollege: 'Delhi Technological University (DTU)',
-    projectTitle: 'Student Portfolio Website & 8-Slide PPT',
-    category: 'web-dev',
-    rating: 5,
-    review: 'Priced at just ₹350 for full source code and a clean presentation! Pooja explained the code in simple words so I could answer all my viva questions effortlessly.',
-    whatWentWell: 'Super affordable student pricing, fast delivery, and neat slides.',
-    suggestions: 'Keep this pocket-friendly pricing forever!',
-    verified: true,
-    date: getPastDate(2)
-  },
-  {
-    id: 'rev_02',
-    studentName: 'Sneha Kulkarni',
-    studentCollege: 'BITS Pilani',
-    projectTitle: 'College PPT on Cyber Security (10 Slides)',
-    category: 'ppt-presentation',
-    rating: 5,
-    review: 'Got a 10-slide PPT done for ₹150 within 24 hours. The visual layout and diagram quality blew my college panel away. 10/10 recommendation!',
-    whatWentWell: 'Very cheap rate and high quality design.',
-    suggestions: 'None, fantastic experience.',
-    verified: true,
-    date: getPastDate(5)
-  },
-  {
-    id: 'rev_03',
-    studentName: 'Karthik Raja',
-    studentCollege: 'NIT Trichy',
-    projectTitle: 'Python Data Cleaning & Analysis Mini Project',
-    category: 'data-science',
-    rating: 5,
-    review: 'Total cost was ₹450 with project review included. The mentor was patient and resolved all my dataset bugs. Zero hidden charges!',
-    whatWentWell: 'Transparent pricing, no surprises, genuine guidance.',
-    suggestions: 'More sample PPT templates would be great.',
-    verified: true,
-    date: getPastDate(9)
-  }
-];
+export const INITIAL_REVIEWS: PlatformReview[] = [];
 
 export const INITIAL_TRANSACTIONS: Transaction[] = [
   {
