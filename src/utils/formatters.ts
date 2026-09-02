@@ -211,12 +211,12 @@ export function getComplexityLabel(complexity: ComplexityLevel): { title: string
 export function getUrgencyLabel(urgency: UrgencyLevel): { title: string; days: string; tag: string } {
   switch (urgency) {
     case 'standard':
-      return { title: 'Standard Delivery', days: '7+ Days', tag: 'Best Value' };
+      return { title: 'Quick Task', days: '~5–30 Minutes', tag: 'Fast Automated' };
     case 'priority':
-      return { title: 'Priority Delivery', days: '3–6 Days', tag: 'Most Popular' };
+      return { title: 'Standard Project', days: '~30m–4 Hours', tag: 'Most Popular' };
     case 'urgent':
-      return { title: 'Urgent Express', days: '1–2 Days', tag: 'Fast Track' };
+      return { title: 'Complex Project', days: '~4–12 Hours', tag: 'Deep Synthesis' };
     case 'same-day':
-      return { title: 'Emergency Rush', days: '24 Hours / Same Day', tag: 'Super Fast' };
+      return { title: 'Expedited Review', days: '~1–2 Hours', tag: 'Priority Queue' };
   }
 }

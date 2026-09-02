@@ -55,8 +55,8 @@ export const HeroSection: React.FC = () => {
                 { label: 'College PPT — FREE', icon: Presentation },
                 { label: 'Paid Tasks Up to ₹100 Max', icon: PiggyBank },
                 { label: 'Free Project Preview', icon: ShieldCheck },
-                { label: '100% Viva Ready Code', icon: Code2 },
-                { label: 'On-Time Delivery', icon: Clock },
+                { label: 'Verified Clean Code', icon: Code2 },
+                { label: '5m–12h Max AI Delivery', icon: Clock },
                 { label: '3 Revisions Included', icon: CheckCircle2 }
               ].map((item, idx) => {
                 const Icon = item.icon;

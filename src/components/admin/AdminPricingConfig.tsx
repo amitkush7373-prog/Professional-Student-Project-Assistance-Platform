@@ -105,7 +105,7 @@ export const AdminPricingConfig: React.FC = () => {
         <div className="p-6 rounded-2xl glass-panel border border-[var(--border-color)] space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2 flex items-center justify-between">
             <span>Base Project Price (INR)</span>
-            <span className="text-emerald-500 font-normal text-[10px]">7+ Days Base</span>
+            <span className="text-emerald-500 font-normal text-[10px]">AI Dynamic Base</span>
           </h4>
 
           <div className="space-y-3 text-xs">
@@ -229,16 +229,16 @@ export const AdminPricingConfig: React.FC = () => {
           </div>
         </div>
 
-        {/* Urgency Adders */}
+        {/* AI Timeline Tiers */}
         <div className="p-6 rounded-2xl glass-panel border border-[var(--border-color)] space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2">
-            Urgency / Timeline Extra Fees (INR)
+            AI Complexity Timeline Adders (INR)
           </h4>
 
           <div className="space-y-3 text-xs">
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                7+ Days (Standard, +₹0)
+                Quick Task (~5–30 Minutes, +₹0)
               </label>
               <input
                 type="number"
@@ -253,7 +253,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                4–6 Days Priority (+₹10)
+                Standard Project (~30m–4 Hours, +₹0)
               </label>
               <input
                 type="number"
@@ -268,7 +268,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                2–3 Days Urgent (+₹20)
+                Complex Project (~4–12 Hours, +₹0)
               </label>
               <input
                 type="number"
@@ -283,7 +283,7 @@ export const AdminPricingConfig: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[var(--text-primary)] mb-1">
-                1 Day Priority (+₹30)
+                Expedited Review Queue (~1–2 Hours, +₹0)
               </label>
               <input
                 type="number"

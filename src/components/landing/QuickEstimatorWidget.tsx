@@ -135,33 +135,20 @@ export const QuickEstimatorWidget: React.FC = () => {
         </div>
       )}
 
-      {/* Target Deadline */}
-      <div className="space-y-1.5 text-xs">
-        <div className="flex justify-between items-center">
-          <label className="font-semibold text-[var(--text-primary)]">Target Deadline</label>
-          <span className="text-[10px] text-emerald-500 font-semibold">More time = Lower price</span>
+      {/* AI Estimated Completion Box */}
+      <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-blue-500" />
+            <span>AI Estimated Completion</span>
+          </span>
+          <span className="font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md text-[11px]">
+            {assessment.estimatedDeliveryText}
+          </span>
         </div>
-        <div className="grid grid-cols-4 gap-1.5">
-          {[
-            { id: 'standard' as UrgencyLevel, label: '7+ Days' },
-            { id: 'priority' as UrgencyLevel, label: '4–6 Days' },
-            { id: 'urgent' as UrgencyLevel, label: '2–3 Days' },
-            { id: 'same-day' as UrgencyLevel, label: '1 Day' }
-          ].map(u => (
-            <button
-              key={u.id}
-              type="button"
-              onClick={() => setUrgency(u.id)}
-              className={`py-1.5 text-[10px] font-bold rounded-lg border transition-all ${
-                urgency === u.id
-                  ? 'border-blue-600 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold'
-                  : 'border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
-              }`}
-            >
-              {u.label}
-            </button>
-          ))}
-        </div>
+        <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+          {assessment.complexityReasoning} (Strictly maximum 12 hours)
+        </p>
       </div>
 
       {/* Calculated Total Box */}

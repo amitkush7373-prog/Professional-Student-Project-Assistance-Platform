@@ -18,10 +18,10 @@ export const DEFAULT_PRICING_CONFIG: PricingConfig = {
     majorProject: 100 // Complex task / Capstone (₹100 MAX)
   },
   urgencyAdders: {
-    standard: 0,     // 7+ days: ₹0 (best price)
-    priority: 10,    // 4-6 days: +₹10
-    urgent: 20,      // 2-3 days: +₹20
-    'same-day': 30   // 1 day (tomorrow): +₹30
+    standard: 0,
+    priority: 0,
+    urgent: 0,
+    'same-day': 0
   },
   pptRates: {
     '5_7_slides': 0,    // COMPLETELY FREE (₹0)
@@ -101,7 +101,7 @@ export interface EvaluateProjectParams {
   projectLevel?: CollegeProjectLevel;
   category?: ProjectCategory;
   complexity?: ComplexityLevel;
-  urgency: UrgencyLevel;
+  urgency?: UrgencyLevel;
   technologies?: string[];
   featuresCount?: number;
   descriptionText?: string;
@@ -119,11 +119,11 @@ export interface EvaluateProjectParams {
 }
 
 /**
- * Super Affordable Student Pricing Engine (₹30, ₹50, ₹80, ₹100 MAXIMUM)
- * - 5-10 slide College PPT: 100% FREE (₹0)
- * - Very small task / bug fix: ₹30 – ₹50
- * - Medium task / mini project: ₹70 – ₹80
- * - More involved task: ₹100 MAX
+ * Intelligent AI Complexity & Delivery Engine
+ * Dynamic processing time ranges (Strict Max: 12 Hours):
+ * - Quick Task: ~5–30 minutes (simple PPTs, basic modifications, small college tasks)
+ * - Standard Project: ~30 minutes–4 hours (normal college projects, detailed presentations, moderate coding projects)
+ * - Complex Project: ~4–12 hours (large projects, complex software/ML, large datasets, multiple components)
  */
 export function evaluateProjectRequirements(params: EvaluateProjectParams): ProjectAssessment {
   const config = params.pricingConfig || DEFAULT_PRICING_CONFIG;
@@ -135,46 +135,46 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
   const textCorpus = `${params.descriptionText || ''} ${params.problemStatement || ''}`.toLowerCase();
   const techCount = params.technologies?.length || 0;
 
-  // 1. AI Automatic Complexity Analysis
+  // 1. AI Automatic Complexity Analysis & Realistic Delivery Time (Max 12 Hours)
   let resolvedComplexity: 'small' | 'medium' | 'large' = 'small';
-  let estimatedDeliveryText = '~25 minutes';
+  let estimatedDeliveryText = 'Usually ready in ~25 minutes';
   let estimatedMinutes = 25;
-  let complexityReasoning = 'Standard single-module task with automated generation.';
+  let complexityReasoning = 'Quick task with automated AI workflow and instant rendering.';
 
   if (service === 'ppt-presentation') {
     resolvedComplexity = 'small';
-    estimatedDeliveryText = '~20 minutes';
-    estimatedMinutes = 20;
+    estimatedDeliveryText = 'Usually ready in ~15 minutes';
+    estimatedMinutes = 15;
     complexityReasoning = 'Presentation generation and visual layout structuring.';
   } else if (service === 'project-review') {
     resolvedComplexity = 'small';
-    estimatedDeliveryText = '~30 minutes';
+    estimatedDeliveryText = 'Usually ready in ~30 minutes';
     estimatedMinutes = 30;
     complexityReasoning = 'Algorithmic review, logic verification, and rubric evaluation.';
   } else {
-    // Check for Large / Complex Project criteria
+    // Check for Large / Complex Project criteria (4 - 12 hours)
     const hasComplexKeywords = /full[- ]?stack|deep learning|neural network|microservices?|distributed|multi[- ]?tier|blockchain|transformer|bert|llm|cloud deployment|ansys|solidworks|finite element|capstone|large dataset|multi[- ]?module/i.test(textCorpus);
     const hasMultipleComponents = params.needsProject && params.needsDocumentation && params.needsVivaPrep;
     
     if (params.projectLevel === 'major' || hasComplexKeywords || (techCount >= 4 && hasMultipleComponents)) {
       resolvedComplexity = 'large';
-      estimatedDeliveryText = '~6 hours';
+      estimatedDeliveryText = 'Estimated processing time: ~6 hours';
       estimatedMinutes = 360;
       complexityReasoning = 'Full-scope multi-tier architecture with extensive processing, documentation, and testing.';
     } else if (params.projectLevel === 'mini' || techCount >= 2 || /machine learning|data analysis|react|node|spring|database|mini project|classification|opencv|yolo|api integration|dashboard|embedded/i.test(textCorpus)) {
       resolvedComplexity = 'medium';
-      estimatedDeliveryText = '~2.5 hours';
+      estimatedDeliveryText = 'Estimated processing time: ~2.5 hours';
       estimatedMinutes = 150;
       complexityReasoning = 'Modular software/engineering project with data processing and structured implementation.';
     } else {
       resolvedComplexity = 'small';
-      estimatedDeliveryText = '~25 minutes';
+      estimatedDeliveryText = 'Usually ready in ~25 minutes';
       estimatedMinutes = 25;
       complexityReasoning = 'Basic college assignment / simple topic with focused single-module scope.';
     }
   }
 
-  // 2. Base Amount Resolution
+  // 2. Base Amount Resolution (Transparent, affordable pricing)
   if (service === 'ppt-presentation') {
     const slideTier = params.pptSlideCount || '8_10_slides';
     baseAmount = config.pptRates[slideTier] !== undefined ? config.pptRates[slideTier] : 0;
@@ -256,7 +256,7 @@ export function evaluateProjectRequirements(params: EvaluateProjectParams): Proj
 
   return {
     estimatedComplexity: resolvedComplexity,
-    estimatedEffortHours: resolvedComplexity === 'small' ? 1 : resolvedComplexity === 'medium' ? 3 : 8,
+    estimatedEffortHours: resolvedComplexity === 'small' ? 0.5 : resolvedComplexity === 'medium' ? 2.5 : 6,
     recommendedTimelineDays: 1,
     estimatedPrice: totalFinalPrice,
     basePrice: baseAmount,

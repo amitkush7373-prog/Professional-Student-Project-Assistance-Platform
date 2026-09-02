@@ -20,8 +20,8 @@ export const FAQ_DATA: FaqItem[] = [
   {
     id: 'faq_1',
     category: 'Ordering & Pricing',
-    question: 'How is the project price calculated?',
-    answer: 'Our dynamic pricing engine calculates pricing based on project complexity (Small, Medium, Large), technology stack prerequisites, timeline urgency (Standard 7+ days, Priority 3-6 days, Urgent 1-2 days, Same-day), and any optional add-ons like IEEE SRS Documentation or Cloud Hosting. There are zero hidden fees, and an itemized breakdown is provided before checkout.'
+    question: 'How is the project price and delivery time calculated?',
+    answer: 'Our dynamic AI engine determines delivery time automatically based on project scope (Quick Tasks: ~5–30 minutes, Standard Projects: ~30m–4 hours, Complex Systems: ~4–12 hours max). Pricing is strictly capped at ₹100 MAX with Basic College PPT 100% FREE. There are zero hidden fees and no deadline markups.'
   },
   {
     id: 'faq_2',
@@ -44,8 +44,8 @@ export const FAQ_DATA: FaqItem[] = [
   {
     id: 'faq_5',
     category: 'Deadlines & Revisions',
-    question: 'Can you handle extremely urgent or same-day project deadlines?',
-    answer: 'Yes. For tight submission dates, choose our "Urgent Express (1–2 Days)" or "Emergency Rush (24 Hours / Same Day)" options. We assign priority compute and dedicated senior mentors to ensure guaranteed on-time delivery.'
+    question: 'How fast can I get my college project deliverables?',
+    answer: 'Our AI automation delivers simple tasks and PPT decks in ~5–30 minutes, standard mini-projects in ~30m–4 hours, and complex major capstone systems in ~4–12 hours maximum. You never have to wait days.'
   },
   {
     id: 'faq_6',

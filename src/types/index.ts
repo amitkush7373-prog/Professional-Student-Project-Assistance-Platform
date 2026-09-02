@@ -267,10 +267,10 @@ export interface PricingConfig {
     majorProject: number; // Complex (₹100 MAX)
   };
   urgencyAdders: {
-    standard: number; // 7+ days: ₹0
-    priority: number; // 4-6 days: +₹10
-    urgent: number;   // 2-3 days: +₹20
-    'same-day': number; // 1 day: +₹30
+    standard: number;
+    priority: number;
+    urgent: number;
+    'same-day': number;
   };
   pptRates: {
     '5_7_slides': number;   // ₹0 (FREE)
